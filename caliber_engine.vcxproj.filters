@@ -75,6 +75,9 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="default.vert">
@@ -133,12 +136,21 @@
     <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\..\Downloads\opengl-tutorials-main (2)\opengl-tutorials-main\Resources\YoutubeOpenGL 6 - Textures\Screenshot (8).png">
+    <Image Include="pop_cat.png">
       <Filter>Resource Files\Textures</Filter>
     </Image>
     <Image Include="PavingStones119_1K_Color.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="planks.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="planksSpec.png">
       <Filter>Resource Files\Textures</Filter>
     </Image>
   </ItemGroup>
