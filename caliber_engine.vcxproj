@@ -196,6 +196,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\Downloads\opengl-tutorials-main (2)\opengl-tutorials-main\Resources\YoutubeOpenGL 6 - Textures\Screenshot (8).png" />
+    <Image Include="PavingStones119_1K_Color.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
