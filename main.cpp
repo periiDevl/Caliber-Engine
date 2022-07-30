@@ -60,6 +60,10 @@ int main()
 	// Enables the Depth Buffer
 	glEnable(GL_DEPTH_TEST);
 
+	glEnable(GL_DEPTH_TEST);
+	glCullFace(GL_FRONT);
+	glFrontFace(GL_CCW);
+
 	// Creates camera object
 	Camera camera(width, height, glm::vec3(0.0f, 0.0f, 2.0f));
 
