@@ -105,6 +105,12 @@
     <None Include="framebuffer.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="skybox.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="skybox.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shaderClass.h">
@@ -164,6 +170,42 @@
       <Filter>Resource Files\Textures</Filter>
     </Image>
     <Image Include="planksSpec.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="cliffside_2.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="cliffside_3.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="cliffside_4.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="cliffside_5.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="cliffside_6.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="cliffside_1.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="left.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="right.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="top.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="back.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="bottom.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="front.jpg">
       <Filter>Resource Files\Textures</Filter>
     </Image>
   </ItemGroup>

@@ -182,6 +182,8 @@
     <None Include="framebuffer.vert" />
     <None Include="light.frag" />
     <None Include="light.vert" />
+    <None Include="skybox.frag" />
+    <None Include="skybox.vert" />
     <None Include="transparent.frag" />
   </ItemGroup>
   <ItemGroup>
@@ -202,10 +204,22 @@
     <ClInclude Include="VBO.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="back.jpg" />
+    <Image Include="bottom.jpg" />
+    <Image Include="cliffside_1.png" />
+    <Image Include="cliffside_2.png" />
+    <Image Include="cliffside_3.png" />
+    <Image Include="cliffside_4.png" />
+    <Image Include="cliffside_5.png" />
+    <Image Include="cliffside_6.png" />
+    <Image Include="front.jpg" />
+    <Image Include="left.jpg" />
     <Image Include="PavingStones119_1K_Color.png" />
     <Image Include="planks.png" />
     <Image Include="planksSpec.png" />
     <Image Include="pop_cat.png" />
+    <Image Include="right.jpg" />
+    <Image Include="top.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
