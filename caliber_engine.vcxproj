@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -175,8 +175,11 @@
     <ClCompile Include="VBO.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\Downloads\opengl-tutorials-main (2)\opengl-tutorials-main\YoutubeOpenGL 30 - Bloom\framebuffer.vert" />
     <None Include="default.frag" />
     <None Include="default.vert" />
+    <None Include="framebuffer.frag" />
+    <None Include="framebuffer.vert" />
     <None Include="light.frag" />
     <None Include="light.vert" />
     <None Include="transparent.frag" />
@@ -187,7 +190,6 @@
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_impl_glfw.h" />
-    <ClInclude Include="imgui\imgui_impl_opengl3.h" />
     <ClInclude Include="imgui\imgui_internal.h" />
     <ClInclude Include="imgui\imstb_rectpack.h" />
     <ClInclude Include="imgui\imstb_textedit.h" />

@@ -1,9 +1,27 @@
+#include"imgui.h"
+#include"imgui_impl_glfw.h"
+#include"imgui_impl_opengl3.h"
+
+#include<iostream>
+#include<glad/glad.h>
+#include<GLFW/glfw3.h>
 #include"Model.h"
 
 
 const unsigned int width = 800;
 const unsigned int height = 800;
 
+float rectangleVertices[] =
+{
+	// Coords    // texCoords
+	 1.0f, -1.0f,  1.0f, 0.0f,
+	-1.0f, -1.0f,  0.0f, 0.0f,
+	-1.0f,  1.0f,  0.0f, 1.0f,
+
+	 1.0f,  1.0f,  1.0f, 1.0f,
+	 1.0f, -1.0f,  1.0f, 0.0f,
+	-1.0f,  1.0f,  0.0f, 1.0f
+};
 
 int main()
 {
@@ -37,12 +55,23 @@ int main()
 	glViewport(0, 0, width, height);
 
 
+	
+	
 
 
-
+	// Initialize ImGUI
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	ImGui::StyleColorsDark();
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init("#version 330");
 	// Generates Shader object using shaders default.vert and default.frag
 	Shader shaderProgram("default.vert", "default.frag");
 	Shader transpProgram("default.vert", "transparent.frag");
+	Shader framebufferProgram("framebuffer.vert", "framebuffer.frag");
+
+
 	// Take care of all the light related things
 	glm::vec4 lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	glm::vec3 lightPos = glm::vec3(0.5f, 0.5f, 0.5f);
@@ -57,6 +86,8 @@ int main()
 	transpProgram.Activate();
 	glUniform4f(glGetUniformLocation(transpProgram.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	glUniform3f(glGetUniformLocation(transpProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
+	framebufferProgram.Activate();
+	glUniform1i(glGetUniformLocation(framebufferProgram.ID, "screenTexture"), 0);
 
 
 	// Enables the Depth Buffer
@@ -79,23 +110,65 @@ int main()
 	double crntTime = 0.0;
 	double timeDiff;
 	unsigned int counter = 0;
-	//vsync
-	glfwSwapInterval(0);
+	/*
+	// Prepare framebuffer rectangle VBO and VAO
+	unsigned int rectVAO, rectVBO;
+	glGenVertexArrays(1, &rectVAO);
+	glGenBuffers(1, &rectVBO);
+	glBindVertexArray(rectVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, rectVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(rectangleVertices), &rectangleVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+	
+
+	unsigned int FBO;
+	glGenFramebuffers(1, &FBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+
+	// Create Framebuffer Texture
+	unsigned int framebufferTexture;
+	glGenTextures(1, &framebufferTexture);
+	glBindTexture(GL_TEXTURE_2D, framebufferTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // Prevents edge bleeding
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // Prevents edge bleeding
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, framebufferTexture, 0);
+
+	// Create Render Buffer Object
+	unsigned int RBO;
+	glGenRenderbuffers(1, &RBO);
+	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
+	*/
+
+	
 
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
 	{
+		
 
+		//vsync
+		glfwSwapInterval(1);
+		
 		crntTime = glfwGetTime();
 		timeDiff = crntTime - prevTime;
 		counter++;
 		if (timeDiff >= 1.0 / 30.0)
 		{
+			
 			// Creates new title
 			std::string FPS = std::to_string((1.0 / timeDiff) * counter);
 			std::string ms = std::to_string((timeDiff / counter) * 1000);
 			std::string newTitle = "Cliber window - running at :" + FPS + "FPS / " + ms + "ms";
 			glfwSetWindowTitle(window, newTitle.c_str());
+
 
 			// Resets times and counter
 			prevTime = crntTime;
@@ -104,17 +177,30 @@ int main()
 			camera.Inputs(window);
 			// Use this if you have disabled VSync
 			//camera.Inputs(window);
+			// Tell OpenGL a new frame is about to begin
 		}
 
 
-		// Specify the color of the background
-		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
-		// Clean the back buffer and depth buffer
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		/*
+		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+		// Specify the color of the background
+		*/
+		
+
+		// Tell OpenGL a new frame is about to begin
+		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST);
+
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		
 		// Handles camera inputs
 		// Updates and exports the camera matrix to the Vertex Shader
-		camera.updateMatrix(45.0f, 0.1f, 100.0f);
+		camera.updateMatrix(45.0f, 0.01f, 100.0f);
 
 		//enable only after wanting to blend
 		//glEnable(GL_BLEND);
@@ -122,15 +208,46 @@ int main()
 		// Draw a model
 		model.Draw(shaderProgram, camera, glm::vec3(1,10,1));
 
+		// Bind the default framebuffer
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		// Draw the framebuffer rectangle
+		/*
+		glCullFace(GL_FRONT);
+		framebufferProgram.Activate();
+		glBindVertexArray(rectVAO);
+		glDisable(GL_DEPTH_TEST); // prevents framebuffer rectangle from being discarded
+		glBindTexture(GL_TEXTURE_2D, framebufferTexture);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+		glCullFace(GL_BACK);
+		*/
 		glDisable(GL_BLEND);
+
+
+		
+		// ImGUI window creation
+		ImGui::Begin("My name is window, ImGUI window");
+		// Text that appears in the window
+		ImGui::Text("Hello there adventurer!");
+		// Ends the window
+		ImGui::End();
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		// Swap the back buffer with the front buffer
 		glfwSwapBuffers(window);
 		// Take care of all GLFW events
 		glfwPollEvents();
+		// Renders the ImGUI elements
+		
 	}
 
-
-
+	// Deletes all ImGUI instances
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
+	
 	// Delete all the objects we've created
 	shaderProgram.Delete();
 	transpProgram.Delete();
