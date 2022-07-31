@@ -71,6 +71,10 @@ int main()
 	ImGui::StyleColorsDark();
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init("#version 330");
+
+
+
+
 	// Generates Shader object using shaders default.vert and default.frag
 	Shader shaderProgram("default.vert", "default.frag");
 	Shader transpProgram("default.vert", "transparent.frag");
@@ -152,7 +156,12 @@ int main()
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
 	*/
 
-	
+	ImGuiStyle& style = ImGui::GetStyle();
+	style.Colors[ImGuiCol_WindowBg] = ImVec4(0.07, 0.08, 0.09, 0.75);
+	style.Colors[ImGuiCol_Border] = ImVec4(0.68, 0.24, 0.65, 1);
+	style.Colors[ImGuiCol_CheckMark] = ImVec4(0.68, 0.24, 0.65, 1);
+	style.Colors[ImGuiCol_Text] = ImVec4(0.98, 0.77, 1.00, 1);
+	style.WindowRounding = 8;
 	
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
@@ -211,10 +220,11 @@ int main()
 		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
-		if (gamemode == true) {
+		if (gamemode == false) {
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame();
+
 		}
 		
 
@@ -247,17 +257,26 @@ int main()
 
 
 		
-		if (gamemode == true) {
+		if (gamemode == false) {
 			// ImGUI window creation
 			ImGui::Begin("Project settings");
 			// Text that appears in the window
-			ImGui::Text("Hello there adventurer!");
+			ImGui::Text("I have no idea what to put here.");
 			ImGui::Checkbox("enable vsync", &vsync);
 			// Ends the window
 			ImGui::End();
 
+			ImGui::Begin("poop box A");
+			ImGui::Text("A is Ass");
+			ImGui::End();
+
+			ImGui::Begin("poop box B");
+			ImGui::Text("B is Butt");
+			ImGui::End();
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+			
+			
 		}
 		
 		
