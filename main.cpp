@@ -14,8 +14,12 @@ const unsigned int height = 720;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
+int sampels = 12;
+bool MSAA = false;
 bool vsync = true;
 bool gamemode = false;
+
+
 
 float rectangleVertices[] =
 {
@@ -74,6 +78,7 @@ int main()
 	// In this case we are using OpenGL 3.3
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_SAMPLES, sampels);
 	// Tell GLFW we are using the CORE profile
 	// So that means we only have the modern functions
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -140,6 +145,7 @@ int main()
 
 	// Enables the Depth Buffer
 	glEnable(GL_DEPTH_TEST);
+
 
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
@@ -274,11 +280,9 @@ int main()
 			stbi_image_free(data);
 		}
 	}
-
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
 	{
-		
 
 		//vsync
 		if (vsync == true) {
@@ -391,7 +395,13 @@ int main()
 		*/
 		glDisable(GL_BLEND);
 
+		if (MSAA == true) {
+			glEnable(GL_MULTISAMPLE);
 
+		}
+		else {
+			glDisable(GL_MULTISAMPLE);
+		}
 		
 		if (gamemode == false) {
 			// ImGUI window creation
@@ -399,6 +409,8 @@ int main()
 			// Text that appears in the window
 			ImGui::Text("I have no idea what to put here.");
 			ImGui::Checkbox("enable vsync", &vsync);
+			
+			ImGui::Checkbox("enable MSAA (12 samples)", &MSAA);
 			// Ends the window
 			ImGui::End();
 
@@ -414,6 +426,7 @@ int main()
 			
 			
 		}
+		
 		
 		
 		
