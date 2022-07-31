@@ -9,8 +9,11 @@
 #include"Model.h"
 
 
-const unsigned int width = 800;
-const unsigned int height = 800;
+const unsigned int width = 1280;
+const unsigned int height = 720;
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+
 bool vsync = true;
 bool gamemode = false;
 
@@ -86,12 +89,12 @@ int main()
 	}
 	// Introduce the window into the current context
 	glfwMakeContextCurrent(window);
-
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	//Load GLAD so it configures OpenGL
 	gladLoadGL();
 	// Specify the viewport of OpenGL in the Window
 	// In this case the viewport goes from x = 0, y = 0, to x = 800, y = 800
-	glViewport(0, 0, width, height);
+	//glViewport(0, 0, width, height);
 
 
 	
@@ -197,6 +200,9 @@ int main()
 	style.Colors[ImGuiCol_Border] = ImVec4(0.68, 0.24, 0.65, 1);
 	style.Colors[ImGuiCol_CheckMark] = ImVec4(0.68, 0.24, 0.65, 1);
 	style.Colors[ImGuiCol_Text] = ImVec4(0.98, 0.77, 1.00, 1);
+	style.Colors[ImGuiCol_FrameBg] = ImVec4(0.98, 0.77, 1.00, 1);
+	style.Colors[ImGuiCol_TitleBg] = ImVec4(0.31, 0.05, 0.19, 1);
+	style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.50, 0.09, 0.31, 1);
 	style.WindowRounding = 8;
 	
 	// Create VAO, VBO, and EBO for the skybox
@@ -423,6 +429,7 @@ int main()
 		
 	}
 
+
 	// Deletes all ImGUI instances
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
@@ -436,4 +443,10 @@ int main()
 	// Terminate GLFW before ending the program
 	glfwTerminate();
 	return 0;
+}
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+	// make sure the viewport matches the new window dimensions; note that width and 
+	// height will be significantly larger than specified on retina displays.
+	glViewport(0, 0, width, height);
 }
