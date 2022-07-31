@@ -2,6 +2,7 @@
 #include"imgui_impl_glfw.h"
 #include"imgui_impl_opengl3.h"
 
+
 #include<iostream>
 #include<glad/glad.h>
 #include<GLFW/glfw3.h>
@@ -10,6 +11,8 @@
 
 const unsigned int width = 800;
 const unsigned int height = 800;
+bool vsync = true;
+bool gamemode = false;
 
 float rectangleVertices[] =
 {
@@ -22,6 +25,8 @@ float rectangleVertices[] =
 	 1.0f, -1.0f,  1.0f, 0.0f,
 	-1.0f,  1.0f,  0.0f, 1.0f
 };
+
+
 
 int main()
 {
@@ -148,38 +153,52 @@ int main()
 	*/
 
 	
-
+	
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
 	{
 		
 
 		//vsync
-		glfwSwapInterval(1);
+		if (vsync == true) {
+			glfwSwapInterval(1);
+
+		}
+		else {
+			glfwSwapInterval(0);
+
+		}
+		
 		
 		crntTime = glfwGetTime();
 		timeDiff = crntTime - prevTime;
 		counter++;
+		
 		if (timeDiff >= 1.0 / 30.0)
 		{
-			
+
 			// Creates new title
 			std::string FPS = std::to_string((1.0 / timeDiff) * counter);
 			std::string ms = std::to_string((timeDiff / counter) * 1000);
 			std::string newTitle = "Cliber window - running at :" + FPS + "FPS / " + ms + "ms";
 			glfwSetWindowTitle(window, newTitle.c_str());
 
-
 			// Resets times and counter
 			prevTime = crntTime;
 			counter = 0;
-
-			camera.Inputs(window);
 			// Use this if you have disabled VSync
 			//camera.Inputs(window);
+			if (vsync == false) {
+				camera.Inputs(window);
+			}
+			
 			// Tell OpenGL a new frame is about to begin
-		}
 
+		}
+		
+		if (vsync == true) {
+			camera.Inputs(window);
+		}
 
 
 		/*
@@ -192,10 +211,12 @@ int main()
 		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
-
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
+		if (gamemode == true) {
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
+		}
+		
 
 		
 		// Handles camera inputs
@@ -226,15 +247,25 @@ int main()
 
 
 		
-		// ImGUI window creation
-		ImGui::Begin("My name is window, ImGUI window");
-		// Text that appears in the window
-		ImGui::Text("Hello there adventurer!");
-		// Ends the window
-		ImGui::End();
+		if (gamemode == true) {
+			// ImGUI window creation
+			ImGui::Begin("Project settings");
+			// Text that appears in the window
+			ImGui::Text("Hello there adventurer!");
+			ImGui::Checkbox("enable vsync", &vsync);
+			// Ends the window
+			ImGui::End();
 
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		}
+		
+		
+		
+		
+		
+		
+		
 		// Swap the back buffer with the front buffer
 		glfwSwapBuffers(window);
 		// Take care of all GLFW events
