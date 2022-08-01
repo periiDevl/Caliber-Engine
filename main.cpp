@@ -12,6 +12,9 @@
 const unsigned int width = 1280;
 const unsigned int height = 720;
 
+float NomralSpeed = 0.04;
+float SlowSpeed = 0.01;
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 int sampels = 12;
@@ -158,7 +161,7 @@ int main()
 	
 
 	// Load in a model
-	Model model("models/monkey/scene.gltf");
+	Model model("models/bunny/scene.gltf");
 	
 	double prevTime = 0.0;
 	double crntTime = 0.0;
@@ -206,7 +209,9 @@ int main()
 	style.Colors[ImGuiCol_Border] = ImVec4(0.68, 0.24, 0.65, 1);
 	style.Colors[ImGuiCol_CheckMark] = ImVec4(0.68, 0.24, 0.65, 1);
 	style.Colors[ImGuiCol_Text] = ImVec4(0.98, 0.77, 1.00, 1);
-	style.Colors[ImGuiCol_FrameBg] = ImVec4(0.98, 0.77, 1.00, 1);
+	style.Colors[ImGuiCol_FrameBg] = ImVec4(0.40, 0.00, 0.09, 1);
+	style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.50, 0.00, 0.25, 1);
+	style.Colors[ImGuiCol_FrameBgActive] = ImVec4(0.70, 0.00, 0.35, 1);
 	style.Colors[ImGuiCol_TitleBg] = ImVec4(0.31, 0.05, 0.19, 1);
 	style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.50, 0.09, 0.31, 1);
 	style.WindowRounding = 8;
@@ -299,6 +304,12 @@ int main()
 		timeDiff = crntTime - prevTime;
 		counter++;
 		
+
+
+		/*
+		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+		// Specify the color of the background
+		*/
 		if (timeDiff >= 1.0 / 30.0)
 		{
 
@@ -314,7 +325,7 @@ int main()
 			// Use this if you have disabled VSync
 			//camera.Inputs(window);
 			if (vsync == false) {
-				camera.Inputs(window);
+				camera.Inputs(window, NomralSpeed, SlowSpeed);
 			}
 			
 			// Tell OpenGL a new frame is about to begin
@@ -322,14 +333,8 @@ int main()
 		}
 		
 		if (vsync == true) {
-			camera.Inputs(window);
+			camera.Inputs(window, NomralSpeed, SlowSpeed);
 		}
-
-
-		/*
-		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-		// Specify the color of the background
-		*/
 		
 
 		// Tell OpenGL a new frame is about to begin
@@ -353,7 +358,8 @@ int main()
 		//glEnable(GL_BLEND);
 		
 		// Draw a model
-		model.Draw(shaderProgram, camera, glm::vec3(1,10,1));
+		model.Draw(shaderProgram, camera, glm::vec3(0,0,0));
+		
 
 		glCullFace(GL_FRONT);
 		glDepthFunc(GL_LEQUAL);
@@ -414,8 +420,10 @@ int main()
 			// Ends the window
 			ImGui::End();
 
-			ImGui::Begin("poop box A");
-			ImGui::Text("A is Ass");
+			ImGui::Begin("viewport settings");
+			ImGui::Text("also have no idea what to put here");
+			ImGui::SliderFloat("Normal speed", &SlowSpeed, 0.01, 0.2);
+			ImGui::SliderFloat("fast speed", &NomralSpeed, 0.01, 0.2);
 			ImGui::End();
 
 			ImGui::Begin("poop box B");

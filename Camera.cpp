@@ -32,8 +32,10 @@ void Camera::Matrix(Shader& shader, const char* uniform)
 
 
 
-void Camera::Inputs(GLFWwindow* window)
-{
+void Camera::Inputs(GLFWwindow* window, float camSpeed, float slowCamSpeed)
+{	
+	
+	
 	// Handles key inputs
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
@@ -61,11 +63,11 @@ void Camera::Inputs(GLFWwindow* window)
 	}
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 	{
-		speed = 0.04f;
+		speed = camSpeed;
 	}
 	else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
 	{
-		speed = 0.01f;
+		speed = slowCamSpeed;
 	}
 
 
