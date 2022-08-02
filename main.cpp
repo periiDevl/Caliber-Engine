@@ -160,7 +160,7 @@ int main()
 	
 
 	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
+	glCullFace(GL_FRONT);
 	glFrontFace(GL_CCW);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	// Creates camera object
@@ -367,7 +367,9 @@ int main()
 		//glEnable(GL_BLEND);
 		
 		// Draw a model
+		
 		model.Draw(shaderProgram, camera, glm::vec3(0,0,0));
+		
 		
 
 		glCullFace(GL_FRONT);
@@ -393,7 +395,7 @@ int main()
 
 		// Switch back to the normal depth function
 		glDepthFunc(GL_LESS);
-		glCullFace(GL_BACK);
+		glCullFace(GL_FRONT);
 		// Bind the default framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
