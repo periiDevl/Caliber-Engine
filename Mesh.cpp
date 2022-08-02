@@ -25,11 +25,11 @@ Mesh::Mesh(std::vector <Vertex>& vertices, std::vector <GLuint>& indices, std::v
 
 void Mesh::Draw
 (
-	Shader& shader,
+	Shader& shader, 
 	Camera& camera,
 	glm::mat4 matrix,
-	glm::vec3 translation,
-	glm::quat rotation,
+	glm::vec3 translation, 
+	glm::quat rotation, 
 	glm::vec3 scale
 )
 {

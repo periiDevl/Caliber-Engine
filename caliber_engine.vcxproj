@@ -178,12 +178,8 @@
     <None Include="..\..\..\Downloads\opengl-tutorials-main (2)\opengl-tutorials-main\YoutubeOpenGL 30 - Bloom\framebuffer.vert" />
     <None Include="default.frag" />
     <None Include="default.vert" />
-    <None Include="framebuffer.frag" />
-    <None Include="framebuffer.vert" />
     <None Include="light.frag" />
     <None Include="light.vert" />
-    <None Include="shadowMap.frag" />
-    <None Include="shadowMap.vert" />
     <None Include="skybox.frag" />
     <None Include="skybox.vert" />
     <None Include="transparent.frag" />

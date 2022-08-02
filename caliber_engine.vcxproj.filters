@@ -98,23 +98,13 @@
     <None Include="transparent.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="framebuffer.vert" />
     <None Include="..\..\..\Downloads\opengl-tutorials-main (2)\opengl-tutorials-main\YoutubeOpenGL 30 - Bloom\framebuffer.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="framebuffer.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="skybox.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="skybox.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="shadowMap.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="shadowMap.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>
