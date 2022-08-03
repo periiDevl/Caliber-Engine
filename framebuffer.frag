@@ -8,6 +8,10 @@ uniform float gamma;
 
 void main()
 {
-    vec4 fragment = texture(screenTexture, texCoords);
-    FragColor.rgb = pow(fragment.rgb, vec3(1.0f / gamma));
+    vec3 fragment = texture(screenTexture, texCoords).rgb;
+
+    float exposure = 1f;
+    vec3 toneMapped = vec3(1.0f) - exp(-fragment * exposure);
+
+    FragColor.rgb = pow(toneMapped, vec3(1.0f / gamma));
 }
