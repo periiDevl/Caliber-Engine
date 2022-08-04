@@ -17,7 +17,7 @@ int samples = Isampels;
 int vsync = Ivsync;
 
 // Controls the gamma function
-float gamma = 2.2f;
+float gamma = Igamma;
 
 
 float rectangleVertices[] =
@@ -235,19 +235,26 @@ int main()
 	shadowMapProgram.Activate();
 	glUniformMatrix4fv(glGetUniformLocation(shadowMapProgram.ID, "lightProjection"), 1, GL_FALSE, glm::value_ptr(lightProjection));
 
-	ImGuiStyle& style = ImGui::GetStyle();
-	style.Colors[ImGuiCol_WindowBg] = ImVec4(0.07, 0.08, 0.09, 0.75);
-	style.Colors[ImGuiCol_Border] = ImVec4(0.68, 0.24, 0.65, 1);
-	style.Colors[ImGuiCol_CheckMark] = ImVec4(0.68, 0.24, 0.65, 1);
-	style.Colors[ImGuiCol_Text] = ImVec4(0.98, 0.77, 1.00, 1);
+	ImVec4 backroundColor = ImVec4(0.06, 0.06, 0.09, 0.95);
+	ImVec4 wigitsInsideHover = ImVec4(0.25, 0.23, 0.44, 1);
+	ImVec4 wigitsInside = ImVec4(0.14, 0.13, 0.24, 1);
+	ImVec4 wigitsInsideActive = ImVec4(0.54, 0.51, 0.71, 1);
+	ImVec4 windowWhite = ImVec4(1, 1, 1, 1);
 	
-	style.Colors[ImGuiCol_FrameBg] = ImVec4(0.40, 0.00, 0.09, 1);
-	style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.50, 0.00, 0.25, 1);
-	style.Colors[ImGuiCol_FrameBgActive] = ImVec4(0.70, 0.00, 0.35, 1);
-	style.Colors[ImGuiCol_TitleBg] = ImVec4(0.31, 0.05, 0.19, 1);
-	style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.50, 0.09, 0.31, 1);
-	style.Colors[ImGuiCol_TabActive] = ImVec4(0.50, 0.09, 0.31, 1);
-	style.WindowRounding = 8;
+
+	ImGuiStyle& style = ImGui::GetStyle();
+	style.WindowRounding = 0;
+	style.Colors[ImGuiCol_WindowBg] = backroundColor;
+	style.Colors[ImGuiCol_Border] = windowWhite;
+	style.Colors[ImGuiCol_CheckMark] = windowWhite;
+	style.Colors[ImGuiCol_Text] = windowWhite;
+	
+	style.Colors[ImGuiCol_FrameBg] = wigitsInside;
+	style.Colors[ImGuiCol_FrameBgHovered] = wigitsInsideHover;
+	style.Colors[ImGuiCol_FrameBgActive] = wigitsInsideActive;
+	style.Colors[ImGuiCol_TitleBg] = wigitsInside;
+	style.Colors[ImGuiCol_TitleBgActive] = wigitsInsideHover;
+	style.Colors[ImGuiCol_TabActive] = wigitsInsideActive;
 
 	bool v = true;
 	if (vsync == 1)
@@ -384,13 +391,13 @@ int main()
 				if (ImGui::BeginTabItem("Graphics"))
 				{
 					style.Colors[ImGuiCol_Text] = ImVec4(1, 0, 0, 1);
-					ImGui::Text("this will change how your game looks, make sure you have the proper graphics card.");
+					ImGui::Text("This will change how your game looks, make sure you have the proper graphics card.");
 					style.Colors[ImGuiCol_Text] = ImVec4(0.98, 0.77, 1.00, 1);
 
-					ImGui::DragInt("MSSA samples (needs restart to change)", &samples, 0.03f, 1, std::numeric_limits<int>::max());
-					ImGui::Checkbox("enable vsync", &v);
-
-					
+					ImGui::DragInt("MSSA samples (Needs restart to change)", &samples, 0.03f, 1, std::numeric_limits<int>::max());
+					ImGui::Checkbox("Enable vsync", &v);
+					ImGui::InputFloat("Gamma correction value", &gamma, 0.3f, 1, "%.3f", 0);
+					glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);
 
 					ImGui::EndTabItem();
 				}
@@ -403,7 +410,7 @@ int main()
 				ImGui::EndTabBar();
 			}
 			
-			ImGui::PushItemWidth(-100);
+			
 			
 			ImGui::End();
 		}
@@ -446,9 +453,12 @@ int main()
 
 	std::string tvsync = std::to_string(vsync);
 
+	std::string tgamma = std::to_string(gamma);
+
 
 	stuff.push_back("int Isampels = " + tsamples + ";");
 	stuff.push_back("bool Ivsync = " + tvsync + ";");
+	stuff.push_back("float Igamma = " + tgamma + ";");
 
 
 	for (std::string sufff : stuff)
