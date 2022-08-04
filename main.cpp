@@ -5,8 +5,8 @@
 #include"Model.h"
 
 
-const unsigned int width = 800;
-const unsigned int height = 800;
+const unsigned int width = 1920;
+const unsigned int height = 1080;
 
 // Number of samples per pixel for MSAA
 unsigned int samples = 8;
@@ -44,7 +44,7 @@ int main()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Create a GLFWwindow object of 800 by 800 pixels, naming it "YoutubeOpenGL"
-	GLFWwindow* window = glfwCreateWindow(width, height, "Caliber window", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(width, height, "Caliber window", glfwGetPrimaryMonitor(), NULL);
 	// Error check if the window fails to create
 	if (window == NULL)
 	{
@@ -335,7 +335,7 @@ int main()
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		//if (ImGui::Begin("project settings", 0, ImGuiWindowFlags_NoResize)) {
-		if (ImGui::Begin("project settings", 0, ImGuiWindowFlags_NoResize)) {
+		if (ImGui::Begin("project settings")) {
 			if (ImGui::BeginTabBar("something"))
 			{
 				if (ImGui::BeginTabItem("Tab funny"))
@@ -355,6 +355,12 @@ int main()
 			
 			ImGui::End();
 		}
+
+		
+			
+
+		
+		
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
