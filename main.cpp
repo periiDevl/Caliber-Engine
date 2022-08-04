@@ -13,10 +13,11 @@ const unsigned int width = 1920;
 const unsigned int height = 1080;
 
 // Number of samples per pixel for MSAA
-unsigned int samples = 8;
+int samples = Isampels;
+int vsync = Ivsync;
 
 // Controls the gamma function
-float gamma = 2.5f;
+float gamma = 2.2f;
 
 
 float rectangleVertices[] =
@@ -34,26 +35,7 @@ float rectangleVertices[] =
 
 int main()
 {
-	std::ofstream file("settings.h");
 	
-	file << "";
-	
-	std::vector<std::string> stuff;
-	//DO NOT TOUCH
-	stuff.push_back("#pragma once");
-
-	std::string t = std::to_string(samples);
-	stuff.push_back("int Isampels = " + t +";");
-	
-	
-	for (std::string sufff : stuff)
-	{
-		//file << sufff << std::endl;
-		file << sufff << std::endl;
-	}
-
-
-	file.close();
 	
 	
 
@@ -72,6 +54,7 @@ int main()
 
 	// Create a GLFWwindow object of 800 by 800 pixels, naming it "YoutubeOpenGL"
 	GLFWwindow* window = glfwCreateWindow(width, height, "Caliber window", glfwGetPrimaryMonitor(), NULL);
+	//GLFWwindow* window = glfwCreateWindow(width, height, "Caliber window", NULL, NULL);
 	// Error check if the window fails to create
 	if (window == NULL)
 	{
@@ -257,6 +240,7 @@ int main()
 	style.Colors[ImGuiCol_Border] = ImVec4(0.68, 0.24, 0.65, 1);
 	style.Colors[ImGuiCol_CheckMark] = ImVec4(0.68, 0.24, 0.65, 1);
 	style.Colors[ImGuiCol_Text] = ImVec4(0.98, 0.77, 1.00, 1);
+	
 	style.Colors[ImGuiCol_FrameBg] = ImVec4(0.40, 0.00, 0.09, 1);
 	style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.50, 0.00, 0.25, 1);
 	style.Colors[ImGuiCol_FrameBgActive] = ImVec4(0.70, 0.00, 0.35, 1);
@@ -265,15 +249,43 @@ int main()
 	style.Colors[ImGuiCol_TabActive] = ImVec4(0.50, 0.09, 0.31, 1);
 	style.WindowRounding = 8;
 
+	bool v = true;
+	if (vsync == 1)
+	{
+		v = true;
+	}
+	else {
+		v = false;
+	}
 
+	
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
 	{
+		if (v == true)
+		{
+			vsync = 1;
+		}
+		else {
+			vsync = 0;
+		}
+
+		if (vsync == 0)
+		{
+			glfwSwapInterval(0);
+		}
+		if (vsync == 1)
+		{
+			glfwSwapInterval(1);
+		}
 		// Updates counter and times
 		crntTime = glfwGetTime();
 		timeDiff = crntTime - prevTime;
 		counter++;
 
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
 		if (timeDiff >= 1.0 / 30.0)
 		{
 			// Creates new title
@@ -282,17 +294,17 @@ int main()
 			std::string newTitle = "Caliber window - " + FPS + "FPS / " + ms + "ms";
 			glfwSetWindowTitle(window, newTitle.c_str());
 
+			
 			// Resets times and counter
 			prevTime = crntTime;
 			counter = 0;
 
 			// Use this if you have disabled VSync
-			//camera.Inputs(window);
+			if (vsync == 0) {
+				camera.Inputs(window);
+			}
 		}
 
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
 
 		// Depth testing needed for Shadow Map
 		glEnable(GL_DEPTH_TEST);
@@ -305,6 +317,8 @@ int main()
 		// Draw scene for shadow map
 		
 		model.Draw(shadowMapProgram, camera);
+		
+		
 		
 
 
@@ -322,7 +336,9 @@ int main()
 		glEnable(GL_DEPTH_TEST);
 
 		// Handles camera inputs (delete this if you have disabled VSync)
-		camera.Inputs(window);
+		if (vsync == 1) {
+			camera.Inputs(window);
+		}
 		// Updates and exports the camera matrix to the Vertex Shader
 		camera.updateMatrix(45.0f, 0.1f, 100.0f);
 
@@ -363,22 +379,31 @@ int main()
 
 		//if (ImGui::Begin("project settings", 0, ImGuiWindowFlags_NoResize)) {
 		if (ImGui::Begin("project settings")) {
-			if (ImGui::BeginTabBar("something"))
+			if (ImGui::BeginTabBar("project tabs"))
 			{
-				if (ImGui::BeginTabItem("Tab funny"))
+				if (ImGui::BeginTabItem("Graphics"))
 				{
-					ImGui::Text("B is Butt");
+					style.Colors[ImGuiCol_Text] = ImVec4(1, 0, 0, 1);
+					ImGui::Text("this will change how your game looks, make sure you have the proper graphics card.");
+					style.Colors[ImGuiCol_Text] = ImVec4(0.98, 0.77, 1.00, 1);
+
+					ImGui::DragInt("MSSA samples (needs restart to change)", &samples, 0.03f, 1, std::numeric_limits<int>::max());
+					ImGui::Checkbox("enable vsync", &v);
+
+					
+
 					ImGui::EndTabItem();
 				}
 				
-				if (ImGui::BeginTabItem("Tab other"))
+				if (ImGui::BeginTabItem("UI style"))
 				{
 					ImGui::Text("A is Ass");
 					ImGui::EndTabItem();
 				}
 				ImGui::EndTabBar();
 			}
-
+			
+			ImGui::PushItemWidth(-100);
 			
 			ImGui::End();
 		}
@@ -400,6 +425,40 @@ int main()
 	}
 
 
+	std::ofstream file("settings.h");
+
+	file << "";
+
+	std::vector<std::string> stuff;
+	//DO NOT TOUCH
+	stuff.push_back("#pragma once");
+
+	if (v == true)
+	{
+		vsync = 1;
+	}
+	else {
+		vsync = 0;
+	}
+
+	std::string tsamples = std::to_string(samples);
+
+
+	std::string tvsync = std::to_string(vsync);
+
+
+	stuff.push_back("int Isampels = " + tsamples + ";");
+	stuff.push_back("bool Ivsync = " + tvsync + ";");
+
+
+	for (std::string sufff : stuff)
+	{
+		//file << sufff << std::endl;
+		file << sufff << std::endl;
+	}
+
+
+	file.close();
 
 	// Delete all the objects we've created
 	shaderProgram.Delete();
