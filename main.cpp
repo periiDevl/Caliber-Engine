@@ -87,7 +87,7 @@ int main()
 	Shader shadowMapProgram("shadowMap.vert", "shadowMap.frag");
 
 	// Take care of all the light related things
-	glm::vec4 lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	glm::vec4 lightColor = glm::vec4(1.0f, 1, 1, 1.0f);
 	glm::vec3 lightPos = glm::vec3(0.5f, 0.5f, 0.5f);
 
 	shaderProgram.Activate();
@@ -96,6 +96,9 @@ int main()
 	framebufferProgram.Activate();
 	glUniform1i(glGetUniformLocation(framebufferProgram.ID, "screenTexture"), 0);
 	glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);
+
+	
+
 
 
 	
@@ -365,6 +368,7 @@ int main()
 		*/
 
 		// Draw the normal model
+		// Take care of all the light related things
 		
 		model.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f));
 
