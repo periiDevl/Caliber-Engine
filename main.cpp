@@ -1,5 +1,7 @@
 
-
+#include"imgui.h"
+#include"imgui_impl_glfw.h"
+#include"imgui_impl_opengl3.h"
 #include"Model.h"
 
 
@@ -61,7 +63,13 @@ int main()
 
 
 
-
+	// Initialize ImGUI
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	ImGui::StyleColorsDark();
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init("#version 330");
 
 	// Generates shaders
 	Shader shaderProgram("default.vert", "default.frag");
@@ -217,7 +225,18 @@ int main()
 	shadowMapProgram.Activate();
 	glUniformMatrix4fv(glGetUniformLocation(shadowMapProgram.ID, "lightProjection"), 1, GL_FALSE, glm::value_ptr(lightProjection));
 
-
+	ImGuiStyle& style = ImGui::GetStyle();
+	style.Colors[ImGuiCol_WindowBg] = ImVec4(0.07, 0.08, 0.09, 0.75);
+	style.Colors[ImGuiCol_Border] = ImVec4(0.68, 0.24, 0.65, 1);
+	style.Colors[ImGuiCol_CheckMark] = ImVec4(0.68, 0.24, 0.65, 1);
+	style.Colors[ImGuiCol_Text] = ImVec4(0.98, 0.77, 1.00, 1);
+	style.Colors[ImGuiCol_FrameBg] = ImVec4(0.40, 0.00, 0.09, 1);
+	style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.50, 0.00, 0.25, 1);
+	style.Colors[ImGuiCol_FrameBgActive] = ImVec4(0.70, 0.00, 0.35, 1);
+	style.Colors[ImGuiCol_TitleBg] = ImVec4(0.31, 0.05, 0.19, 1);
+	style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.50, 0.09, 0.31, 1);
+	style.Colors[ImGuiCol_TabActive] = ImVec4(0.50, 0.09, 0.31, 1);
+	style.WindowRounding = 8;
 
 
 	// Main while loop
@@ -244,6 +263,9 @@ int main()
 			//camera.Inputs(window);
 		}
 
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
 
 		// Depth testing needed for Shadow Map
 		glEnable(GL_DEPTH_TEST);
@@ -286,9 +308,15 @@ int main()
 		glActiveTexture(GL_TEXTURE0 + 2);
 		glBindTexture(GL_TEXTURE_2D, shadowMap);
 		glUniform1i(glGetUniformLocation(shaderProgram.ID, "shadowMap"), 2);
+		/*
+		glm::vec3 translation = glm::vec3(0.0f, 0.0f, 0.0f),
+			glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f),
+			glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f)
+		*/
 
 		// Draw the normal model
-		model.Draw(shaderProgram, camera);
+		
+		model.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f));
 
 		// Make it so the multisampling FBO is read while the post-processing FBO is drawn
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
@@ -306,6 +334,31 @@ int main()
 		glBindTexture(GL_TEXTURE_2D, postProcessingTexture);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
+		//if (ImGui::Begin("project settings", 0, ImGuiWindowFlags_NoResize)) {
+		if (ImGui::Begin("project settings", 0, ImGuiWindowFlags_NoResize)) {
+			if (ImGui::BeginTabBar("something"))
+			{
+				if (ImGui::BeginTabItem("Tab funny"))
+				{
+					ImGui::Text("B is Butt");
+					ImGui::EndTabItem();
+				}
+				
+				if (ImGui::BeginTabItem("Tab other"))
+				{
+					ImGui::Text("A is Ass");
+					ImGui::EndTabItem();
+				}
+				ImGui::EndTabBar();
+			}
+
+			
+			ImGui::End();
+		}
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+
 
 		// Swap the back buffer with the front buffer
 		glfwSwapBuffers(window);
@@ -319,9 +372,19 @@ int main()
 	shaderProgram.Delete();
 	glDeleteFramebuffers(1, &FBO);
 	glDeleteFramebuffers(1, &postProcessingFBO);
+
+	// Deletes all ImGUI instances
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
+
+	
 	// Delete window before ending the program
 	glfwDestroyWindow(window);
 	// Terminate GLFW before ending the program
 	glfwTerminate();
 	return 0;
+
+
 }
+
