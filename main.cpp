@@ -3,6 +3,10 @@
 #include"imgui_impl_glfw.h"
 #include"imgui_impl_opengl3.h"
 #include"Model.h"
+#include<iostream>
+#include<fstream>
+#include<string>
+#include"settings.h"
 
 
 const unsigned int width = 1920;
@@ -30,6 +34,29 @@ float rectangleVertices[] =
 
 int main()
 {
+	std::ofstream file("settings.h");
+	
+	file << "";
+	
+	std::vector<std::string> stuff;
+	//DO NOT TOUCH
+	stuff.push_back("#pragma once");
+
+	std::string t = std::to_string(samples);
+	stuff.push_back("int Isampels = " + t +";");
+	
+	
+	for (std::string sufff : stuff)
+	{
+		//file << sufff << std::endl;
+		file << sufff << std::endl;
+	}
+
+
+	file.close();
+	
+	
+
 	// Initialize GLFW
 	glfwInit();
 
