@@ -94,7 +94,7 @@ int main()
 	glUniform4f(glGetUniformLocation(shaderProgram.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 
-	glm::vec4 lColor = glm::vec4(0.0f, 1, 1, 1.0f);
+	glm::vec4 lColor = glm::vec4(0.10f, 0, 0, 1.0f);
 	glm::vec3 lPos = glm::vec3(1.9f, 1, 0.5f);
 
 	glUniform4f(glGetUniformLocation(shaderProgram.ID, "lColor"), lColor.x, lColor.y, lColor.z, lColor.w);

@@ -43,7 +43,7 @@ vec4 pointLight()
 	float dist = length(lightVec);
 	float a = 3.0;
 	float b = 0.7;
-	float inten = 1.0f / (a * dist * dist + b * dist + 1.0f);
+	float inten = 10.0f / (a * dist * dist + b * dist + 1.0f);
 
 	// ambient lighting
 	float ambient = 0.20f;
@@ -76,7 +76,7 @@ vec4 pLight()
 	float dist = length(lightVec);
 	float a = 3.0;
 	float b = 0.7;
-	float inten = 1.0f / (a * dist * dist + b * dist + 1.0f);
+	float inten = 100.0f / (a * dist * dist + b * dist + 1.0f);
 
 	// ambient lighting
 	float ambient = 0.20f;
@@ -204,6 +204,6 @@ void main()
 {
 	// outputs final color
 	float depth = logisticDepth(gl_FragCoord.z);
-	FragColor = pointLight() + pLight() * (1.0f - depth) + vec4(depth * vec3(0.07f, 0.13f, 0.17f), 1.0f);
+	FragColor = ((pointLight() + pLight()) + direcLight()) * (1.0f - depth) + vec4(depth * vec3(0.07f, 0.13f, 0.17f), 1.0f);
 }
 
