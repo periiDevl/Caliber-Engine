@@ -24,6 +24,12 @@ uniform sampler2D shadowMap;
 uniform vec4 lightColor;
 // Gets the position of the light from the main function
 uniform vec3 lightPos;
+
+// Gets the color of the light from the main function
+uniform vec4 lColor;
+// Gets the position of the light from the main function
+uniform vec3 lPos;
+
 // Gets the position of the camera from the main function
 uniform vec3 camPos;
 
@@ -59,6 +65,39 @@ vec4 pointLight()
 	};
 
 	return (texture(diffuse0, texCoord) * (diffuse * inten + ambient) + texture(specular0, texCoord).r * specular * inten) * lightColor;
+}
+
+vec4 pLight()
+{	
+	// used in two variables so I calculate it here to not have to do it twice
+	vec3 lightVec = lPos - crntPos;
+
+	// intensity of light with respect to distance
+	float dist = length(lightVec);
+	float a = 3.0;
+	float b = 0.7;
+	float inten = 1.0f / (a * dist * dist + b * dist + 1.0f);
+
+	// ambient lighting
+	float ambient = 0.20f;
+
+	// diffuse lighting
+	vec3 normal = normalize(Normal);
+	vec3 lightDirection = normalize(lightVec);
+	float diffuse = max(dot(normal, lightDirection), 0.0f);
+
+	// specular lighting
+	float specular = 0.0f;
+	if (diffuse != 0.0f)
+	{
+		float specularLight = 0.50f;
+		vec3 viewDirection = normalize(camPos - crntPos);
+		vec3 halfwayVec = normalize(viewDirection + lightDirection);
+		float specAmount = pow(max(dot(normal, halfwayVec), 0.0f), 16);
+		specular = specAmount * specularLight;
+	};
+
+	return (texture(diffuse0, texCoord) * (diffuse * inten + ambient) + texture(specular0, texCoord).r * specular * inten) * lColor;
 }
 
 vec4 direcLight()
@@ -165,6 +204,6 @@ void main()
 {
 	// outputs final color
 	float depth = logisticDepth(gl_FragCoord.z);
-	FragColor = pointLight() * (1.0f - depth) + vec4(depth * vec3(0.07f, 0.13f, 0.17f), 1.0f);
+	FragColor = pointLight() + pLight() * (1.0f - depth) + vec4(depth * vec3(0.07f, 0.13f, 0.17f), 1.0f);
 }
 
