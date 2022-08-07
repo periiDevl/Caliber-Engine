@@ -216,7 +216,7 @@ int main()
 	glGenFramebuffers(1, &shadowMapFBO);
 
 	// Texture for Shadow Map FBO
-	unsigned int shadowMapWidth = 2048, shadowMapHeight = 2048;
+	unsigned int shadowMapWidth = 10048, shadowMapHeight = 10048;
 	unsigned int shadowMap;
 	glGenTextures(1, &shadowMap);
 	glBindTexture(GL_TEXTURE_2D, shadowMap);
@@ -238,7 +238,7 @@ int main()
 
 
 	// Matrices needed for the light's perspective
-	glm::mat4 orthgonalProjection = glm::ortho(-35.0f, 35.0f, -35.0f, 35.0f, 0.1f, 75.0f);
+	glm::mat4 orthgonalProjection = glm::ortho(-350.0f, 350.0f, -350.0f, 350.0f, 1.0f, 750.0f);
 	glm::mat4 lightView = glm::lookAt(20.0f * lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 lightProjection = orthgonalProjection * lightView;
 
