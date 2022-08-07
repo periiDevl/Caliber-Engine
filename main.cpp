@@ -125,7 +125,7 @@ int main()
 
 
 	// Creates camera object
-	Camera camera(width, height, glm::vec3(0.0f, 0.0f, 2.0f));
+	Camera camera(width, height, glm::vec3(0.0f, 2.0f, 2.0f));
 
 
 	

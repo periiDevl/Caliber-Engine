@@ -15,7 +15,12 @@
     "nodes" : [
         {
             "mesh" : 0,
-            "name" : "scene"
+            "name" : "scene",
+            "scale" : [
+                3.023761034011841,
+                1,
+                2.949608087539673
+            ]
         },
         {
             "children" : [
@@ -27,7 +32,7 @@
     "materials" : [
         {
             "doubleSided" : true,
-            "name" : "pasted__lambert2",
+            "name" : "pasted__lambert2.001",
             "pbrMetallicRoughness" : {
                 "baseColorTexture" : {
                     "index" : 0
@@ -38,7 +43,7 @@
     ],
     "meshes" : [
         {
-            "name" : "object",
+            "name" : "object.002",
             "primitives" : [
                 {
                     "attributes" : {
@@ -70,10 +75,10 @@
         {
             "bufferView" : 0,
             "componentType" : 5126,
-            "count" : 48,
+            "count" : 120,
             "max" : [
                 19.390472412109375,
-                6.708200454711914,
+                13.877959251403809,
                 17.0511531829834
             ],
             "min" : [
@@ -86,54 +91,54 @@
         {
             "bufferView" : 1,
             "componentType" : 5126,
-            "count" : 48,
+            "count" : 120,
             "type" : "VEC3"
         },
         {
             "bufferView" : 2,
             "componentType" : 5126,
-            "count" : 48,
+            "count" : 120,
             "type" : "VEC2"
         },
         {
             "bufferView" : 3,
             "componentType" : 5123,
-            "count" : 48,
+            "count" : 120,
             "normalized" : true,
             "type" : "VEC4"
         },
         {
             "bufferView" : 4,
             "componentType" : 5123,
-            "count" : 72,
+            "count" : 180,
             "type" : "SCALAR"
         }
     ],
     "bufferViews" : [
         {
             "buffer" : 0,
-            "byteLength" : 576,
+            "byteLength" : 1440,
             "byteOffset" : 0
         },
         {
             "buffer" : 0,
-            "byteLength" : 576,
-            "byteOffset" : 576
+            "byteLength" : 1440,
+            "byteOffset" : 1440
         },
         {
             "buffer" : 0,
-            "byteLength" : 384,
-            "byteOffset" : 1152
+            "byteLength" : 960,
+            "byteOffset" : 2880
         },
         {
             "buffer" : 0,
-            "byteLength" : 384,
-            "byteOffset" : 1536
+            "byteLength" : 960,
+            "byteOffset" : 3840
         },
         {
             "buffer" : 0,
-            "byteLength" : 144,
-            "byteOffset" : 1920
+            "byteLength" : 360,
+            "byteOffset" : 4800
         }
     ],
     "samplers" : [
@@ -144,7 +149,7 @@
     ],
     "buffers" : [
         {
-            "byteLength" : 2064,
+            "byteLength" : 5160,
             "uri" : "scene.bin"
         }
     ]
