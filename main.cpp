@@ -9,8 +9,11 @@
 #include"settings.h"
 
 
-const unsigned int width = 1920;
-const unsigned int height = 1080;
+int width = IwindowW;
+int height = IwindowH;
+
+int mockwidth = width;
+int mockheight = height;
 
 // Number of samples per pixel for MSAA
 int samples = Isampels;
@@ -32,7 +35,6 @@ float rectangleVertices[] =
 	-1.0f,  1.0f,  0.0f, 1.0f
 };
 
-
 int main()
 {
 	
@@ -51,10 +53,16 @@ int main()
 	// Tell GLFW we are using the CORE profile
 	// So that means we only have the modern functions
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	
 
-	// Create a GLFWwindow object of 800 by 800 pixels, naming it "YoutubeOpenGL"
+	
+	
+	
 	GLFWwindow* window = glfwCreateWindow(width, height, "Caliber window", glfwGetPrimaryMonitor(), NULL);
+	
+	
 	//GLFWwindow* window = glfwCreateWindow(width, height, "Caliber window", NULL, NULL);
+	
 	// Error check if the window fails to create
 	if (window == NULL)
 	{
@@ -153,7 +161,7 @@ int main()
 	double prevTime = 0.0;
 	double crntTime = 0.0;
 	double timeDiff;
-	// Keeps track of the amount of frames in timeDiff
+	// Keeps track of the Blur_amount of frames in timeDiff
 	unsigned int counter = 0;
 
 	// Use this to disable VSync (not advized)
@@ -315,6 +323,7 @@ int main()
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
 	{
+		
 		if (v == true)
 		{
 			vsync = 1;
@@ -382,7 +391,10 @@ int main()
 		// Bind the custom framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 		// Specify the color of the background
-		glClearColor(pow(0.07f, gamma), pow(0.13f, gamma), pow(0.17f, gamma), 1.0f);
+		
+		//glClearColor(pow(0.07f, gamma), pow(0.13f, gamma), pow(0.17f, gamma), 1.0f);
+		glClearColor(0.77f, 0.74f, 0.82f, 1.0f);
+		
 		// Clean the back buffer and depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// Enable depth testing since it's disabled when drawing the framebuffer rectangle
@@ -424,9 +436,9 @@ int main()
 		// Bounce the image data around to blur multiple times
 		bool horizontal = true, first_iteration = true;
 		// Amount of time to bounce the blur
-		int amount = 0;
+		int Blur_amount = 1;
 		blurProgram.Activate();
-		for (unsigned int i = 0; i < amount; i++)
+		for (unsigned int i = 0; i < Blur_amount; i++)
 		{
 			glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
 			glUniform1i(glGetUniformLocation(blurProgram.ID, "horizontal"), horizontal);
@@ -463,11 +475,19 @@ int main()
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, pingpongBuffer[!horizontal]);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-
+		
 		//if (ImGui::Begin("project settings", 0, ImGuiWindowFlags_NoResize)) {
 		if (ImGui::Begin("project settings")) {
 			if (ImGui::BeginTabBar("project tabs"))
 			{
+
+				if (ImGui::BeginTabItem("General"))
+				{
+					ImGui::InputInt("Window width", &mockwidth, 20, 1, 0);
+					ImGui::InputInt("Window height", &mockheight, 20, 1,0);
+
+					ImGui::EndTabItem();
+				}
 				if (ImGui::BeginTabItem("Graphics"))
 				{
 					style.Colors[ImGuiCol_Text] = ImVec4(1, 0, 0, 1);
@@ -529,13 +549,13 @@ int main()
 	}
 
 	std::string tsamples = std::to_string(samples);
-
-
 	std::string tvsync = std::to_string(vsync);
-
 	std::string tgamma = std::to_string(gamma);
+	std::string twidth = std::to_string(mockwidth);
+	std::string theight = std::to_string(mockheight);
 
-
+	stuff.push_back("int IwindowW = " + twidth + ";");
+	stuff.push_back("int IwindowH = " + theight + ";");
 	stuff.push_back("int Isampels = " + tsamples + ";");
 	stuff.push_back("bool Ivsync = " + tvsync + ";");
 	stuff.push_back("float Igamma = " + tgamma + ";");
