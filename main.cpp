@@ -15,11 +15,11 @@ int height = IwindowH;
 int mockwidth = width;
 int mockheight = height;
 
-// Number of samples per pixel for MSAA
+
 int samples = Isampels;
 int vsync = Ivsync;
+int wireframe = Iwire;
 
-// Controls the gamma function
 float gamma = Igamma;
 
 
@@ -282,7 +282,7 @@ int main()
 
 
 	// Matrices needed for the light's perspective
-	glm::mat4 orthgonalProjection = glm::ortho(-350.0f, 350.0f, -350.0f, 350.0f, 1.0f, 750.0f);
+	glm::mat4 orthgonalProjection = glm::ortho(-90.0f, 90.0f, -90.0f, 90.0f, 1.0f, 750.0f);
 	glm::mat4 lightView = glm::lookAt(20.0f * lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 lightProjection = orthgonalProjection * lightView;
 
@@ -320,10 +320,24 @@ int main()
 	}
 
 	
+	bool wireBool = false;
+	if (wireframe == 0) {
+		wireBool = false;
+	}
+	else
+	{
+		wireBool = true;
+	}
+
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
 	{
+		if (wireBool == true) {
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		}
 		
+		
+
 		if (v == true)
 		{
 			vsync = 1;
@@ -407,7 +421,6 @@ int main()
 		// Updates and exports the camera matrix to the Vertex Shader
 		camera.updateMatrix(45.0f, 0.1f, 100.0f);
 
-
 		// Send the light matrix to the shader
 		shaderProgram.Activate();
 		glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "lightProjection"), 1, GL_FALSE, glm::value_ptr(lightProjection));
@@ -436,7 +449,7 @@ int main()
 		// Bounce the image data around to blur multiple times
 		bool horizontal = true, first_iteration = true;
 		// Amount of time to bounce the blur
-		int Blur_amount = 1;
+		int Blur_amount = 0;
 		blurProgram.Activate();
 		for (unsigned int i = 0; i < Blur_amount; i++)
 		{
@@ -473,6 +486,9 @@ int main()
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, postProcessingTexture);
 		glActiveTexture(GL_TEXTURE1);
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 		glBindTexture(GL_TEXTURE_2D, pingpongBuffer[!horizontal]);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		
@@ -502,9 +518,9 @@ int main()
 					ImGui::EndTabItem();
 				}
 				
-				if (ImGui::BeginTabItem("UI style"))
+				if (ImGui::BeginTabItem("Debug"))
 				{
-					ImGui::Text("A is Ass");
+					ImGui::Checkbox("Enable wireframe", &wireBool);
 					ImGui::EndTabItem();
 				}
 				ImGui::EndTabBar();
@@ -548,17 +564,27 @@ int main()
 		vsync = 0;
 	}
 
+	if (wireBool == true)
+	{
+		wireframe = 1;
+	}
+	else {
+		wireframe = 0;
+	}
+
 	std::string tsamples = std::to_string(samples);
 	std::string tvsync = std::to_string(vsync);
 	std::string tgamma = std::to_string(gamma);
 	std::string twidth = std::to_string(mockwidth);
 	std::string theight = std::to_string(mockheight);
+	std::string twire = std::to_string(wireframe);
 
 	stuff.push_back("int IwindowW = " + twidth + ";");
 	stuff.push_back("int IwindowH = " + theight + ";");
 	stuff.push_back("int Isampels = " + tsamples + ";");
 	stuff.push_back("bool Ivsync = " + tvsync + ";");
 	stuff.push_back("float Igamma = " + tgamma + ";");
+	stuff.push_back("int Iwire = " + twire + ";");
 
 
 	for (std::string sufff : stuff)
