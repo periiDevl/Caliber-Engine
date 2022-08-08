@@ -1,7 +1,8 @@
 #version 330 core
 
 // Outputs colors in RGBA
-out vec4 FragColor;
+layout (location = 0) out vec4 FragColor;
+layout (location = 1) out vec4 BloomColor;
 
 // Imports the current position from the Vertex Shader
 in vec3 crntPos;
@@ -205,5 +206,15 @@ void main()
 	// outputs final color
 	float depth = logisticDepth(gl_FragCoord.z);
 	FragColor = ((pointLight() + pLight()) + direcLight()) * (1.0f - depth) + vec4(depth * vec3(0.07f, 0.13f, 0.17f), 1.0f);
+	//FragColor = direcLight() * (1.0f - depth) + vec4(depth * vec3(0.07f, 0.13f, 0.17f), 1.0f);
+	
+
+	
+	// Calculate brightness by adding up all the channels with different weights each
+	float brightness = dot(FragColor.rgb, vec3(0.2126f, 0.7152f, 0.0722f));
+    if(brightness > 0.15f)
+        BloomColor = vec4(FragColor.rgb, 1.0f);
+    else
+        BloomColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 }
 

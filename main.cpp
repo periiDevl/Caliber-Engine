@@ -85,6 +85,7 @@ int main()
 	Shader shaderProgram("default.vert", "default.frag");
 	Shader framebufferProgram("framebuffer.vert", "framebuffer.frag");
 	Shader shadowMapProgram("shadowMap.vert", "shadowMap.frag");
+	Shader blurProgram("framebuffer.vert", "blur.frag");
 
 	// Take care of all the light related things
 	glm::vec4 lightColor = glm::vec4(1.0f, 1, 1, 1.0f);
@@ -102,13 +103,12 @@ int main()
 
 	framebufferProgram.Activate();
 	glUniform1i(glGetUniformLocation(framebufferProgram.ID, "screenTexture"), 0);
+	glUniform1i(glGetUniformLocation(framebufferProgram.ID, "bloomTexture"), 1);
 	glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);
 
-	
+	blurProgram.Activate();
+	glUniform1i(glGetUniformLocation(blurProgram.ID, "screenTexture"), 0);
 
-
-
-	
 
 	// Enables the Depth Buffer
 	glEnable(GL_DEPTH_TEST);
@@ -189,6 +189,27 @@ int main()
 	if (fboStatus != GL_FRAMEBUFFER_COMPLETE)
 		std::cout << "Framebuffer error: " << fboStatus << std::endl;
 
+	// Create Ping Pong Framebuffers for repetitive blurring
+	unsigned int pingpongFBO[2];
+	unsigned int pingpongBuffer[2];
+	glGenFramebuffers(2, pingpongFBO);
+	glGenTextures(2, pingpongBuffer);
+	for (unsigned int i = 0; i < 2; i++)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[i]);
+		glBindTexture(GL_TEXTURE_2D, pingpongBuffer[i]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingpongBuffer[i], 0);
+
+		fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+		if (fboStatus != GL_FRAMEBUFFER_COMPLETE)
+			std::cout << "Ping-Pong Framebuffer error: " << fboStatus << std::endl;
+	}
+
 	// Create Frame Buffer Object
 	unsigned int postProcessingFBO;
 	glGenFramebuffers(1, &postProcessingFBO);
@@ -204,6 +225,21 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, postProcessingTexture, 0);
+
+	// Create Second Framebuffer Texture
+	unsigned int bloomTexture;
+	glGenTextures(1, &bloomTexture);
+	glBindTexture(GL_TEXTURE_2D, bloomTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, bloomTexture, 0);
+
+	// Tell OpenGL we need to draw to both attachments
+	unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+	glDrawBuffers(2, attachments);
 
 	// Error checking framebuffer
 	fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -385,6 +421,36 @@ int main()
 		// Conclude the multisampling and copy it to the post-processing FBO
 		glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
+		// Bounce the image data around to blur multiple times
+		bool horizontal = true, first_iteration = true;
+		// Amount of time to bounce the blur
+		int amount = 0;
+		blurProgram.Activate();
+		for (unsigned int i = 0; i < amount; i++)
+		{
+			glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
+			glUniform1i(glGetUniformLocation(blurProgram.ID, "horizontal"), horizontal);
+
+			// In the first bounc we want to get the data from the bloomTexture
+			if (first_iteration)
+			{
+				glBindTexture(GL_TEXTURE_2D, bloomTexture);
+				first_iteration = false;
+			}
+			// Move the data between the pingPong textures
+			else
+			{
+				glBindTexture(GL_TEXTURE_2D, pingpongBuffer[!horizontal]);
+			}
+
+			// Render the image
+			glBindVertexArray(rectVAO);
+			glDisable(GL_DEPTH_TEST);
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+
+			// Switch between vertical and horizontal blurring
+			horizontal = !horizontal;
+		}
 
 		// Bind the default framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -392,7 +458,10 @@ int main()
 		framebufferProgram.Activate();
 		glBindVertexArray(rectVAO);
 		glDisable(GL_DEPTH_TEST); // prevents framebuffer rectangle from being discarded
+		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, postProcessingTexture);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, pingpongBuffer[!horizontal]);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		//if (ImGui::Begin("project settings", 0, ImGuiWindowFlags_NoResize)) {

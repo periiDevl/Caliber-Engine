@@ -176,6 +176,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Downloads\opengl-tutorials-main (2)\opengl-tutorials-main\YoutubeOpenGL 30 - Bloom\framebuffer.vert" />
+    <None Include="blur.frag" />
     <None Include="default.frag" />
     <None Include="default.vert" />
     <None Include="framebuffer.frag" />
