@@ -21,7 +21,7 @@ int vsync = Ivsync;
 int wireframe = Iwire;
 
 float gamma = Igamma;
-
+float exposure = Iexposure;
 
 float rectangleVertices[] =
 {
@@ -37,6 +37,7 @@ float rectangleVertices[] =
 
 int main()
 {
+	float realExposure = exposure;
 	
 	
 	
@@ -113,6 +114,7 @@ int main()
 	glUniform1i(glGetUniformLocation(framebufferProgram.ID, "screenTexture"), 0);
 	glUniform1i(glGetUniformLocation(framebufferProgram.ID, "bloomTexture"), 1);
 	glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);
+	glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
 
 	blurProgram.Activate();
 	glUniform1i(glGetUniformLocation(blurProgram.ID, "screenTexture"), 0);
@@ -333,10 +335,11 @@ int main()
 	{
 		wireBool = true;
 	}
-	
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
 	{
+		exposure = realExposure;
+		glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
 		if (wireBool == true) {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		}
@@ -397,8 +400,16 @@ int main()
 
 		// Draw scene for shadow map
 		if (run) {
+			model.Draw(shadowMapProgram, camera, glm::vec3(10, 0.0f, 0.0f));
+			exposure = realExposure;
+			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
 		}
-		model.Draw(shadowMapProgram, camera, glm::vec3(10, 0.0f, 0.0f));
+		else
+		{
+			exposure = 0.15f;
+			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
+		}
+	
 		
 		
 
@@ -490,6 +501,7 @@ int main()
 		// Bind the default framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		// Draw the framebuffer rectangle
+		
 		framebufferProgram.Activate();
 		glBindVertexArray(rectVAO);
 		glDisable(GL_DEPTH_TEST); // prevents framebuffer rectangle from being discarded
@@ -498,8 +510,9 @@ int main()
 		glActiveTexture(GL_TEXTURE1);
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-		glBindTexture(GL_TEXTURE_2D, pingpongBuffer[!horizontal]);
+		if (run) {
+			glBindTexture(GL_TEXTURE_2D, pingpongBuffer[!horizontal]);
+		}
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		
 		//if (ImGui::Begin("project settings", 0, ImGuiWindowFlags_NoResize)) {
@@ -524,7 +537,11 @@ int main()
 						ImGui::DragInt("MSSA samples (Needs restart to change)", &samples, 0.03f, 1, std::numeric_limits<int>::max());
 						ImGui::Checkbox("Enable vsync", &v);
 						ImGui::InputFloat("Gamma correction value", &gamma, 0.3f, 1, "%.3f", 0);
+
+						ImGui::InputFloat("Exposure value", &realExposure, 0.3f, 1, "%.3f", 0);
+						exposure = realExposure;
 						glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);
+						glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
 
 						ImGui::EndTabItem();
 					}
@@ -569,6 +586,7 @@ int main()
 		// Take care of all GLFW events
 		glfwPollEvents();
 	}
+	
 
 
 	std::ofstream file("settings.h");
@@ -594,13 +612,14 @@ int main()
 	else {
 		wireframe = 0;
 	}
-
+	
 	std::string tsamples = std::to_string(samples);
 	std::string tvsync = std::to_string(vsync);
 	std::string tgamma = std::to_string(gamma);
 	std::string twidth = std::to_string(mockwidth);
 	std::string theight = std::to_string(mockheight);
 	std::string twire = std::to_string(wireframe);
+	std::string texpose = std::to_string(realExposure);
 
 	stuff.push_back("int IwindowW = " + twidth + ";");
 	stuff.push_back("int IwindowH = " + theight + ";");
@@ -608,6 +627,7 @@ int main()
 	stuff.push_back("bool Ivsync = " + tvsync + ";");
 	stuff.push_back("float Igamma = " + tgamma + ";");
 	stuff.push_back("int Iwire = " + twire + ";");
+	stuff.push_back("float Iexposure = " + texpose + ";");
 
 
 	for (std::string sufff : stuff)
