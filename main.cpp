@@ -333,7 +333,7 @@ int main()
 	{
 		wireBool = true;
 	}
-
+	
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -396,9 +396,9 @@ int main()
 		glClear(GL_DEPTH_BUFFER_BIT);
 
 		// Draw scene for shadow map
-		
-		model.Draw(shadowMapProgram, camera);
-		
+		if (run) {
+		}
+		model.Draw(shadowMapProgram, camera, glm::vec3(10, 0.0f, 0.0f));
 		
 		
 
@@ -424,16 +424,20 @@ int main()
 			camera.Inputs(window);
 		}
 		// Updates and exports the camera matrix to the Vertex Shader
-		camera.updateMatrix(45.0f, 0.1f, 100.0f);
+		camera.updateMatrix(60.0f, 0.1f, 100.0f);
 
 		// Send the light matrix to the shader
+		
 		shaderProgram.Activate();
 		glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "lightProjection"), 1, GL_FALSE, glm::value_ptr(lightProjection));
 
 		// Bind the Shadow Map
 		glActiveTexture(GL_TEXTURE0 + 2);
+
 		glBindTexture(GL_TEXTURE_2D, shadowMap);
+
 		glUniform1i(glGetUniformLocation(shaderProgram.ID, "shadowMap"), 2);
+		
 		/*
 		glm::vec3 translation = glm::vec3(0.0f, 0.0f, 0.0f),
 			glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f),
@@ -443,7 +447,8 @@ int main()
 		// Draw the normal model
 		// Take care of all the light related things
 		
-		model.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f));
+		model.Draw(shaderProgram, camera, glm::vec3(10, 0.0f, 0.0f));
+		
 
 		// Make it so the multisampling FBO is read while the post-processing FBO is drawn
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
