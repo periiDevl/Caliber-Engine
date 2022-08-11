@@ -8,7 +8,7 @@
 #include<string>
 #include"settings.h"
 
-
+bool run = false;
 int width = IwindowW;
 int height = IwindowH;
 
@@ -282,17 +282,20 @@ int main()
 
 
 	// Matrices needed for the light's perspective
-	glm::mat4 orthgonalProjection = glm::ortho(-90.0f, 90.0f, -90.0f, 90.0f, 1.0f, 750.0f);
-	glm::mat4 lightView = glm::lookAt(20.0f * lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 orthgonalProjection = glm::ortho(-90.0f, 90.0f, -90.0f, 90.0f, 1.0f, 250.0f);
+	glm::mat4 lightView = glm::lookAt(70.0f * lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 lightProjection = orthgonalProjection * lightView;
 
 	shadowMapProgram.Activate();
 	glUniformMatrix4fv(glGetUniformLocation(shadowMapProgram.ID, "lightProjection"), 1, GL_FALSE, glm::value_ptr(lightProjection));
+	//0.29, 1.00, 0.62,
 
-	ImVec4 backroundColor = ImVec4(0.06, 0.06, 0.09, 0.95);
-	ImVec4 wigitsInsideHover = ImVec4(0.25, 0.23, 0.44, 1);
-	ImVec4 wigitsInside = ImVec4(0.14, 0.13, 0.24, 1);
-	ImVec4 wigitsInsideActive = ImVec4(0.54, 0.51, 0.71, 1);
+	ImVec4 backroundColor = ImVec4(0.10, 0.15, 0.13, 0.95);
+	ImVec4 TitleColor = ImVec4(0.18, 0.63, 0.39, 0.95);
+	ImVec4 BorderColor = ImVec4(1, 1, 1, 0);
+	ImVec4 wigitsInsideHover = ImVec4(0.24, 0.72, 0.00, 1);
+	ImVec4 wigitsInside = ImVec4(0.17, 0.50, 0.00, 1);
+	ImVec4 wigitsInsideActive = ImVec4(0.34, 0.650, 0.00, 1);
 	ImVec4 windowWhite = ImVec4(1, 1, 1, 1);
 	
 
@@ -303,11 +306,13 @@ int main()
 	style.Colors[ImGuiCol_CheckMark] = windowWhite;
 	style.Colors[ImGuiCol_Text] = windowWhite;
 	
+	style.Colors[ImGuiCol_Border] = BorderColor;
+
 	style.Colors[ImGuiCol_FrameBg] = wigitsInside;
 	style.Colors[ImGuiCol_FrameBgHovered] = wigitsInsideHover;
 	style.Colors[ImGuiCol_FrameBgActive] = wigitsInsideActive;
-	style.Colors[ImGuiCol_TitleBg] = wigitsInside;
-	style.Colors[ImGuiCol_TitleBgActive] = wigitsInsideHover;
+	style.Colors[ImGuiCol_TitleBg] = TitleColor;
+	style.Colors[ImGuiCol_TitleBgActive] = TitleColor;
 	style.Colors[ImGuiCol_TabActive] = wigitsInsideActive;
 
 	bool v = true;
@@ -493,45 +498,58 @@ int main()
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		
 		//if (ImGui::Begin("project settings", 0, ImGuiWindowFlags_NoResize)) {
-		if (ImGui::Begin("project settings")) {
-			if (ImGui::BeginTabBar("project tabs"))
-			{
-
-				if (ImGui::BeginTabItem("General"))
+		if (run == false) {
+			if (ImGui::Begin("project settings")) {
+				if (ImGui::BeginTabBar("project tabs"))
 				{
-					ImGui::InputInt("Window width", &mockwidth, 20, 1, 0);
-					ImGui::InputInt("Window height", &mockheight, 20, 1,0);
 
-					ImGui::EndTabItem();
-				}
-				if (ImGui::BeginTabItem("Graphics"))
-				{
-					style.Colors[ImGuiCol_Text] = ImVec4(1, 0, 0, 1);
-					ImGui::Text("This will change how your game looks, make sure you have the proper graphics card.");
-					style.Colors[ImGuiCol_Text] = ImVec4(0.98, 0.77, 1.00, 1);
+					if (ImGui::BeginTabItem("General"))
+					{
+						ImGui::InputInt("Window width", &mockwidth, 20, 1, 0);
+						ImGui::InputInt("Window height", &mockheight, 20, 1, 0);
 
-					ImGui::DragInt("MSSA samples (Needs restart to change)", &samples, 0.03f, 1, std::numeric_limits<int>::max());
-					ImGui::Checkbox("Enable vsync", &v);
-					ImGui::InputFloat("Gamma correction value", &gamma, 0.3f, 1, "%.3f", 0);
-					glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);
+						ImGui::EndTabItem();
+					}
+					if (ImGui::BeginTabItem("Graphics"))
+					{
+						style.Colors[ImGuiCol_Text] = ImVec4(1, 0, 0, 1);
+						ImGui::Text("This will change how your game looks, make sure you have the proper graphics card.");
+						style.Colors[ImGuiCol_Text] = ImVec4(0.98, 0.77, 1.00, 1);
 
-					ImGui::EndTabItem();
+						ImGui::DragInt("MSSA samples (Needs restart to change)", &samples, 0.03f, 1, std::numeric_limits<int>::max());
+						ImGui::Checkbox("Enable vsync", &v);
+						ImGui::InputFloat("Gamma correction value", &gamma, 0.3f, 1, "%.3f", 0);
+						glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);
+
+						ImGui::EndTabItem();
+					}
+
+					if (ImGui::BeginTabItem("Debug"))
+					{
+						ImGui::Checkbox("Enable wireframe", &wireBool);
+						ImGui::EndTabItem();
+					}
+					ImGui::EndTabBar();
 				}
-				
-				if (ImGui::BeginTabItem("Debug"))
-				{
-					ImGui::Checkbox("Enable wireframe", &wireBool);
-					ImGui::EndTabItem();
-				}
-				ImGui::EndTabBar();
+
+				ImGui::End();
+
 			}
-			
-			
-			
-			ImGui::End();
 		}
-
+		ImGui::Begin("runtime");
+		if (ImGui::Button("play"))
+		{
+			if (run == false) {
+				run = true;
+			}
+			else if (run == true)
+			{
+				run = false;
+			}
+		}
 		
+
+		ImGui::End();
 			
 
 		
