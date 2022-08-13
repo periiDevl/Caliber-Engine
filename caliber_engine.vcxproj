@@ -207,6 +207,7 @@
     <ClInclude Include="VBO.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\..\..\source\repos\caliber_engine\caliberLogo.jpeg" />
     <Image Include="back.jpg" />
     <Image Include="bottom.jpg" />
     <Image Include="cliffside_1.png" />

@@ -74,6 +74,20 @@ int main()
 	// Introduce the window into the current context
 	glfwMakeContextCurrent(window);
 
+	//load Icon
+	int wid, hei;
+	int channels;
+	//!rememer! make sure to install the icon
+	unsigned char* pixels = stbi_load("C:/Users/יונתן/source/repos/caliber_engine/engine_assets/caliberLogo.jpeg", &wid, &hei, &channels, 4);
+
+	//change icon
+	GLFWimage images[1];
+	images[0].width = wid;
+	images[0].height = hei;
+	images[0].pixels = pixels;
+
+	glfwSetWindowIcon(window, 1, images);
+
 	//Load GLAD so it configures OpenGL
 	gladLoadGL();
 	// Specify the viewport of OpenGL in the Window
@@ -470,7 +484,7 @@ int main()
 		// Bounce the image data around to blur multiple times
 		bool horizontal = true, first_iteration = true;
 		// Amount of time to bounce the blur
-		int Blur_amount = 0;
+		int Blur_amount = 2;
 		blurProgram.Activate();
 		for (unsigned int i = 0; i < Blur_amount; i++)
 		{
