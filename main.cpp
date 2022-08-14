@@ -19,7 +19,8 @@ int mockheight = height;
 int samples = Isampels;
 int vsync = Ivsync;
 int wireframe = Iwire;
-
+int renderShadows = IrenderShadow;
+int highQualtiyShdows = Ihqs;
 float gamma = Igamma;
 float exposure = Iexposure;
 
@@ -59,10 +60,10 @@ int main()
 	
 	
 	
-	GLFWwindow* window = glfwCreateWindow(width, height, "Caliber window", glfwGetPrimaryMonitor(), NULL);
+	//GLFWwindow* window = glfwCreateWindow(width, height, "Caliber window", glfwGetPrimaryMonitor(), NULL);
 	
 	
-	//GLFWwindow* window = glfwCreateWindow(width, height, "Caliber window", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(width, height, "Caliber window", NULL, NULL);
 	
 	// Error check if the window fails to create
 	if (window == NULL)
@@ -274,9 +275,17 @@ int main()
 	// Framebuffer for Shadow Map
 	unsigned int shadowMapFBO;
 	glGenFramebuffers(1, &shadowMapFBO);
-
+	unsigned int shadowMapWidth, shadowMapHeight;
 	// Texture for Shadow Map FBO
-	unsigned int shadowMapWidth = 10048, shadowMapHeight = 10048;
+	if (highQualtiyShdows == 1) {
+		shadowMapWidth = 5000, shadowMapHeight = 5000;
+	}
+	else
+	{
+		shadowMapWidth = 548, shadowMapHeight = 548;
+
+	}
+	
 	unsigned int shadowMap;
 	glGenTextures(1, &shadowMap);
 	glBindTexture(GL_TEXTURE_2D, shadowMap);
@@ -298,7 +307,7 @@ int main()
 
 
 	// Matrices needed for the light's perspective
-	glm::mat4 orthgonalProjection = glm::ortho(-90.0f, 90.0f, -90.0f, 90.0f, 1.0f, 250.0f);
+	glm::mat4 orthgonalProjection = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, 1.0f, 130.0f);
 	glm::mat4 lightView = glm::lookAt(70.0f * lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 lightProjection = orthgonalProjection * lightView;
 
@@ -339,7 +348,14 @@ int main()
 	else {
 		v = false;
 	}
-
+	bool renSha = true;
+	if (renderShadows == 1)
+	{
+		renSha = true;
+	}
+	else {
+		renSha = false;
+	}
 	
 	bool wireBool = false;
 	if (wireframe == 0) {
@@ -349,32 +365,49 @@ int main()
 	{
 		wireBool = true;
 	}
+
+	bool hqs = false;
+	if (highQualtiyShdows == 0) {
+		hqs = false;
+	}
+	else
+	{
+		hqs = true;
+	}
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
 	{
-		exposure = realExposure;
-		glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
-		if (wireBool == true) {
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		}
-		
-		
+		if (run == true) {
+			exposure = realExposure;
+			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
+			if (wireBool == true) {
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			}
 
-		if (v == true)
-		{
-			vsync = 1;
-		}
-		else {
-			vsync = 0;
-		}
+			if (renSha == true)
+			{
+				renderShadows = 1;
+			}
+			else {
+				renderShadows = 0;
+			}
 
-		if (vsync == 0)
-		{
-			glfwSwapInterval(0);
-		}
-		if (vsync == 1)
-		{
-			glfwSwapInterval(1);
+			if (v == true)
+			{
+				vsync = 1;
+			}
+			else {
+				vsync = 0;
+			}
+
+			if (vsync == 0)
+			{
+				glfwSwapInterval(0);
+			}
+			if (vsync == 1)
+			{
+				glfwSwapInterval(1);
+			}
 		}
 		// Updates counter and times
 		crntTime = glfwGetTime();
@@ -408,13 +441,17 @@ int main()
 		glEnable(GL_DEPTH_TEST);
 
 		// Preparations for the Shadow Map
-		glViewport(0, 0, shadowMapWidth, shadowMapHeight);
-		glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFBO);
+		if (renderShadows == 1 || !run) {
+			glViewport(0, 0, shadowMapWidth, shadowMapHeight);
+			glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFBO);
+		}
 		glClear(GL_DEPTH_BUFFER_BIT);
 
 		// Draw scene for shadow map
-		if (run) {
-			model.Draw(shadowMapProgram, camera, glm::vec3(10, 0.0f, 0.0f));
+		if (run == true) {
+			if (renderShadows == 1) {
+				model.Draw(shadowMapProgram, camera, glm::vec3(10, 0.0f, 0.0f));
+			}
 			exposure = realExposure;
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
 		}
@@ -484,7 +521,7 @@ int main()
 		// Bounce the image data around to blur multiple times
 		bool horizontal = true, first_iteration = true;
 		// Amount of time to bounce the blur
-		int Blur_amount = 2;
+		int Blur_amount = 0;
 		blurProgram.Activate();
 		for (unsigned int i = 0; i < Blur_amount; i++)
 		{
@@ -527,6 +564,11 @@ int main()
 		if (run) {
 			glBindTexture(GL_TEXTURE_2D, pingpongBuffer[!horizontal]);
 		}
+		else
+		{
+
+			glBindTexture(GL_TEXTURE_2D, postProcessingTexture);
+		}
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		
 		//if (ImGui::Begin("project settings", 0, ImGuiWindowFlags_NoResize)) {
@@ -557,6 +599,8 @@ int main()
 						glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);
 						glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
 
+						ImGui::Checkbox("Enable shadows", &renSha);
+						ImGui::Checkbox("Enable high qualtiy shadows (Needs restart to change)", &hqs);
 						ImGui::EndTabItem();
 					}
 
@@ -626,6 +670,13 @@ int main()
 	else {
 		wireframe = 0;
 	}
+	if (hqs == true)
+	{
+		highQualtiyShdows = 1;
+	}
+	else {
+		highQualtiyShdows = 0;
+	}
 	
 	std::string tsamples = std::to_string(samples);
 	std::string tvsync = std::to_string(vsync);
@@ -634,6 +685,8 @@ int main()
 	std::string theight = std::to_string(mockheight);
 	std::string twire = std::to_string(wireframe);
 	std::string texpose = std::to_string(realExposure);
+	std::string tenableshadows = std::to_string(renSha);
+	std::string thqs = std::to_string(hqs);
 
 	stuff.push_back("int IwindowW = " + twidth + ";");
 	stuff.push_back("int IwindowH = " + theight + ";");
@@ -642,6 +695,8 @@ int main()
 	stuff.push_back("float Igamma = " + tgamma + ";");
 	stuff.push_back("int Iwire = " + twire + ";");
 	stuff.push_back("float Iexposure = " + texpose + ";");
+	stuff.push_back("int IrenderShadow = " + tenableshadows + ";");
+	stuff.push_back("int Ihqs = " + thqs + ";");
 
 
 	for (std::string sufff : stuff)
