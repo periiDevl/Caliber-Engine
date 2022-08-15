@@ -7,7 +7,10 @@
 #include<fstream>
 #include<string>
 #include"settings.h"
+#include"bullet-src/btBulletCollisionCommon.h"
+#include"bullet-src/btBulletDynamicsCommon.h"
 
+btDynamicsWorld* world;
 bool run = false;
 int width = IwindowW;
 int height = IwindowH;
@@ -520,8 +523,9 @@ int main()
 
 		// Bounce the image data around to blur multiple times
 		bool horizontal = true, first_iteration = true;
+		
 		// Amount of time to bounce the blur
-		int Blur_amount = 0;
+		int Blur_amount = 1;
 		blurProgram.Activate();
 		for (unsigned int i = 0; i < Blur_amount; i++)
 		{
