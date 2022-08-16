@@ -1,6 +1,6 @@
 /*
 Bullet Continuous Collision Detection and Physics Library
-Copyright (c) 2003-2006 Erwin Coumans  http://continuousphysics.com/Bullet/
+Copyright (c) 2003-2006 Erwin Coumans  https://bulletphysics.org
 
 This software is provided 'as-is', without any express or implied warranty.
 In no event will the authors be held liable for any damages arising from the use of this software.
@@ -19,27 +19,25 @@ subject to the following restrictions:
 #include "LinearMath/btAlignedObjectArray.h"
 class btCollisionAlgorithm;
 class btCollisionObject;
-
+struct btCollisionObjectWrapper;
 struct btCollisionAlgorithmConstructionInfo;
 
 ///Used by the btCollisionDispatcher to register and create instances for btCollisionAlgorithm
 struct btCollisionAlgorithmCreateFunc
 {
 	bool m_swapped;
-	
+
 	btCollisionAlgorithmCreateFunc()
-		:m_swapped(false)
+		: m_swapped(false)
 	{
 	}
 	virtual ~btCollisionAlgorithmCreateFunc(){};
 
-	virtual	btCollisionAlgorithm* CreateCollisionAlgorithm(btCollisionAlgorithmConstructionInfo& , btCollisionObject* body0,btCollisionObject* body1)
+	virtual btCollisionAlgorithm* CreateCollisionAlgorithm(btCollisionAlgorithmConstructionInfo&, const btCollisionObjectWrapper* body0Wrap, const btCollisionObjectWrapper* body1Wrap)
 	{
-		
-		(void)body0;
-		(void)body1;
+		(void)body0Wrap;
+		(void)body1Wrap;
 		return 0;
 	}
 };
-#endif //BT_COLLISION_CREATE_FUNC
-
+#endif  //BT_COLLISION_CREATE_FUNC

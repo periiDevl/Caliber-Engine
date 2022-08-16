@@ -1,6 +1,6 @@
 /*
 Bullet Continuous Collision Detection and Physics Library
-Copyright (c) 2003-2006 Erwin Coumans  http://continuousphysics.com/Bullet/
+Copyright (c) 2003-2006 Erwin Coumans  https://bulletphysics.org
 
 This software is provided 'as-is', without any express or implied warranty.
 In no event will the authors be held liable for any damages arising from the use of this software.
@@ -20,24 +20,23 @@ subject to the following restrictions:
 #include "BulletCollision/CollisionDispatch/btCollisionObject.h"
 #include "btSoftBody.h"
 #include "BulletSoftBody/btSoftBodySolvers.h"
+#include "BulletCollision/CollisionDispatch/btCollisionObjectWrapper.h"
 
 ///TODO: include all the shapes that the softbody can collide with
 ///alternatively, implement special case collision algorithms (just like for rigid collision shapes)
 
 //#include <stdio.h>
 
-btSoftRigidCollisionAlgorithm::btSoftRigidCollisionAlgorithm(btPersistentManifold* /*mf*/,const btCollisionAlgorithmConstructionInfo& ci,btCollisionObject* /*col0*/,btCollisionObject* /*col1*/, bool isSwapped)
-: btCollisionAlgorithm(ci),
-//m_ownManifold(false),
-//m_manifoldPtr(mf),
-m_isSwapped(isSwapped)
+btSoftRigidCollisionAlgorithm::btSoftRigidCollisionAlgorithm(btPersistentManifold* /*mf*/, const btCollisionAlgorithmConstructionInfo& ci, const btCollisionObjectWrapper*, const btCollisionObjectWrapper*, bool isSwapped)
+	: btCollisionAlgorithm(ci),
+	  //m_ownManifold(false),
+	  //m_manifoldPtr(mf),
+	  m_isSwapped(isSwapped)
 {
 }
 
-
 btSoftRigidCollisionAlgorithm::~btSoftRigidCollisionAlgorithm()
 {
-
 	//m_softBody->m_overlappingRigidBodies.remove(m_rigidCollisionObject);
 
 	/*if (m_ownManifold)
@@ -46,30 +45,28 @@ btSoftRigidCollisionAlgorithm::~btSoftRigidCollisionAlgorithm()
 	m_dispatcher->releaseManifold(m_manifoldPtr);
 	}
 	*/
-
 }
 
-
 #include <stdio.h>
-
-void btSoftRigidCollisionAlgorithm::processCollision (btCollisionObject* body0,btCollisionObject* body1,const btDispatcherInfo& dispatchInfo,btManifoldResult* resultOut)
+#include "LinearMath/btQuickprof.h"
+void btSoftRigidCollisionAlgorithm::processCollision(const btCollisionObjectWrapper* body0Wrap, const btCollisionObjectWrapper* body1Wrap, const btDispatcherInfo& dispatchInfo, btManifoldResult* resultOut)
 {
+	BT_PROFILE("btSoftRigidCollisionAlgorithm::processCollision");
 	(void)dispatchInfo;
 	(void)resultOut;
 	//printf("btSoftRigidCollisionAlgorithm\n");
+	//	const btCollisionObjectWrapper* softWrap = m_isSwapped?body1Wrap:body0Wrap;
+	//	const btCollisionObjectWrapper* rigidWrap = m_isSwapped?body0Wrap:body1Wrap;
+	btSoftBody* softBody = m_isSwapped ? (btSoftBody*)body1Wrap->getCollisionObject() : (btSoftBody*)body0Wrap->getCollisionObject();
+	const btCollisionObjectWrapper* rigidCollisionObjectWrap = m_isSwapped ? body0Wrap : body1Wrap;
 
-	btSoftBody* softBody =  m_isSwapped? (btSoftBody*)body1 : (btSoftBody*)body0;
-	btCollisionObject* rigidCollisionObject = m_isSwapped? body0 : body1;
-	
-	if (softBody->m_collisionDisabledObjects.findLinearSearch(rigidCollisionObject)==softBody->m_collisionDisabledObjects.size())
+	if (softBody->m_collisionDisabledObjects.findLinearSearch(rigidCollisionObjectWrap->getCollisionObject()) == softBody->m_collisionDisabledObjects.size())
 	{
-		softBody->getSoftBodySolver()->processCollision(softBody, rigidCollisionObject);
+		softBody->getSoftBodySolver()->processCollision(softBody, rigidCollisionObjectWrap);
 	}
-
-
 }
 
-btScalar btSoftRigidCollisionAlgorithm::calculateTimeOfImpact(btCollisionObject* col0,btCollisionObject* col1,const btDispatcherInfo& dispatchInfo,btManifoldResult* resultOut)
+btScalar btSoftRigidCollisionAlgorithm::calculateTimeOfImpact(btCollisionObject* col0, btCollisionObject* col1, const btDispatcherInfo& dispatchInfo, btManifoldResult* resultOut)
 {
 	(void)resultOut;
 	(void)dispatchInfo;
@@ -79,6 +76,3 @@ btScalar btSoftRigidCollisionAlgorithm::calculateTimeOfImpact(btCollisionObject*
 	//not yet
 	return btScalar(1.);
 }
-
-
-
