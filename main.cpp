@@ -7,9 +7,7 @@
 #include<fstream>
 #include<string>
 #include"settings.h"
-#include"bullet-src/btBulletCollisionCommon.h"
-#include"bullet-src/btBulletDynamicsCommon.h"
-btDynamicsWorld* world;
+
 
 bool run = false;
 int width = IwindowW;
