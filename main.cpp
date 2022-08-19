@@ -9,7 +9,9 @@
 #include"settings.h"
 
 
-bool run = false;
+
+
+bool run = true;
 int width = IwindowW;
 int height = IwindowH;
 
@@ -71,7 +73,7 @@ int main()
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
-		return -1;
+		return -1; 
 	}
 	// Introduce the window into the current context
 	glfwMakeContextCurrent(window);
@@ -151,7 +153,8 @@ int main()
 
 
 	// Creates camera object
-	Camera camera(width, height, glm::vec3(0.0f, 2.0f, 2.0f));
+	Camera camera(width, height, glm::vec3(22.0f, 15.0, 0.0f));
+	
 
 
 	
@@ -409,7 +412,12 @@ int main()
 			{
 				glfwSwapInterval(1);
 			}
+			
+			
 		}
+//		camera.Orientation = glm::vec3(-90, -60, 0);
+//		camera.Position = glm::vec3(22.0f, 15.0, 0.0f);
+
 		// Updates counter and times
 		crntTime = glfwGetTime();
 		timeDiff = crntTime - prevTime;
@@ -451,7 +459,7 @@ int main()
 		// Draw scene for shadow map
 		if (run == true) {
 			if (renderShadows == 1) {
-				model.Draw(shadowMapProgram, camera, glm::vec3(10, 0.0f, 0.0f));
+				model.Draw(shadowMapProgram, camera, glm::vec3(10, 0.0f, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(1.5f, 1, 1));
 			}
 			exposure = realExposure;
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
@@ -510,8 +518,7 @@ int main()
 		// Draw the normal model
 		// Take care of all the light related things
 		
-		model.Draw(shaderProgram, camera, glm::vec3(10, 0.0f, 0.0f));
-		
+		model.Draw(shaderProgram, camera, glm::vec3(10, 0.0f, 0.0f),glm::quat(0,0,0,0), glm::vec3(1.5f, 1, 1));
 
 		// Make it so the multisampling FBO is read while the post-processing FBO is drawn
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
