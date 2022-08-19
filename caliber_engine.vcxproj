@@ -185,7 +185,7 @@
     <None Include="shadowMap.frag" />
     <None Include="shadowMap.vert" />
     <None Include="skybox.frag" />
-    <None Include="skybox.vert" />
+    <None Include="skyobx.vert" />
     <None Include="transparent.frag" />
   </ItemGroup>
   <ItemGroup>
