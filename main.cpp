@@ -11,7 +11,7 @@
 
 
 
-bool run = true;
+bool run = false;
 int width = IwindowW;
 int height = IwindowH;
 
@@ -311,7 +311,7 @@ int main()
 
 
 	// Matrices needed for the light's perspective
-	glm::mat4 orthgonalProjection = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, 1.0f, 130.0f);
+	glm::mat4 orthgonalProjection = glm::ortho(-30.0f, 30.0f, -30.0f, 30.0f, 1.0f, 130.0f);
 	glm::mat4 lightView = glm::lookAt(70.0f * lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 lightProjection = orthgonalProjection * lightView;
 
@@ -319,12 +319,12 @@ int main()
 	glUniformMatrix4fv(glGetUniformLocation(shadowMapProgram.ID, "lightProjection"), 1, GL_FALSE, glm::value_ptr(lightProjection));
 	//0.29, 1.00, 0.62,
 
-	ImVec4 backroundColor = ImVec4(0.10, 0.15, 0.13, 0.95);
-	ImVec4 TitleColor = ImVec4(0.18, 0.63, 0.39, 0.95);
-	ImVec4 BorderColor = ImVec4(1, 1, 1, 0);
-	ImVec4 wigitsInsideHover = ImVec4(0.24, 0.72, 0.00, 1);
-	ImVec4 wigitsInside = ImVec4(0.17, 0.50, 0.00, 1);
-	ImVec4 wigitsInsideActive = ImVec4(0.34, 0.650, 0.00, 1);
+	ImVec4 backroundColor = ImVec4(0.5, 0.5, 0.5, 0.55);
+	ImVec4 TitleColor = ImVec4(0, 0, 0, 0.95);
+	ImVec4 BorderColor = ImVec4(0, 0, 0, 1);
+	ImVec4 wigitsInsideHover = ImVec4(0.2, 0.2, 0.2, 1);
+	ImVec4 wigitsInside = ImVec4(0.3, 0.30, 0.30, 1);
+	ImVec4 wigitsInsideActive = ImVec4(0.1, 0.1, 0.10, 1);
 	ImVec4 windowWhite = ImVec4(1, 1, 1, 1);
 	
 
@@ -335,6 +335,7 @@ int main()
 	style.Colors[ImGuiCol_CheckMark] = windowWhite;
 	style.Colors[ImGuiCol_Text] = windowWhite;
 	
+	
 	style.Colors[ImGuiCol_Border] = BorderColor;
 
 	style.Colors[ImGuiCol_FrameBg] = wigitsInside;
@@ -343,6 +344,10 @@ int main()
 	style.Colors[ImGuiCol_TitleBg] = TitleColor;
 	style.Colors[ImGuiCol_TitleBgActive] = TitleColor;
 	style.Colors[ImGuiCol_TabActive] = wigitsInsideActive;
+	style.Colors[ImGuiCol_TabHovered] = wigitsInsideHover;
+	style.Colors[ImGuiCol_Tab] = wigitsInside;
+	
+	
 
 	bool v = true;
 	if (vsync == 1)

@@ -7,4 +7,4 @@ float Igamma = 2.200000;
 int Iwire = 0;
 float Iexposure = 1.000000;
 int IrenderShadow = 1;
-int Ihqs = 0;
+int Ihqs = 1;
