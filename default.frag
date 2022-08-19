@@ -187,7 +187,7 @@ vec4 spotLight()
 	return (texture(diffuse0, texCoord) * (diffuse * inten + ambient) + texture(specular0, texCoord).r * specular * inten) * lightColor;
 }
 
-float near = 0.001f;
+float near = 0.0001f;
 float far = 100.0f;
 
 float linearizeDepth(float depth)

@@ -113,7 +113,7 @@
     <None Include="shadowMap.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="skyobx.vert">
+    <None Include="skybox.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="skybox.frag">

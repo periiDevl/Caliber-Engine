@@ -24,6 +24,7 @@ int vsync = Ivsync;
 int wireframe = Iwire;
 int renderShadows = IrenderShadow;
 int highQualtiyShdows = Ihqs;
+int bloom = Ibloom;
 float gamma = Igamma;
 float exposure = Iexposure;
 
@@ -323,7 +324,7 @@ int main()
 	unsigned int shadowMapWidth, shadowMapHeight;
 	// Texture for Shadow Map FBO
 	if (highQualtiyShdows == 1) {
-		shadowMapWidth = 5000, shadowMapHeight = 5000;
+		shadowMapWidth = 7480, shadowMapHeight = 7480;
 	}
 	else
 	{
@@ -351,8 +352,8 @@ int main()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	glm::mat4 orthgonalProjection;
-	glm::mat4 orthgonalProjectionLow = glm::ortho(-15.0f, 15.0f, -15.0f, 15.0f, 1.0f, 130.0f);
-	glm::mat4 orthgonalProjectionHigh = glm::ortho(-40.0f, 40.0f, -40.0f, 40.0f, 1.0f, 130.0f);
+	glm::mat4 orthgonalProjectionLow = glm::ortho(-15.0f, 15.0f, -15.0f, 15.0f, 1.0f, 100.0f);
+	glm::mat4 orthgonalProjectionHigh = glm::ortho(-30.0f, 30.0f, -30.0f, 30.0f, 1.0f, 230.0f);
 	// Matrices needed for the light's perspective
 	if (HighLightView == 0) {
 		orthgonalProjection = orthgonalProjectionLow;
@@ -663,29 +664,31 @@ int main()
 		
 		model.Draw(shaderProgram, camera, glm::vec3(10, 0.0f, 0.0f),glm::quat(0,0,0,0), glm::vec3(1.5f, 1, 1));
 
-		// Since the cubemap will always have a depth of 1.0, we need that equal sign so it doesn't get discarded
-		glDepthFunc(GL_LEQUAL);
+		if (run == true) {
+			// Since the cubemap will always have a depth of 1.0, we need that equal sign so it doesn't get discarded
+			glDepthFunc(GL_LEQUAL);
 
-		skyboxShader.Activate();
-		glm::mat4 view = glm::mat4(1.0f);
-		glm::mat4 projection = glm::mat4(1.0f);
-		// We make the mat4 into a mat3 and then a mat4 again in order to get rid of the last row and column
-		// The last row and column affect the translation of the skybox (which we don't want to affect)
-		view = glm::mat4(glm::mat3(glm::lookAt(camera.Position, camera.Position + camera.Orientation, camera.Up)));
-		projection = glm::perspective(glm::radians(45.0f), (float)width / height, 0.1f, 100.0f);
-		glUniformMatrix4fv(glGetUniformLocation(skyboxShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
-		glUniformMatrix4fv(glGetUniformLocation(skyboxShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+			skyboxShader.Activate();
+			glm::mat4 view = glm::mat4(1.0f);
+			glm::mat4 projection = glm::mat4(1.0f);
+			// We make the mat4 into a mat3 and then a mat4 again in order to get rid of the last row and column
+			// The last row and column affect the translation of the skybox (which we don't want to affect)
+			view = glm::mat4(glm::mat3(glm::lookAt(camera.Position, camera.Position + camera.Orientation, camera.Up)));
+			projection = glm::perspective(glm::radians(60.0f), (float)width / height, 0.1f, 100.0f);
+			glUniformMatrix4fv(glGetUniformLocation(skyboxShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
+			glUniformMatrix4fv(glGetUniformLocation(skyboxShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
-		// Draws the cubemap as the last object so we can save a bit of performance by discarding all fragments
-		// where an object is present (a depth of 1.0f will always fail against any object's depth value)
-		glBindVertexArray(skyboxVAO);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
+			// Draws the cubemap as the last object so we can save a bit of performance by discarding all fragments
+			// where an object is present (a depth of 1.0f will always fail against any object's depth value)
+			glBindVertexArray(skyboxVAO);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
 
-		// Switch back to the normal depth function
-		glDepthFunc(GL_LESS);
+			// Switch back to the normal depth function
+			glDepthFunc(GL_LESS);
+		}
 
 		// Make it so the multisampling FBO is read while the post-processing FBO is drawn
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
@@ -697,7 +700,7 @@ int main()
 		bool horizontal = true, first_iteration = true;
 		
 		// Amount of time to bounce the blur
-		int Blur_amount = 1;
+		int Blur_amount = bloom;
 		blurProgram.Activate();
 		for (unsigned int i = 0; i < Blur_amount; i++)
 		{
@@ -775,6 +778,7 @@ int main()
 						glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);
 						glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
 
+						ImGui::DragInt("bloom amount", &bloom, 0.012f, 0, std::numeric_limits<int>::max());
 						ImGui::Checkbox("Enable shadows", &renSha);
 						ImGui::Checkbox("Enable high qualtiy shadows (Needs restart to change)", &hqs);
 
@@ -816,6 +820,9 @@ int main()
 		
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+
+
 
 
 
@@ -868,6 +875,7 @@ int main()
 	std::string tenableshadows = std::to_string(renSha);
 	std::string thqs = std::to_string(hqs);
 	std::string thighlightview = std::to_string(lightVLow);
+	std::string tbloom = std::to_string(bloom);
 
 	stuff.push_back("int IwindowW = " + twidth + ";");
 	stuff.push_back("int IwindowH = " + theight + ";");
@@ -879,6 +887,7 @@ int main()
 	stuff.push_back("int IrenderShadow = " + tenableshadows + ";");
 	stuff.push_back("int Ihqs = " + thqs + ";");
 	stuff.push_back("int IlightViewSetting = " + thighlightview + ";");
+	stuff.push_back("int Ibloom = " + tbloom + ";");
 
 	
 	for (std::string sufff : stuff)
