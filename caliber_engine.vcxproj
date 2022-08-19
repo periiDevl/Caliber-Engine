@@ -82,8 +82,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\יונתן\Documents\GitHub\caliber_engine\Libraries\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\יונתן\Documents\GitHub\caliber_engine\Libraries\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\do not erase\bankrobbyGithub\caliber_engine\Libraries\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\do not erase\bankrobbyGithub\caliber_engine\Libraries\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>

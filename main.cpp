@@ -77,7 +77,7 @@ int main()
 	}
 	// Introduce the window into the current context
 	glfwMakeContextCurrent(window);
-
+	/*
 	//load Icon
 	int wid, hei;
 	int channels;
@@ -89,8 +89,8 @@ int main()
 	images[0].width = wid;
 	images[0].height = hei;
 	images[0].pixels = pixels;
-
 	glfwSetWindowIcon(window, 1, images);
+	*/
 
 	//Load GLAD so it configures OpenGL
 	gladLoadGL();
@@ -311,7 +311,7 @@ int main()
 
 
 	// Matrices needed for the light's perspective
-	glm::mat4 orthgonalProjection = glm::ortho(-30.0f, 30.0f, -30.0f, 30.0f, 1.0f, 130.0f);
+	glm::mat4 orthgonalProjection = glm::ortho(-15.0f, 15.0f, -15.0f, 15.0f, 1.0f, 130.0f);
 	glm::mat4 lightView = glm::lookAt(70.0f * lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 lightProjection = orthgonalProjection * lightView;
 
@@ -400,25 +400,25 @@ int main()
 			else {
 				renderShadows = 0;
 			}
-
-			if (v == true)
-			{
-				vsync = 1;
-			}
-			else {
-				vsync = 0;
-			}
-
-			if (vsync == 0)
-			{
-				glfwSwapInterval(0);
-			}
-			if (vsync == 1)
-			{
-				glfwSwapInterval(1);
-			}
 			
 			
+		}
+
+		if (v == true)
+		{
+			vsync = 1;
+		}
+		else {
+			vsync = 0;
+		}
+
+		if (vsync == 0)
+		{
+			glfwSwapInterval(0);
+		}
+		if (vsync == 1)
+		{
+			glfwSwapInterval(1);
 		}
 //		camera.Orientation = glm::vec3(-90, -60, 0);
 //		camera.Position = glm::vec3(22.0f, 15.0, 0.0f);
