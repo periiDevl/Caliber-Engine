@@ -7,9 +7,6 @@
 #include<fstream>
 #include<string>
 #include"settings.h"
-#include"q3.h"
-
-q3Scene scene(1.0 / 60.0);
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -32,8 +29,6 @@ float exposure = Iexposure;
 
 int HighLightView = IlightViewSetting;
 
-q3BodyDef bodyDef;
-q3Body* body = scene.CreateBody(bodyDef);
 
 float rectangleVertices[] =
 {
@@ -520,15 +515,7 @@ int main()
 		}
 	}
 
-	q3BoxDef boxDef; // See q3Box.h for settings details
-	q3Transform localSpace; // Contains position and orientation, see q3Transform.h for details
-	q3Identity(localSpace); // Specify the origin, and identity orientation
 	
-	// Create a box at the origin with width, height, depth = (1.0, 1.0, 1.0)
-	// and add it to a rigid body. The transform is defined relative to the owning body
-	boxDef.Set(localSpace, q3Vec3(1.0, 1.0, 1.0));
-	body->AddBox(boxDef);
-	scene.Step();
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -681,7 +668,7 @@ int main()
 		// Take care of all the light related things
 		//camera.Position = glm::vec3(localSpace.position.x, localSpace.position.y, localSpace.position.z);
 		
-		model.Draw(shaderProgram, camera, glm::vec3(localSpace.position.x, localSpace.position.y, localSpace.position.z), glm::quat(0, 0, 0, 0), glm::vec3(1, 1, 1));
+		model.Draw(shaderProgram, camera, glm::vec3(10, 0.0f, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(1.5f, 1, 1));
 		
 			
 		
