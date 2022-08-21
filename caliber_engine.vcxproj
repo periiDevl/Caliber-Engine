@@ -96,7 +96,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>q3;imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -128,7 +128,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>q3;imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -168,6 +168,21 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="q3\broadphase\q3BroadPhase.cpp" />
+    <ClCompile Include="q3\broadphase\q3DynamicAABBTree.cpp" />
+    <ClCompile Include="q3\collision\q3Box.cpp" />
+    <ClCompile Include="q3\collision\q3Collide.cpp" />
+    <ClCompile Include="q3\common\q3Geometry.cpp" />
+    <ClCompile Include="q3\common\q3Memory.cpp" />
+    <ClCompile Include="q3\dynamics\q3Body.cpp" />
+    <ClCompile Include="q3\dynamics\q3Contact.cpp" />
+    <ClCompile Include="q3\dynamics\q3ContactManager.cpp" />
+    <ClCompile Include="q3\dynamics\q3ContactSolver.cpp" />
+    <ClCompile Include="q3\dynamics\q3Island.cpp" />
+    <ClCompile Include="q3\math\q3Mat3.cpp" />
+    <ClCompile Include="q3\math\q3Quaternion.cpp" />
+    <ClCompile Include="q3\math\q3Vec3.cpp" />
+    <ClCompile Include="q3\scene\q3Scene.cpp" />
     <ClCompile Include="shaderClass.cpp" />
     <ClCompile Include="stb.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -189,6 +204,7 @@
     <None Include="transparent.frag" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="C:\Users\peric\source\repos\caliber_engine\qu3e\q3.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="EBO.h" />
     <ClInclude Include="imgui\imconfig.h" />
@@ -200,6 +216,26 @@
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="q3\broadphase\q3BroadPhase.h" />
+    <ClInclude Include="q3\broadphase\q3DynamicAABBTree.h" />
+    <ClInclude Include="q3\collision\q3Box.h" />
+    <ClInclude Include="q3\collision\q3Collide.h" />
+    <ClInclude Include="q3\common\q3Geometry.h" />
+    <ClInclude Include="q3\common\q3Memory.h" />
+    <ClInclude Include="q3\common\q3Settings.h" />
+    <ClInclude Include="q3\common\q3Types.h" />
+    <ClInclude Include="q3\debug\q3Render.h" />
+    <ClInclude Include="q3\dynamics\q3Body.h" />
+    <ClInclude Include="q3\dynamics\q3Contact.h" />
+    <ClInclude Include="q3\dynamics\q3ContactManager.h" />
+    <ClInclude Include="q3\dynamics\q3ContactSolver.h" />
+    <ClInclude Include="q3\dynamics\q3Island.h" />
+    <ClInclude Include="q3\math\q3Mat3.h" />
+    <ClInclude Include="q3\math\q3Math.h" />
+    <ClInclude Include="q3\math\q3Quaternion.h" />
+    <ClInclude Include="q3\math\q3Transform.h" />
+    <ClInclude Include="q3\math\q3Vec3.h" />
+    <ClInclude Include="q3\scene\q3Scene.h" />
     <ClInclude Include="settings.h" />
     <ClInclude Include="shaderClass.h" />
     <ClInclude Include="Texture.h" />

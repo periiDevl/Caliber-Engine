@@ -7,9 +7,11 @@
 #include<fstream>
 #include<string>
 #include"settings.h"
+#include"q3.h"
 
+q3Scene scene(1.0 / 60.0);
 
-
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 bool run = false;
 int width = IwindowW;
@@ -29,6 +31,9 @@ float gamma = Igamma;
 float exposure = Iexposure;
 
 int HighLightView = IlightViewSetting;
+
+q3BodyDef bodyDef;
+q3Body* body = scene.CreateBody(bodyDef);
 
 float rectangleVertices[] =
 {
@@ -101,10 +106,10 @@ int main()
 	
 	
 	
-	GLFWwindow* window = glfwCreateWindow(width, height, "Caliber window", glfwGetPrimaryMonitor(), NULL);
+	//GLFWwindow* window = glfwCreateWindow(width, height, "Caliber window", glfwGetPrimaryMonitor(), NULL);
 	
 	
-	//GLFWwindow* window = glfwCreateWindow(width, height, "Caliber window", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(width, height, "Caliber window", NULL, NULL);
 	
 	// Error check if the window fails to create
 	if (window == NULL)
@@ -115,6 +120,7 @@ int main()
 	}
 	// Introduce the window into the current context
 	glfwMakeContextCurrent(window);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	/*
 	//load Icon
 	int wid, hei;
@@ -514,15 +520,25 @@ int main()
 		}
 	}
 
+	q3BoxDef boxDef; // See q3Box.h for settings details
+	q3Transform localSpace; // Contains position and orientation, see q3Transform.h for details
+	q3Identity(localSpace); // Specify the origin, and identity orientation
+	
+	// Create a box at the origin with width, height, depth = (1.0, 1.0, 1.0)
+	// and add it to a rigid body. The transform is defined relative to the owning body
+	boxDef.Set(localSpace, q3Vec3(1.0, 1.0, 1.0));
+	body->AddBox(boxDef);
+	scene.Step();
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
 	{
+		
+		if (wireBool == true && !run) {
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		}
 		if (run == true) {
 			exposure = realExposure;
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
-			if (wireBool == true) {
-				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			}
 
 			if (renSha == true)
 			{
@@ -588,6 +604,10 @@ int main()
 				camera.Inputs(window);
 			}
 		}
+		// Handles camera inputs (delete this if you have disabled VSync)
+		if (vsync == 1) {
+			camera.Inputs(window);
+		}
 
 
 		// Depth testing needed for Shadow Map
@@ -634,10 +654,6 @@ int main()
 		// Enable depth testing since it's disabled when drawing the framebuffer rectangle
 		glEnable(GL_DEPTH_TEST);
 
-		// Handles camera inputs (delete this if you have disabled VSync)
-		if (vsync == 1) {
-			camera.Inputs(window);
-		}
 		// Updates and exports the camera matrix to the Vertex Shader
 		camera.updateMatrix(60.0f, 0.1f, 100.0f);
 
@@ -659,11 +675,16 @@ int main()
 			glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f)
 		*/
 
+		// Create a box at the origin with width, height, depth = (1.0, 1.0, 1.0)
+		// and add it to a rigid body. The transform is defined relative to the owning body
 		// Draw the normal model
 		// Take care of all the light related things
+		//camera.Position = glm::vec3(localSpace.position.x, localSpace.position.y, localSpace.position.z);
 		
-		model.Draw(shaderProgram, camera, glm::vec3(10, 0.0f, 0.0f),glm::quat(0,0,0,0), glm::vec3(1.5f, 1, 1));
-
+		model.Draw(shaderProgram, camera, glm::vec3(localSpace.position.x, localSpace.position.y, localSpace.position.z), glm::quat(0, 0, 0, 0), glm::vec3(1, 1, 1));
+		
+			
+		
 		if (run == true) {
 			// Since the cubemap will always have a depth of 1.0, we need that equal sign so it doesn't get discarded
 			glDepthFunc(GL_LEQUAL);
@@ -700,6 +721,9 @@ int main()
 		bool horizontal = true, first_iteration = true;
 		
 		// Amount of time to bounce the blur
+		
+			
+		
 		int Blur_amount = bloom;
 		blurProgram.Activate();
 		for (unsigned int i = 0; i < Blur_amount; i++)
@@ -876,6 +900,7 @@ int main()
 	std::string thqs = std::to_string(hqs);
 	std::string thighlightview = std::to_string(lightVLow);
 	std::string tbloom = std::to_string(bloom);
+	
 
 	stuff.push_back("int IwindowW = " + twidth + ";");
 	stuff.push_back("int IwindowH = " + theight + ";");
@@ -917,5 +942,12 @@ int main()
 	return 0;
 
 
+}
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+	// make sure the viewport matches the new window dimensions; note that width and 
+	// height will be significantly larger than specified on retina displays.
+	glViewport(0, 0, width, height);
 }
 

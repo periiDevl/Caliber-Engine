@@ -9,4 +9,4 @@ float Iexposure = 1.000000;
 int IrenderShadow = 1;
 int Ihqs = 1;
 int IlightViewSetting = 1;
-int Ibloom = 1;
+int Ibloom = 3;

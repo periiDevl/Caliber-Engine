@@ -25,6 +25,54 @@
     <Filter Include="Header Files\imgui">
       <UniqueIdentifier>{c2df27a6-a63d-4a4c-95c7-9f9f81c9c686}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\qu3e">
+      <UniqueIdentifier>{ec885a0f-96b3-4bc4-8db2-17bb348a59b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\qu3e">
+      <UniqueIdentifier>{4e64a001-ab0a-46df-b71c-a551197a805a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\qu3e\scene">
+      <UniqueIdentifier>{d158859a-38a8-464f-8470-8dc09e442a0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\qu3e\scene">
+      <UniqueIdentifier>{2f168a94-701e-4833-98f0-5613466aef1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\qu3e\math">
+      <UniqueIdentifier>{fb450722-4013-454c-8259-1e04ed6084b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\qu3e\math">
+      <UniqueIdentifier>{0c57ecb0-435c-4904-910d-a3f84b9af6d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\qu3e\dynamics">
+      <UniqueIdentifier>{62e0e2b4-5375-453c-935e-93393bdb2a77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\qu3e\dynamics">
+      <UniqueIdentifier>{09bb9d13-cc28-4581-b9c5-663b41d410d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\qu3e\debug">
+      <UniqueIdentifier>{e297da77-5c3c-4cab-b45e-1588ac0f6b4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\qu3e\debug">
+      <UniqueIdentifier>{b3f991b4-eace-46dc-b8c0-458b42c3ca57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\qu3e\common">
+      <UniqueIdentifier>{3b60fea7-102f-4db1-b8f0-3eff97814e2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\qu3e\common">
+      <UniqueIdentifier>{bbd16835-31c2-4bb9-8826-3aa6b61ef7f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\qu3e\collision">
+      <UniqueIdentifier>{fa228a0f-92d5-45fb-bd62-556e593442dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\qu3e\collision">
+      <UniqueIdentifier>{ba523c93-e443-437f-a94f-356137a5ddc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\qu3e\broadphase">
+      <UniqueIdentifier>{6ff28239-5cc9-4ccd-98d4-091d175714e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\qu3e\broadphase">
+      <UniqueIdentifier>{19f9e120-25a6-4ccd-8b16-9244914dbc4b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -80,6 +128,51 @@
     </ClCompile>
     <ClCompile Include="imgui\imgui_tables.cpp">
       <Filter>Source Files\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="q3\scene\q3Scene.cpp">
+      <Filter>Source Files\qu3e\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="q3\math\q3Mat3.cpp">
+      <Filter>Source Files\qu3e\math</Filter>
+    </ClCompile>
+    <ClCompile Include="q3\math\q3Quaternion.cpp">
+      <Filter>Source Files\qu3e\math</Filter>
+    </ClCompile>
+    <ClCompile Include="q3\math\q3Vec3.cpp">
+      <Filter>Source Files\qu3e\math</Filter>
+    </ClCompile>
+    <ClCompile Include="q3\dynamics\q3Body.cpp">
+      <Filter>Source Files\qu3e\dynamics</Filter>
+    </ClCompile>
+    <ClCompile Include="q3\dynamics\q3Contact.cpp">
+      <Filter>Source Files\qu3e\dynamics</Filter>
+    </ClCompile>
+    <ClCompile Include="q3\dynamics\q3ContactManager.cpp">
+      <Filter>Source Files\qu3e\dynamics</Filter>
+    </ClCompile>
+    <ClCompile Include="q3\dynamics\q3ContactSolver.cpp">
+      <Filter>Source Files\qu3e\dynamics</Filter>
+    </ClCompile>
+    <ClCompile Include="q3\dynamics\q3Island.cpp">
+      <Filter>Source Files\qu3e\dynamics</Filter>
+    </ClCompile>
+    <ClCompile Include="q3\common\q3Geometry.cpp">
+      <Filter>Source Files\qu3e\common</Filter>
+    </ClCompile>
+    <ClCompile Include="q3\common\q3Memory.cpp">
+      <Filter>Source Files\qu3e\common</Filter>
+    </ClCompile>
+    <ClCompile Include="q3\collision\q3Box.cpp">
+      <Filter>Source Files\qu3e\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="q3\collision\q3Collide.cpp">
+      <Filter>Source Files\qu3e\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="q3\broadphase\q3BroadPhase.cpp">
+      <Filter>Source Files\qu3e\broadphase</Filter>
+    </ClCompile>
+    <ClCompile Include="q3\broadphase\q3DynamicAABBTree.cpp">
+      <Filter>Source Files\qu3e\broadphase</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -168,6 +261,69 @@
     </ClInclude>
     <ClInclude Include="settings.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\peric\source\repos\caliber_engine\qu3e\q3.h">
+      <Filter>Header Files\qu3e</Filter>
+    </ClInclude>
+    <ClInclude Include="q3\scene\q3Scene.h">
+      <Filter>Header Files\qu3e\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="q3\math\q3Mat3.h">
+      <Filter>Header Files\qu3e\math</Filter>
+    </ClInclude>
+    <ClInclude Include="q3\math\q3Math.h">
+      <Filter>Header Files\qu3e\math</Filter>
+    </ClInclude>
+    <ClInclude Include="q3\math\q3Quaternion.h">
+      <Filter>Header Files\qu3e\math</Filter>
+    </ClInclude>
+    <ClInclude Include="q3\math\q3Transform.h">
+      <Filter>Header Files\qu3e\math</Filter>
+    </ClInclude>
+    <ClInclude Include="q3\math\q3Vec3.h">
+      <Filter>Header Files\qu3e\math</Filter>
+    </ClInclude>
+    <ClInclude Include="q3\dynamics\q3Contact.h">
+      <Filter>Header Files\qu3e\dynamics</Filter>
+    </ClInclude>
+    <ClInclude Include="q3\dynamics\q3ContactManager.h">
+      <Filter>Header Files\qu3e\dynamics</Filter>
+    </ClInclude>
+    <ClInclude Include="q3\dynamics\q3ContactSolver.h">
+      <Filter>Header Files\qu3e\dynamics</Filter>
+    </ClInclude>
+    <ClInclude Include="q3\dynamics\q3Island.h">
+      <Filter>Header Files\qu3e\dynamics</Filter>
+    </ClInclude>
+    <ClInclude Include="q3\dynamics\q3Body.h">
+      <Filter>Header Files\qu3e\dynamics</Filter>
+    </ClInclude>
+    <ClInclude Include="q3\debug\q3Render.h">
+      <Filter>Header Files\qu3e\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="q3\common\q3Geometry.h">
+      <Filter>Header Files\qu3e\common</Filter>
+    </ClInclude>
+    <ClInclude Include="q3\common\q3Memory.h">
+      <Filter>Header Files\qu3e\common</Filter>
+    </ClInclude>
+    <ClInclude Include="q3\common\q3Settings.h">
+      <Filter>Header Files\qu3e\common</Filter>
+    </ClInclude>
+    <ClInclude Include="q3\common\q3Types.h">
+      <Filter>Header Files\qu3e\common</Filter>
+    </ClInclude>
+    <ClInclude Include="q3\collision\q3Box.h">
+      <Filter>Header Files\qu3e\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="q3\collision\q3Collide.h">
+      <Filter>Header Files\qu3e\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="q3\broadphase\q3BroadPhase.h">
+      <Filter>Header Files\qu3e\broadphase</Filter>
+    </ClInclude>
+    <ClInclude Include="q3\broadphase\q3DynamicAABBTree.h">
+      <Filter>Header Files\qu3e\broadphase</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
