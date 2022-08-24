@@ -10,3 +10,5 @@ int IrenderShadow = 1;
 int Ihqs = 1;
 int IlightViewSetting = 1;
 int Ibloom = 3;
+int InormalSpeed = 0.000000;
+int Ictrlspeed = 0.000000;

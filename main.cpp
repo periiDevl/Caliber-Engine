@@ -7,6 +7,8 @@
 #include<fstream>
 #include<string>
 #include"settings.h"
+#include<PxPhysicsAPI.h>
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -17,6 +19,8 @@ int height = IwindowH;
 int mockwidth = width;
 int mockheight = height;
 
+float normalSpeed = InormalSpeed;
+float ctrlSpeed = Ictrlspeed;
 
 int samples = Isampels;
 int vsync = Ivsync;
@@ -79,11 +83,9 @@ unsigned int skyboxIndices[] =
 
 int main()
 {
-	float realExposure = exposure;
-	
-	
-	
 
+
+	float realExposure = exposure;
 	// Initialize GLFW
 	glfwInit();
 
@@ -116,6 +118,7 @@ int main()
 	// Introduce the window into the current context
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	
 	/*
 	//load Icon
 	int wid, hei;
@@ -136,7 +139,6 @@ int main()
 	// Specify the viewport of OpenGL in the Window
 	// In this case the viewport goes from x = 0, y = 0, to x = 800, y = 800
 	glViewport(0, 0, width, height);
-
 
 
 	// Initialize ImGUI
@@ -193,7 +195,6 @@ int main()
 	glCullFace(GL_FRONT);
 	// Uses counter clock-wise standard
 	glFrontFace(GL_CCW);
-
 
 	// Creates camera object
 	Camera camera(width, height, glm::vec3(22.0f, 15.0, 0.0f));
@@ -516,8 +517,9 @@ int main()
 	}
 
 	
+	
 	// Main while loop
-	while (!glfwWindowShouldClose(window))
+	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
 		
 		if (wireBool == true && !run) {
@@ -588,16 +590,12 @@ int main()
 
 			// Use this if you have disabled VSync
 			if (vsync == 0) {
-				camera.Inputs(window);
+				camera.Inputs(window, ctrlSpeed, normalSpeed);
 			}
 		}
-		// Handles camera inputs (delete this if you have disabled VSync)
-		if (vsync == 1) {
-			camera.Inputs(window);
-		}
 
-
-		// Depth testing needed for Shadow Map
+		
+		
 		glEnable(GL_DEPTH_TEST);
 
 		// Preparations for the Shadow Map
@@ -624,6 +622,10 @@ int main()
 		
 		
 
+		// Handles camera inputs (delete this if you have disabled VSync)
+		if (vsync == 1) {
+			camera.Inputs(window, ctrlSpeed, normalSpeed);
+		}
 
 		// Switch back to the default framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -668,6 +670,8 @@ int main()
 		// Take care of all the light related things
 		//camera.Position = glm::vec3(localSpace.position.x, localSpace.position.y, localSpace.position.z);
 		
+		
+
 		model.Draw(shaderProgram, camera, glm::vec3(10, 0.0f, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(1.5f, 1, 1));
 		
 			
@@ -799,6 +803,14 @@ int main()
 						ImGui::EndTabItem();
 					}
 
+					if (ImGui::BeginTabItem("Viewport settings"))
+					{
+						ImGui::InputFloat("Shift speed speed", &normalSpeed, 0.3f, 1, "%.3f", 0);
+						ImGui::InputFloat("Normal speed", &ctrlSpeed, 0.3f, 1, "%.3f", 0);
+
+						ImGui::EndTabItem();
+					}
+
 					if (ImGui::BeginTabItem("Debug"))
 					{
 						ImGui::Checkbox("Enable wireframe", &wireBool);
@@ -887,6 +899,8 @@ int main()
 	std::string thqs = std::to_string(hqs);
 	std::string thighlightview = std::to_string(lightVLow);
 	std::string tbloom = std::to_string(bloom);
+	std::string tnormalSpeed = std::to_string(normalSpeed);
+	std::string tctrlspeed = std::to_string(ctrlSpeed);
 	
 
 	stuff.push_back("int IwindowW = " + twidth + ";");
@@ -900,6 +914,8 @@ int main()
 	stuff.push_back("int Ihqs = " + thqs + ";");
 	stuff.push_back("int IlightViewSetting = " + thighlightview + ";");
 	stuff.push_back("int Ibloom = " + tbloom + ";");
+	stuff.push_back("int InormalSpeed = " + tnormalSpeed + ";");
+	stuff.push_back("int Ictrlspeed = " + tctrlspeed + ";");
 
 	
 	for (std::string sufff : stuff)
@@ -937,4 +953,10 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	// height will be significantly larger than specified on retina displays.
 	glViewport(0, 0, width, height);
 }
+
+
+	
+	
+
+
 
