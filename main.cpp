@@ -7,7 +7,7 @@
 #include<fstream>
 #include<string>
 #include"settings.h"
-#include<PxPhysicsAPI.h>
+
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
