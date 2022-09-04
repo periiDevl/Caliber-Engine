@@ -10,6 +10,9 @@
 
 
 
+
+
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 bool run = false;
@@ -32,6 +35,7 @@ float gamma = Igamma;
 float exposure = Iexposure;
 
 int HighLightView = IlightViewSetting;
+
 
 
 float rectangleVertices[] =
@@ -205,7 +209,8 @@ int main()
 	
 	
 	// Load in models
-	Model model("models/crow/scene.gltf");
+	Model model("models/caliber_deaf/logo/scene.gltf");
+	Model model2("models/caliber_deaf/plain/scene.gltf");
 
 
 	// Prepare framebuffer rectangle VBO and VAO
@@ -353,10 +358,11 @@ int main()
 	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	glm::mat4 orthgonalProjection;
-	glm::mat4 orthgonalProjectionLow = glm::ortho(-15.0f, 15.0f, -15.0f, 15.0f, 1.0f, 100.0f);
-	glm::mat4 orthgonalProjectionHigh = glm::ortho(-30.0f, 30.0f, -30.0f, 30.0f, 1.0f, 230.0f);
 	// Matrices needed for the light's perspective
+	float farPlane = 100.0f;
+	glm::mat4 orthgonalProjection;
+	glm::mat4 orthgonalProjectionLow = glm::ortho(-15.0f, 15.0f, -15.0f, 15.0f, 1.0f, farPlane);
+	glm::mat4 orthgonalProjectionHigh = glm::ortho(-30.0f, 30.0f, -30.0f, 30.0f, 1.0f, farPlane);
 	if (HighLightView == 0) {
 		orthgonalProjection = orthgonalProjectionLow;
 
@@ -516,8 +522,6 @@ int main()
 		}
 	}
 
-	
-	
 	// Main while loop
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
@@ -609,6 +613,7 @@ int main()
 		if (run == true) {
 			if (renderShadows == 1) {
 				model.Draw(shadowMapProgram, camera, glm::vec3(10, 0.0f, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(1.5f, 1, 1));
+				model2.Draw(shadowMapProgram, camera, glm::vec3(10, 0.0f, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(1.5f, 1, 1));
 			}
 			exposure = realExposure;
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
@@ -644,7 +649,7 @@ int main()
 		glEnable(GL_DEPTH_TEST);
 
 		// Updates and exports the camera matrix to the Vertex Shader
-		camera.updateMatrix(60.0f, 0.1f, 100.0f);
+		camera.updateMatrix(60.0f, 0.1f, farPlane);
 
 		// Send the light matrix to the shader
 		
@@ -670,10 +675,8 @@ int main()
 		// Take care of all the light related things
 		//camera.Position = glm::vec3(localSpace.position.x, localSpace.position.y, localSpace.position.z);
 		
-		
-
 		model.Draw(shaderProgram, camera, glm::vec3(10, 0.0f, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(1.5f, 1, 1));
-		
+		model2.Draw(shaderProgram, camera, glm::vec3(10, 0.0f, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(1.5f, 1, 1));
 			
 		
 		if (run == true) {
