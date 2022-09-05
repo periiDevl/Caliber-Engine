@@ -72,8 +72,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\יונתן\Documents\GitHub\caliber_engine\Libraries\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\יונתן\Documents\GitHub\caliber_engine\Libraries\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\jonathan peri\Documents\dev\caliber_engine\Libraries\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\jonathan peri\Documents\dev\caliber_engine\Libraries\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -82,8 +82,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\do not erase\bankrobbyGithub\caliber_engine\Libraries\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\do not erase\bankrobbyGithub\caliber_engine\Libraries\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\jonathan peri\Documents\dev\caliber_engine\Libraries\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\jonathan peri\Documents\dev\caliber_engine\Libraries\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>

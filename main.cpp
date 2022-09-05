@@ -361,7 +361,7 @@ int main()
 	// Matrices needed for the light's perspective
 	float farPlane = 100.0f;
 	glm::mat4 orthgonalProjection;
-	glm::mat4 orthgonalProjectionLow = glm::ortho(-15.0f, 15.0f, -15.0f, 15.0f, 1.0f, farPlane);
+	glm::mat4 orthgonalProjectionLow = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, farPlane);
 	glm::mat4 orthgonalProjectionHigh = glm::ortho(-30.0f, 30.0f, -30.0f, 30.0f, 1.0f, farPlane);
 	if (HighLightView == 0) {
 		orthgonalProjection = orthgonalProjectionLow;
