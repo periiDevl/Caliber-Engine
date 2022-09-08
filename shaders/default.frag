@@ -198,8 +198,8 @@ float linearizeDepth(float depth)
 void main()
 {
 	
-	//FragColor = ((pointLight() + pLight()) + direcLight()) + vec4(linearizeDepth(gl_FragCoord.z) * vec3(0.77f, 0.74f, 0.82f), 1.0f);
-	FragColor = direcLight() + vec4(linearizeDepth(gl_FragCoord.z) * vec3(0.77f, 0.74f, 0.82f), 1.0f);
+	FragColor = ((pointLight() + pLight()) + direcLight()) + vec4(linearizeDepth(gl_FragCoord.z) * vec3(2.47f, 1.64f, 0.47f), 1.0f);
+	//FragColor = direcLight() * (1.0f - depth) + vec4(depth * vec3(0.77f, 0.74f, 0.82f), 1.0f);
 	
 
 	

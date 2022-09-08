@@ -2,14 +2,11 @@
 #include"imgui.h"
 #include"imgui_impl_glfw.h"
 #include"imgui_impl_opengl3.h"
-#include"Model.h"
+#include"src/Model.h"
 #include<iostream>
 #include<fstream>
 #include<string>
-#include"settings.h"
-
-
-
+#include"src/settings.h"
 
 
 
@@ -85,9 +82,9 @@ unsigned int skyboxIndices[] =
 	6, 2, 3
 };
 
+
 int main()
 {
-
 
 	float realExposure = exposure;
 	// Initialize GLFW
@@ -154,11 +151,11 @@ int main()
 	ImGui_ImplOpenGL3_Init("#version 330");
 
 	// Generates shaders
-	Shader shaderProgram("default.vert", "default.frag");
-	Shader framebufferProgram("framebuffer.vert", "framebuffer.frag");
-	Shader shadowMapProgram("shadowMap.vert", "shadowMap.frag");
-	Shader blurProgram("framebuffer.vert", "blur.frag");
-	Shader skyboxShader("skybox.vert", "skybox.frag");
+	Shader shaderProgram("shaders/default.vert", "shaders/default.frag");
+	Shader framebufferProgram("shaders/framebuffer.vert", "shaders/framebuffer.frag");
+	Shader shadowMapProgram("shaders/shadowMap.vert", "shaders/shadowMap.frag");
+	Shader blurProgram("shaders/framebuffer.vert", "shaders/blur.frag");
+	Shader skyboxShader("shaders/skybox.vert", "shaders/skybox.frag");
 
 	// Take care of all the light related things
 	glm::vec4 lightColor = glm::vec4(1.0f, 1, 1, 1.0f);
@@ -171,8 +168,9 @@ int main()
 	skyboxShader.Activate();
 	glUniform1i(glGetUniformLocation(skyboxShader.ID, "skybox"), 0);
 
-	glm::vec4 lColor = glm::vec4(0.10f, 0, 0, 1.0f);
+	glm::vec4 lColor = glm::vec4(2.47f, 1.64f, 0.47f, 1);
 	glm::vec3 lPos = glm::vec3(1.9f, 1, 0.5f);
+
 
 	glUniform4f(glGetUniformLocation(shaderProgram.ID, "lColor"), lColor.x, lColor.y, lColor.z, lColor.w);
 	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lPos"), lPos.x, lPos.y, lPos.z);
@@ -472,12 +470,12 @@ int main()
 	// All the faces of the cubemap (make sure they are in this exact order)
 	std::string facesCubemap[6] =
 	{
-		"skybox/right.jpg",
-		"skybox/left.jpg",
-		"skybox/top.jpg",
-		"skybox/bottom.jpg",
-		"skybox/front.jpg",
-		"skybox/back.jpg"
+		"skybox/sky/right.jpg",
+		"skybox/sky/left.jpg",
+		"skybox/sky/top.jpg",
+		"skybox/sky/bottom.jpg",
+		"skybox/sky/front.jpg",
+		"skybox/sky/back.jpg"
 	};
 
 	// Creates the cubemap texture object
@@ -522,10 +520,15 @@ int main()
 		}
 	}
 
+
+
+
+
 	// Main while loop
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
-		
+	
+
 		if (wireBool == true && !run) {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		}
@@ -592,6 +595,13 @@ int main()
 			prevTime = crntTime;
 			counter = 0;
 
+			//cinamatic mode
+			if (camera.cinamaticview)
+			{
+				run = true;
+			}
+			
+
 			// Use this if you have disabled VSync
 			if (vsync == 0) {
 				camera.Inputs(window, ctrlSpeed, normalSpeed);
@@ -629,6 +639,7 @@ int main()
 
 		// Handles camera inputs (delete this if you have disabled VSync)
 		if (vsync == 1) {
+
 			camera.Inputs(window, ctrlSpeed, normalSpeed);
 		}
 
@@ -650,6 +661,8 @@ int main()
 
 		// Updates and exports the camera matrix to the Vertex Shader
 		camera.updateMatrix(60.0f, 0.1f, farPlane);
+		
+
 
 		// Send the light matrix to the shader
 		
@@ -785,7 +798,7 @@ int main()
 					{
 						style.Colors[ImGuiCol_Text] = ImVec4(1, 0, 0, 1);
 						ImGui::Text("This will change how your game looks, make sure you have the proper graphics card.");
-						style.Colors[ImGuiCol_Text] = ImVec4(0.98, 0.77, 1.00, 1);
+						style.Colors[ImGuiCol_Text] = windowWhite;
 
 						ImGui::DragInt("MSSA samples (Needs restart to change)", &samples, 0.03f, 1, std::numeric_limits<int>::max());
 						ImGui::Checkbox("Enable vsync", &v);
@@ -837,11 +850,18 @@ int main()
 				run = false;
 			}
 		}
-		
 
-		ImGui::End();
 			
-
+		if (camera.cinamaticview)
+		{
+			ImGui::Begin("cinamatic mode tool");
+			style.Colors[ImGuiCol_Text] = ImVec4(1, 0, 0, 1);
+			ImGui::Text("press : ENTER + N : to leave cinamatic mode (you will be in run mode)");
+			style.Colors[ImGuiCol_Text] = windowWhite;
+			ImGui::End();
+		}
+		
+		ImGui::End();
 		
 		
 		ImGui::Render();
