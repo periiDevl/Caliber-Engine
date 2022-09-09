@@ -560,8 +560,8 @@ int main()
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);
 			exposure = 5.0f;
-			gamma = 4.2f;		}
-
+			gamma = 4.2f;
+		}
 		if (v == true)
 		{
 			vsync = 1;
