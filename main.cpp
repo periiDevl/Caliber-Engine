@@ -330,11 +330,11 @@ int main()
 	unsigned int shadowMapWidth, shadowMapHeight;
 	// Texture for Shadow Map FBO
 	if (highQualtiyShdows == 1) {
-		shadowMapWidth = 7480, shadowMapHeight = 7480;
+		shadowMapWidth = 3000, shadowMapHeight = 3000;
 	}
 	else
 	{
-		shadowMapWidth = 548, shadowMapHeight = 548;
+		shadowMapWidth = 1000, shadowMapHeight = 1000;
 
 	}
 	

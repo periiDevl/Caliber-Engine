@@ -136,7 +136,7 @@ vec4 direcLight()
 		float bias = max(0.025f * (1.0f - dot(normal, lightDirection)), 0.0005f);
 
 		// Smoothens out the shadows
-		int sampleRadius = 2;
+		int sampleRadius = 10;
 		vec2 pixelSize = 1.0 / textureSize(shadowMap, 0);
 		for(int y = -sampleRadius; y <= sampleRadius; y++)
 		{
