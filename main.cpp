@@ -33,7 +33,7 @@ float exposure = Iexposure;
 
 int HighLightView = IlightViewSetting;
 
-
+int enableskybox = 0;
 
 float rectangleVertices[] =
 {
@@ -87,6 +87,7 @@ int main()
 {
 
 	float realExposure = exposure;
+	float realGamma = gamma;
 	// Initialize GLFW
 	glfwInit();
 
@@ -158,7 +159,7 @@ int main()
 	Shader skyboxShader("shaders/skybox.vert", "shaders/skybox.frag");
 
 	// Take care of all the light related things
-	glm::vec4 lightColor = glm::vec4(1.0f, 1, 1, 1.0f);
+	glm::vec4 lightColor = glm::vec4(1, 1, 1, 1.0f);
 	glm::vec3 lightPos = glm::vec3(0.5f, 1, 0.5f);
 
 	shaderProgram.Activate();
@@ -168,7 +169,7 @@ int main()
 	skyboxShader.Activate();
 	glUniform1i(glGetUniformLocation(skyboxShader.ID, "skybox"), 0);
 
-	glm::vec4 lColor = glm::vec4(2.47f, 1.64f, 0.47f, 1);
+	glm::vec4 lColor = glm::vec4(1, 1, 1, 1);
 	glm::vec3 lPos = glm::vec3(1.9f, 1, 0.5f);
 
 
@@ -533,9 +534,10 @@ int main()
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		}
 		if (run == true) {
-			exposure = realExposure;
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
-
+			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);
+			exposure = realExposure;
+			gamma = realGamma;
 			if (renSha == true)
 			{
 				renderShadows = 1;
@@ -552,7 +554,13 @@ int main()
 				HighLightView = 0;
 			}
 			
-		}
+		} 
+		else
+		{
+			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
+			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);
+			exposure = 5.0f;
+			gamma = 4.2f;		}
 
 		if (v == true)
 		{
@@ -625,12 +633,13 @@ int main()
 				model.Draw(shadowMapProgram, camera, glm::vec3(10, 0.0f, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(1.5f, 1, 1));
 				model2.Draw(shadowMapProgram, camera, glm::vec3(10, 0.0f, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(1.5f, 1, 1));
 			}
-			exposure = realExposure;
+			
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
 		}
 		else
 		{
 			exposure = 0.037f;
+			gamma = 2.2f;
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
 		}
 	
@@ -692,7 +701,7 @@ int main()
 		model2.Draw(shaderProgram, camera, glm::vec3(10, 0.0f, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(1.5f, 1, 1));
 			
 		
-		if (run == true) {
+		if (run == true || enableskybox == 0 && run == true) {
 			// Since the cubemap will always have a depth of 1.0, we need that equal sign so it doesn't get discarded
 			glDepthFunc(GL_LEQUAL);
 
@@ -806,7 +815,8 @@ int main()
 
 						ImGui::InputFloat("Exposure value", &realExposure, 0.3f, 1, "%.3f", 0);
 						exposure = realExposure;
-						glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);
+						glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), realGamma);
+						//gamma = realGamma;
 						glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
 
 						ImGui::DragInt("bloom amount", &bloom, 0.012f, 0, std::numeric_limits<int>::max());
@@ -924,6 +934,7 @@ int main()
 	std::string tbloom = std::to_string(bloom);
 	std::string tnormalSpeed = std::to_string(normalSpeed);
 	std::string tctrlspeed = std::to_string(ctrlSpeed);
+	std::string tenskybox = std::to_string(enableskybox);
 	
 
 	stuff.push_back("int IwindowW = " + twidth + ";");
@@ -939,6 +950,7 @@ int main()
 	stuff.push_back("int Ibloom = " + tbloom + ";");
 	stuff.push_back("int InormalSpeed = " + tnormalSpeed + ";");
 	stuff.push_back("int Ictrlspeed = " + tctrlspeed + ";");
+	stuff.push_back("int IenSkybox = " + tenskybox + ";");
 
 	
 	for (std::string sufff : stuff)

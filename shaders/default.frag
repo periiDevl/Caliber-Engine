@@ -47,7 +47,7 @@ vec4 pointLight()
 	float inten = 10.0f / (a * dist * dist + b * dist + 1.0f);
 
 	// ambient lighting
-	float ambient = 0.20f;
+	float ambient = 0.0f;
 
 	// diffuse lighting
 	vec3 normal = normalize(Normal);
@@ -80,7 +80,7 @@ vec4 pLight()
 	float inten = 100.0f / (a * dist * dist + b * dist + 1.0f);
 
 	// ambient lighting
-	float ambient = 0.20f;
+	float ambient = 0.0f;
 
 	// diffuse lighting
 	vec3 normal = normalize(Normal);
@@ -162,7 +162,7 @@ vec4 spotLight()
 	float innerCone = 0.95f;
 
 	// ambient lighting
-	float ambient = 0.20f;
+	float ambient = 0;
 
 	// diffuse lighting
 	vec3 normal = normalize(Normal);
@@ -187,7 +187,7 @@ vec4 spotLight()
 	return (texture(diffuse0, texCoord) * (diffuse * inten + ambient) + texture(specular0, texCoord).r * specular * inten) * lightColor;
 }
 
-float near = 0.0001f;
+float near = 0.0005f;
 float far = 100.0f;
 
 float linearizeDepth(float depth)
@@ -198,8 +198,8 @@ float linearizeDepth(float depth)
 void main()
 {
 	
-	FragColor = ((pointLight() + pLight()) + direcLight()) + vec4(linearizeDepth(gl_FragCoord.z) * vec3(2.47f, 1.64f, 0.47f), 1.0f);
-	//FragColor = direcLight() * (1.0f - depth) + vec4(depth * vec3(0.77f, 0.74f, 0.82f), 1.0f);
+	FragColor = ((pointLight() + pLight()) + direcLight()) + vec4(linearizeDepth(gl_FragCoord.z) * vec3(1.0f, 1.0f, 1.0f), 1.0f);
+	//FragColor = direcLight() * (1.0f - depth) + vec4(depth * vec3(1.0, 1.0f, 1.0f), 1.0f);
 	
 
 	
