@@ -334,7 +334,7 @@ int main()
 	}
 	else
 	{
-		shadowMapWidth = 1000, shadowMapHeight = 1000;
+		shadowMapWidth = 800, shadowMapHeight = 800;
 
 	}
 	
