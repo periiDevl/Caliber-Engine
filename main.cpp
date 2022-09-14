@@ -535,9 +535,9 @@ int main()
 		}
 		if (run == true) {
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
-			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);
-			exposure = realExposure;
-			gamma = realGamma;
+			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);;
+			exposure = realExposure; 
+			gamma = 0.5;
 			if (renSha == true)
 			{
 				renderShadows = 1;
@@ -595,7 +595,7 @@ int main()
 			// Creates new title
 			std::string FPS = std::to_string((1.0 / timeDiff) * counter);
 			std::string ms = std::to_string((timeDiff / counter) * 1000);
-			std::string newTitle = "Caliber window - " + FPS + "FPS / " + ms + "ms";
+			std::string newTitle = "Caliber renderer window - " + FPS + "FPS / " + ms + "ms";
 			glfwSetWindowTitle(window, newTitle.c_str());
 
 			
@@ -668,6 +668,7 @@ int main()
 		// Enable depth testing since it's disabled when drawing the framebuffer rectangle
 		glEnable(GL_DEPTH_TEST);
 
+		
 		// Updates and exports the camera matrix to the Vertex Shader
 		camera.updateMatrix(60.0f, 0.1f, farPlane);
 		
@@ -890,7 +891,7 @@ int main()
 	
 
 
-	std::ofstream file("settings.h");
+	std::ofstream file("src/settings.h");
 
 	file << "";
 
