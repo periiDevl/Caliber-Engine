@@ -163,6 +163,7 @@ int main()
 	glm::vec3 lightPos = glm::vec3(0.5f, 1, 0.5f);
 
 	shaderProgram.Activate();
+
 	glUniform4f(glGetUniformLocation(shaderProgram.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 
@@ -208,8 +209,11 @@ int main()
 	
 	
 	// Load in models
-	Model model("models/caliber_deaf/logo/scene.gltf");
-	Model model2("models/caliber_deaf/plain/scene.gltf");
+	Model model("models/cube/scene.gltf");
+
+
+
+	Model grid("models/grid/scene.gltf");
 
 
 	// Prepare framebuffer rectangle VBO and VAO
@@ -516,6 +520,7 @@ int main()
 		}
 		else
 		{
+		
 			std::cout << "Failed to load texture: " << facesCubemap[i] << std::endl;
 			stbi_image_free(data);
 		}
@@ -523,13 +528,12 @@ int main()
 
 
 
-
-
+	float cameraPosYCol;
+	float floorLev = 0;
 	// Main while loop
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
-	
-
+		
 		if (wireBool == true && !run) {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		}
@@ -537,7 +541,7 @@ int main()
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);;
 			exposure = realExposure; 
-			gamma = 0.5;
+			
 			if (renSha == true)
 			{
 				renderShadows = 1;
@@ -560,7 +564,7 @@ int main()
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);
 			exposure = 5.0f;
-			gamma = 4.2f;
+			
 		}
 		if (v == true)
 		{
@@ -611,8 +615,17 @@ int main()
 			
 
 			// Use this if you have disabled VSync
-			if (vsync == 0) {
+			if (vsync == 0 && !run) {
 				camera.Inputs(window, ctrlSpeed, normalSpeed);
+				if (camera.Position.y < floorLev)
+				{
+			
+					camera.Position.y = cameraPosYCol;
+				}
+				else
+				{
+					cameraPosYCol = camera.Position.y;
+				}
 			}
 		}
 
@@ -630,8 +643,8 @@ int main()
 		// Draw scene for shadow map
 		if (run == true) {
 			if (renderShadows == 1) {
-				model.Draw(shadowMapProgram, camera, glm::vec3(10, 0.0f, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(1.5f, 1, 1));
-				model2.Draw(shadowMapProgram, camera, glm::vec3(10, 0.0f, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(1.5f, 1, 1));
+				model.Draw(shadowMapProgram, camera, glm::vec3(0, 7, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(8, 8, 8));
+				
 			}
 			
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
@@ -639,7 +652,7 @@ int main()
 		else
 		{
 			exposure = 0.037f;
-			gamma = 2.2f;
+
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
 		}
 	
@@ -647,9 +660,19 @@ int main()
 		
 
 		// Handles camera inputs (delete this if you have disabled VSync)
-		if (vsync == 1) {
+		if (vsync == 1 && !run) {
+
 
 			camera.Inputs(window, ctrlSpeed, normalSpeed);
+			if (camera.Position.y < floorLev)
+			{
+
+				camera.Position.y = cameraPosYCol;
+			}
+			else
+			{
+				cameraPosYCol = camera.Position.y;
+			}
 		}
 
 		// Switch back to the default framebuffer
@@ -670,7 +693,7 @@ int main()
 
 		
 		// Updates and exports the camera matrix to the Vertex Shader
-		camera.updateMatrix(60.0f, 0.1f, farPlane);
+		camera.updateMatrix(60.0f, 0.1f, 500.0f);
 		
 
 
@@ -698,8 +721,9 @@ int main()
 		// Take care of all the light related things
 		//camera.Position = glm::vec3(localSpace.position.x, localSpace.position.y, localSpace.position.z);
 		
-		model.Draw(shaderProgram, camera, glm::vec3(10, 0.0f, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(1.5f, 1, 1));
-		model2.Draw(shaderProgram, camera, glm::vec3(10, 0.0f, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(1.5f, 1, 1));
+		
+		model.Draw(shaderProgram, camera, glm::vec3(0, 7, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(8, 8, 8));
+		grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(10.5f, 1, 10));
 			
 		
 		if (run == true || enableskybox == 0 && run == true) {
