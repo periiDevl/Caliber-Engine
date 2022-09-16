@@ -916,7 +916,7 @@ int main()
 		glfwSwapBuffers(window);
 		// Take care of all GLFW events
 		glfwPollEvents();
-		SimpleBoxCollision(1, -1, -1, 1, camera);
+		SimpleBoxCollision(10, -10, 10, -10, camera);
 	}
 	
 
@@ -1022,7 +1022,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 
 void SimpleBoxCollision(float x1, float x2, float z1, float z2, Camera camera){
-	if (camera.Position.x < x1 && camera.Position.x > x2 || camera.Position.z < z1 && camera.Position.z > z2)
+	if (camera.Position.x < x1 && camera.Position.x > x2 && camera.Position.z < z1 && camera.Position.z > z2)
 	{
 		printf("Collided");
 	}
