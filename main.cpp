@@ -8,7 +8,7 @@
 #include<string>
 #include"src/settings.h"
 
-
+void SimpleBoxCollision(float x1, float x2, float z1, float z2, Camera camera);
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -34,6 +34,7 @@ float exposure = Iexposure;
 int HighLightView = IlightViewSetting;
 
 int enableskybox = 0;
+
 
 float rectangleVertices[] =
 {
@@ -210,6 +211,10 @@ int main()
 	
 	// Load in models
 	Model model("models/cube/scene.gltf");
+
+	
+	//load collider cube
+	Model colidermodel("models/cube/scene.gltf");
 
 
 
@@ -724,6 +729,7 @@ int main()
 		
 		model.Draw(shaderProgram, camera, glm::vec3(0, 7, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(8, 8, 8));
 		grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(10.5f, 1, 10));
+		
 			
 		
 		if (run == true || enableskybox == 0 && run == true) {
@@ -796,7 +802,6 @@ int main()
 		// Bind the default framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		// Draw the framebuffer rectangle
-		
 		framebufferProgram.Activate();
 		glBindVertexArray(rectVAO);
 		glDisable(GL_DEPTH_TEST); // prevents framebuffer rectangle from being discarded
@@ -911,6 +916,7 @@ int main()
 		glfwSwapBuffers(window);
 		// Take care of all GLFW events
 		glfwPollEvents();
+		SimpleBoxCollision(1, -1, -1, 1, camera);
 	}
 	
 
@@ -1015,7 +1021,12 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 
 
-	
+void SimpleBoxCollision(float x1, float x2, float z1, float z2, Camera camera){
+	if (camera.Position.x < x1 && camera.Position.x > x2 || camera.Position.z < z1 && camera.Position.z > z2)
+	{
+		printf("Collided");
+	}
+}
 	
 
 
