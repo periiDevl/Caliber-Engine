@@ -210,11 +210,10 @@ int main()
 	
 	
 	// Load in models
-	Model model("models/cube/scene.gltf");
+	Model calibericon("models/cliberDeafult/scene.gltf");
 
 	
-	//load collider cube
-	Model colidermodel("models/cube/scene.gltf");
+	
 
 
 
@@ -480,12 +479,12 @@ int main()
 	// All the faces of the cubemap (make sure they are in this exact order)
 	std::string facesCubemap[6] =
 	{
-		"skybox/sky/right.jpg",
-		"skybox/sky/left.jpg",
-		"skybox/sky/top.jpg",
-		"skybox/sky/bottom.jpg",
-		"skybox/sky/front.jpg",
-		"skybox/sky/back.jpg"
+		"skybox/deafult/right.jpg",
+		"skybox/deafult/left.jpg",
+		"skybox/deafult/top.jpg",
+		"skybox/deafult/bottom.jpg",
+		"skybox/deafult/front.jpg",
+		"skybox/deafult/back.jpg"
 	};
 
 	// Creates the cubemap texture object
@@ -619,6 +618,7 @@ int main()
 			}
 			
 
+			
 			// Use this if you have disabled VSync
 			if (vsync == 0 && !run) {
 				camera.Inputs(window, ctrlSpeed, normalSpeed);
@@ -648,7 +648,8 @@ int main()
 		// Draw scene for shadow map
 		if (run == true) {
 			if (renderShadows == 1) {
-				model.Draw(shadowMapProgram, camera, glm::vec3(0, 7, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(8, 8, 8));
+				calibericon.Draw(shadowMapProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(5, 8, 13));
+				
 				
 			}
 			
@@ -727,7 +728,8 @@ int main()
 		//camera.Position = glm::vec3(localSpace.position.x, localSpace.position.y, localSpace.position.z);
 		
 		
-		model.Draw(shaderProgram, camera, glm::vec3(0, 7, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(8, 8, 8));
+		calibericon.Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(5, 8, 13));
+		
 		grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(10.5f, 1, 10));
 		
 			
