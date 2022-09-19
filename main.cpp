@@ -9,6 +9,7 @@
 #include"src/settings.h"
 
 void SimpleBoxCollisionX(float x1, float x2, float z1, float z2, Camera camera);
+void SimpleBoxCollisionZ(float x1, float x2, float z1, float z2, Camera camera);
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -39,6 +40,9 @@ int enableskybox = 0;
 //__________
 bool colidedX = false;
 float camPosX;
+
+float camPosZ;
+bool colidedZ = false;
 //__________
 
 
@@ -924,7 +928,7 @@ int main()
 		glfwSwapBuffers(window);
 		// Take care of all GLFW events
 		glfwPollEvents();
-		SimpleBoxCollisionX(0.01, -0.01, 10, -10, camera);
+		SimpleBoxCollisionX(20, -20, 10, -10, camera);
 		if (colidedX)
 		{
 			camera.Position.x = camPosX;
@@ -932,6 +936,16 @@ int main()
 		else {
 
 			camPosX = camera.Position.x;
+		}
+		
+		SimpleBoxCollisionZ(10, -10, 20, -20, camera);
+		if (colidedZ)
+		{
+			camera.Position.z = camPosZ;
+		}
+		else {
+
+			camPosZ = camera.Position.z;
 		}
 	}
 	
@@ -1051,6 +1065,18 @@ void SimpleBoxCollisionX(float x1, float x2, float z1, float z2, Camera camera){
 
 
 
+}
+
+void SimpleBoxCollisionZ(float x1, float x2, float z1, float z2, Camera camera) {
+	if (camera.Position.x < x1 && camera.Position.x > x2 && camera.Position.z < z1 && camera.Position.z > z2)
+	{
+
+		colidedZ = true;
+	}
+	else
+	{
+		colidedZ = false;
+	}
 }
 	
 
