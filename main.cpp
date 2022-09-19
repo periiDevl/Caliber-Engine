@@ -1022,11 +1022,34 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 }
 
-
+bool x = false;
+bool z = false;
 void SimpleBoxCollision(float x1, float x2, float z1, float z2, Camera camera){
+	//rem!!! make collider for z and x sliding
 	if (camera.Position.x < x1 && camera.Position.x > x2 && camera.Position.z < z1 && camera.Position.z > z2)
 	{
-		printf("Collided");
+		//printf("Collided");
+		if (z == false)
+		{
+			printf("x");
+		}
+		if (x == false)
+		{
+			printf("z");
+		}
+	}
+
+	if (camera.Position.x < x1 && camera.Position.x > x2)
+	{
+		x = true;
+		z = false;
+		//printf("colidedX");
+	}
+	if (camera.Position.z < z1 && camera.Position.z > z2)
+	{
+		x = false;
+		z = true;
+		//printf("collidedz");
 	}
 }
 	

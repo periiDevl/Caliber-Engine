@@ -26,7 +26,7 @@ const vec2 offsets[9] = vec2[](
 
 const float sobel_dx_kernel[9] = float[](
     1, 0, -1,
-    2, 0, -2,
+    2, 0, 2,
     1, 0, -1
 );
 
