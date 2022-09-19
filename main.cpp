@@ -8,7 +8,7 @@
 #include<string>
 #include"src/settings.h"
 
-void SimpleBoxCollision(float x1, float x2, float z1, float z2, Camera camera);
+void SimpleBoxCollisionX(float x1, float x2, float z1, float z2, Camera camera);
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -35,7 +35,11 @@ int HighLightView = IlightViewSetting;
 
 int enableskybox = 0;
 
-
+//collision
+//__________
+bool colidedX = false;
+float camPosX;
+//__________
 
 
 float rectangleVertices[] =
@@ -920,7 +924,15 @@ int main()
 		glfwSwapBuffers(window);
 		// Take care of all GLFW events
 		glfwPollEvents();
-		SimpleBoxCollision(10, -10, 10, -10, camera);
+		SimpleBoxCollisionX(0.01, -0.01, 10, -10, camera);
+		if (colidedX)
+		{
+			camera.Position.x = camPosX;
+		}
+		else {
+
+			camPosX = camera.Position.x;
+		}
 	}
 	
 
@@ -1025,12 +1037,16 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 
 
-void SimpleBoxCollision(float x1, float x2, float z1, float z2, Camera camera){
+void SimpleBoxCollisionX(float x1, float x2, float z1, float z2, Camera camera){
 
 	if (camera.Position.x < x1 && camera.Position.x > x2 && camera.Position.z < z1 && camera.Position.z > z2)
 	{
-		printf("collided");
 
+		colidedX = true;
+	}
+	else
+	{
+		colidedX = false;
 	}
 
 
