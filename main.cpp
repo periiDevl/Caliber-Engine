@@ -8,7 +8,8 @@
 #include<string>
 #include"src/settings.h"
 
-void SimpleBoxCollision(float x1, float x2, float z1, float z2, Camera camera);
+void SimpleBoxCollisionX(float x1, float x2, float z1, float z2, Camera camera);
+void SimpleBoxCollisionZ(float x1, float x2, float z1, float z2, Camera camera);
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -34,6 +35,15 @@ float exposure = Iexposure;
 int HighLightView = IlightViewSetting;
 
 int enableskybox = 0;
+
+//collision
+//__________
+bool colidedX = false;
+float camPosX;
+
+float camPosZ;
+bool colidedZ = false;
+//__________
 
 
 float rectangleVertices[] =
@@ -127,7 +137,7 @@ int main()
 	int wid, hei;
 	int channels;
 	//!rememer! make sure to install the icon
-	unsigned char* pixels = stbi_load("C:/Users/éåðúï/source/repos/caliber_engine/engine_assets/caliberLogo.jpeg", &wid, &hei, &channels, 4);
+	unsigned char* pixels = stbi_load("C:/Users/ï¿½ï¿½ï¿½ï¿½ï¿½/source/repos/caliber_engine/engine_assets/caliberLogo.jpeg", &wid, &hei, &channels, 4);
 
 	//change icon
 	GLFWimage images[1];
@@ -918,7 +928,25 @@ int main()
 		glfwSwapBuffers(window);
 		// Take care of all GLFW events
 		glfwPollEvents();
-		SimpleBoxCollision(10, -10, 10, -10, camera);
+		SimpleBoxCollisionX(20, -20, 10, -10, camera);
+		if (colidedX)
+		{
+			camera.Position.x = camPosX;
+		}
+		else {
+
+			camPosX = camera.Position.x;
+		}
+		
+		SimpleBoxCollisionZ(10, -10, 20, -20, camera);
+		if (colidedZ)
+		{
+			camera.Position.z = camPosZ;
+		}
+		else {
+
+			camPosZ = camera.Position.z;
+		}
 	}
 	
 
@@ -1022,34 +1050,33 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 }
 
-bool x = false;
-bool z = false;
-void SimpleBoxCollision(float x1, float x2, float z1, float z2, Camera camera){
-	//rem!!! make collider for z and x sliding
+
+
+void SimpleBoxCollisionX(float x1, float x2, float z1, float z2, Camera camera){
+
 	if (camera.Position.x < x1 && camera.Position.x > x2 && camera.Position.z < z1 && camera.Position.z > z2)
 	{
-		//printf("Collided");
-		if (z == false)
-		{
-			printf("x");
-		}
-		if (x == false)
-		{
-			printf("z");
-		}
+
+		colidedX = true;
+	}
+	else
+	{
+		colidedX = false;
 	}
 
-	if (camera.Position.x < x1 && camera.Position.x > x2)
+
+
+}
+
+void SimpleBoxCollisionZ(float x1, float x2, float z1, float z2, Camera camera) {
+	if (camera.Position.x < x1 && camera.Position.x > x2 && camera.Position.z < z1 && camera.Position.z > z2)
 	{
-		x = true;
-		z = false;
-		//printf("colidedX");
+
+		colidedZ = true;
 	}
-	if (camera.Position.z < z1 && camera.Position.z > z2)
+	else
 	{
-		x = false;
-		z = true;
-		//printf("collidedz");
+		colidedZ = false;
 	}
 }
 	
