@@ -220,7 +220,7 @@ int main()
 	
 	
 	// Load in models
-	Model calibericon("models/cliberDeafult/scene.gltf");
+	Model calibericon("models/cube/scene.gltf");
 
 	
 	
@@ -658,7 +658,7 @@ int main()
 		// Draw scene for shadow map
 		if (run == true) {
 			if (renderShadows == 1) {
-				calibericon.Draw(shadowMapProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(5, 8, 13));
+				calibericon.Draw(shadowMapProgram, camera, glm::vec3(0, 7, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(8, 8, 8));
 				
 				
 			}
@@ -738,7 +738,7 @@ int main()
 		//camera.Position = glm::vec3(localSpace.position.x, localSpace.position.y, localSpace.position.z);
 		
 		
-		calibericon.Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(5, 8, 13));
+		calibericon.Draw(shaderProgram, camera, glm::vec3(0, 7, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(8, 8, 8));
 		
 		grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(10.5f, 1, 10));
 		
@@ -928,7 +928,7 @@ int main()
 		glfwSwapBuffers(window);
 		// Take care of all GLFW events
 		glfwPollEvents();
-		SimpleBoxCollisionX(20, -20, 10, -10, camera);
+		SimpleBoxCollisionX(11, -11, 10, -10, camera);
 		if (colidedX)
 		{
 			camera.Position.x = camPosX;
@@ -938,7 +938,7 @@ int main()
 			camPosX = camera.Position.x;
 		}
 		
-		SimpleBoxCollisionZ(10, -10, 20, -20, camera);
+		SimpleBoxCollisionZ(10, -10, 11, -11, camera);
 		if (colidedZ)
 		{
 			camera.Position.z = camPosZ;
