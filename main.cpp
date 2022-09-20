@@ -8,8 +8,9 @@
 #include<string>
 #include"src/settings.h"
 
-void SimpleBoxCollisionX(float x1, float x2, float z1, float z2, Camera camera);
-void SimpleBoxCollisionZ(float x1, float x2, float z1, float z2, Camera camera);
+void SimpleCollisionX(float x1, float x2, float z1, float z2, Camera camera);
+void SimpleCollisionZ(float x1, float x2, float z1, float z2, Camera camera);
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -641,6 +642,24 @@ int main()
 				{
 					cameraPosYCol = camera.Position.y;
 				}
+
+				if (colidedX)
+				{
+					camera.Position.x = camPosX;
+				}
+				else {
+
+					camPosX = camera.Position.x;
+				}
+
+				if (colidedZ)
+				{
+					camera.Position.z = camPosZ;
+				}
+				else {
+
+					camPosZ = camera.Position.z;
+				}
 			}
 		}
 
@@ -688,6 +707,24 @@ int main()
 			else
 			{
 				cameraPosYCol = camera.Position.y;
+			}
+
+			if (colidedX)
+			{
+				camera.Position.x = camPosX;
+			}
+			else {
+
+				camPosX = camera.Position.x;
+			}
+
+			if (colidedZ)
+			{
+				camera.Position.z = camPosZ;
+			}
+			else {
+
+				camPosZ = camera.Position.z;
 			}
 		}
 
@@ -928,25 +965,12 @@ int main()
 		glfwSwapBuffers(window);
 		// Take care of all GLFW events
 		glfwPollEvents();
-		SimpleBoxCollisionX(11, -11, 10, -10, camera);
-		if (colidedX)
-		{
-			camera.Position.x = camPosX;
-		}
-		else {
-
-			camPosX = camera.Position.x;
-		}
+		SimpleCollisionX(11, -11, 30, -10, camera);
+					//right left || size X, sizeZ
+		SimpleCollisionZ(10, -10, 31, -31, camera);
+					//front - back || sizeX, sizeZ
+	
 		
-		SimpleBoxCollisionZ(10, -10, 11, -11, camera);
-		if (colidedZ)
-		{
-			camera.Position.z = camPosZ;
-		}
-		else {
-
-			camPosZ = camera.Position.z;
-		}
 	}
 	
 
@@ -1052,7 +1076,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 
 
-void SimpleBoxCollisionX(float x1, float x2, float z1, float z2, Camera camera){
+void SimpleCollisionX(float x1, float x2, float z1, float z2, Camera camera){
 
 	if (camera.Position.x < x1 && camera.Position.x > x2 && camera.Position.z < z1 && camera.Position.z > z2)
 	{
@@ -1068,7 +1092,7 @@ void SimpleBoxCollisionX(float x1, float x2, float z1, float z2, Camera camera){
 
 }
 
-void SimpleBoxCollisionZ(float x1, float x2, float z1, float z2, Camera camera) {
+void SimpleCollisionZ(float x1, float x2, float z1, float z2, Camera camera) {
 	if (camera.Position.x < x1 && camera.Position.x > x2 && camera.Position.z < z1 && camera.Position.z > z2)
 	{
 
