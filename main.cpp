@@ -643,23 +643,6 @@ int main()
 					cameraPosYCol = camera.Position.y;
 				}
 
-				if (colidedX)
-				{
-					camera.Position.x = camPosX;
-				}
-				else {
-
-					camPosX = camera.Position.x;
-				}
-
-				if (colidedZ)
-				{
-					camera.Position.z = camPosZ;
-				}
-				else {
-
-					camPosZ = camera.Position.z;
-				}
 			}
 		}
 
@@ -709,23 +692,7 @@ int main()
 				cameraPosYCol = camera.Position.y;
 			}
 
-			if (colidedX)
-			{
-				camera.Position.x = camPosX;
-			}
-			else {
-
-				camPosX = camera.Position.x;
-			}
-
-			if (colidedZ)
-			{
-				camera.Position.z = camPosZ;
-			}
-			else {
-
-				camPosZ = camera.Position.z;
-			}
+		
 		}
 
 		// Switch back to the default framebuffer
@@ -965,12 +932,29 @@ int main()
 		glfwSwapBuffers(window);
 		// Take care of all GLFW events
 		glfwPollEvents();
-		SimpleCollisionX(11, -11, 30, -10, camera);
+		SimpleCollisionX(11, -31, 10, -10, camera);
 					//right left || size X, sizeZ
-		SimpleCollisionZ(10, -10, 31, -31, camera);
+		SimpleCollisionZ(10, -30, 11, -11, camera);
 					//front - back || sizeX, sizeZ
 	
-		
+
+		if (colidedX)
+		{
+			camera.Position.x = camPosX;
+		}
+		else {
+
+			camPosX = camera.Position.x;
+		}
+
+		if (colidedZ)
+		{
+			camera.Position.z = camPosZ;
+		}
+		else {
+
+			camPosZ = camera.Position.z;
+		}
 	}
 	
 
