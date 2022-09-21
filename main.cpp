@@ -932,11 +932,11 @@ int main()
 		glfwSwapBuffers(window);
 		// Take care of all GLFW events
 		glfwPollEvents();
-		SimpleCollisionX(11, -31, 10, -10, camera);
+		SimpleCollisionX(11, -11, 10, -10, camera);
 					//right left || size X, sizeZ
-		SimpleCollisionZ(10, -30, 11, -11, camera);
+		SimpleCollisionZ(10, -10, 11, -11, camera);
 					//front - back || sizeX, sizeZ
-	
+		//you dont need to use a - you can also use 0!
 
 		if (colidedX)
 		{
