@@ -423,7 +423,7 @@ int main()
 	style.Colors[ImGuiCol_TabActive] = wigitsInsideActive;
 	style.Colors[ImGuiCol_TabHovered] = wigitsInsideHover;
 	style.Colors[ImGuiCol_Tab] = wigitsInside;
-	
+	style.WindowRounding = 7;
 	
 
 	bool v = true;
@@ -743,7 +743,7 @@ int main()
 		// Specify the color of the background
 		
 		//glClearColor(pow(0.07f, gamma), pow(0.13f, gamma), pow(0.17f, gamma), 1.0f);
-		glClearColor(0.77f, 0.74f, 0.82f, 1.0f);
+		glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
 		
 		// Clean the back buffer and depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -880,7 +880,6 @@ int main()
 			
 			ImGui::Begin("Cockpit");
 			{
-
 				if (ImGui::Button("play"))
 				{
 					if (run == false) {
@@ -904,6 +903,7 @@ int main()
 			
 			ImGui::End();
 
+			
 
 			if (ImGui::Begin("project settings")) {
 				if (ImGui::BeginTabBar("project tabs"))
