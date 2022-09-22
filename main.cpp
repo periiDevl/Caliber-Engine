@@ -548,7 +548,10 @@ int main()
 	// Main while loop
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
-		
+		if (glfwGetKey(window, GLFW_KEY_ESCAPE))
+		{
+			run = false;
+		}
 		if (wireBool == true && !run) {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		}
@@ -696,8 +699,6 @@ int main()
 
 		// Handles camera inputs (delete this if you have disabled VSync)
 		if (vsync == 1 && !run) {
-
-
 			camera.Inputs(window, ctrlSpeed, normalSpeed);
 			if (camera.Position.y < floorLev)
 			{
@@ -709,6 +710,11 @@ int main()
 				cameraPosYCol = camera.Position.y;
 			}
 
+
+			SimpleCollisionX(11, -11, 10, -10, camera);
+			//right left || size X, sizeZ
+			SimpleCollisionZ(10, -10, 11, -11, camera);
+			//front - back || sizeX, sizeZ
 			if (colidedX)
 			{
 				camera.Position.x = camPosX;
@@ -776,8 +782,8 @@ int main()
 		
 		
 		calibericon.Draw(shaderProgram, camera, glm::vec3(0, 7, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(8, 8, 8));
-		
 		grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(10.5f, 1, 10));
+		
 		
 			
 		
@@ -869,8 +875,36 @@ int main()
 		}
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		
-		//if (ImGui::Begin("project settings", 0, ImGuiWindowFlags_NoResize)) {
+		
 		if (run == false) {
+			
+			ImGui::Begin("Cockpit");
+			{
+
+				if (ImGui::Button("play"))
+				{
+					if (run == false) {
+						run = true;
+					}
+					else if (run == true)
+					{
+						run = false;
+					}
+				}
+				ImGui::BeginChild("VieportRender");
+				ImVec2 wsize = ImGui::GetWindowSize();
+
+				ImGui::Image((ImTextureID)postProcessingTexture, wsize, ImVec2(0, 1), ImVec2(1, 0));
+				ImGui::EndChild();
+			}
+			ImGui::End();
+			style.Colors[ImGuiCol_WindowBg] = ImVec4(0.6, 0.6, 0.6, 1);
+			ImGui::Begin("backround", 0, ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+			style.Colors[ImGuiCol_WindowBg] = backroundColor;
+			
+			ImGui::End();
+
+
 			if (ImGui::Begin("project settings")) {
 				if (ImGui::BeginTabBar("project tabs"))
 				{
@@ -928,17 +962,7 @@ int main()
 
 			}
 		}
-		ImGui::Begin("runtime");
-		if (ImGui::Button("play"))
-		{
-			if (run == false) {
-				run = true;
-			}
-			else if (run == true)
-			{
-				run = false;
-			}
-		}
+		
 
 			
 		if (camera.cinamaticview)
@@ -950,7 +974,6 @@ int main()
 			ImGui::End();
 		}
 		
-		ImGui::End();
 		
 		
 		ImGui::Render();
@@ -965,10 +988,7 @@ int main()
 		glfwSwapBuffers(window);
 		// Take care of all GLFW events
 		glfwPollEvents();
-		SimpleCollisionX(11, -11, 30, -10, camera);
-					//right left || size X, sizeZ
-		SimpleCollisionZ(10, -10, 31, -31, camera);
-					//front - back || sizeX, sizeZ
+		
 	
 		
 	}
