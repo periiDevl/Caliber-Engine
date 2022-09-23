@@ -221,7 +221,7 @@ int main()
 	
 	
 	// Load in models
-	Model calibericon("models/cube/scene.gltf");
+	Model calibericon("models/crow/scene.gltf");
 
 	
 	
@@ -389,7 +389,7 @@ int main()
 		orthgonalProjection = orthgonalProjectionHigh;
 	}
 
-	glm::mat4 lightView = glm::lookAt(70.0f * lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 lightView = glm::lookAt(140.0f * lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 lightProjection = orthgonalProjection * lightView;
 
 	shadowMapProgram.Activate();
@@ -680,7 +680,7 @@ int main()
 		// Draw scene for shadow map
 		if (run == true) {
 			if (renderShadows == 1) {
-				calibericon.Draw(shadowMapProgram, camera, glm::vec3(0, 7, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(8, 8, 8));
+				calibericon.Draw(shadowMapProgram, camera, glm::vec3(0, 7, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(1, 1, 1));
 				
 				
 			}
@@ -781,7 +781,7 @@ int main()
 		//camera.Position = glm::vec3(localSpace.position.x, localSpace.position.y, localSpace.position.z);
 		
 	
-		calibericon.Draw(shaderProgram, camera, glm::vec3(0, 7, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(8, 8, 8));
+		calibericon.Draw(shaderProgram, camera, glm::vec3(0, 7, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(1, 1, 1));
 		if (!run) {
 			grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(10.5f, 1, 10));
 		}
