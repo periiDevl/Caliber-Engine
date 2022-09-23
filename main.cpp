@@ -377,7 +377,7 @@ int main()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// Matrices needed for the light's perspective
-	float farPlane = 100.0f;
+	float farPlane = 200.0f;
 	glm::mat4 orthgonalProjection;
 	glm::mat4 orthgonalProjectionLow = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, farPlane);
 	glm::mat4 orthgonalProjectionHigh = glm::ortho(-30.0f, 30.0f, -30.0f, 30.0f, 1.0f, farPlane);
@@ -746,7 +746,7 @@ int main()
 		glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
 		
 		// Clean the back buffer and depth buffer
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		// Enable depth testing since it's disabled when drawing the framebuffer rectangle
 		glEnable(GL_DEPTH_TEST);
 
@@ -780,10 +780,12 @@ int main()
 		// Take care of all the light related things
 		//camera.Position = glm::vec3(localSpace.position.x, localSpace.position.y, localSpace.position.z);
 		
-		
+	
 		calibericon.Draw(shaderProgram, camera, glm::vec3(0, 7, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(8, 8, 8));
-		grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(10.5f, 1, 10));
-		
+		if (!run) {
+			grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(10.5f, 1, 10));
+		}
+	
 		
 			
 		
