@@ -221,7 +221,7 @@ int main()
 	
 	
 	// Load in models
-	Model calibericon("models/crow/scene.gltf");
+	Model calibericon("models/crowI/scene.gltf");
 
 	
 	
@@ -380,7 +380,9 @@ int main()
 	float farPlane = 200.0f;
 	glm::mat4 orthgonalProjection;
 	glm::mat4 orthgonalProjectionLow = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, farPlane);
-	glm::mat4 orthgonalProjectionHigh = glm::ortho(-30.0f, 30.0f, -30.0f, 30.0f, 1.0f, farPlane);
+	glm::mat4 orthgonalProjectionHigh = glm::ortho(-70.0f, 70.0f, -70.0f, 70.0f, 1.0f, farPlane);
+	//you can change how far shadows go!!! from 10 to 70 and more
+	glm::mat4 perspectiveProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, farPlane);
 	if (HighLightView == 0) {
 		orthgonalProjection = orthgonalProjectionLow;
 
@@ -388,14 +390,18 @@ int main()
 	else if (HighLightView == 1) {
 		orthgonalProjection = orthgonalProjectionHigh;
 	}
-
+	//direc lights
 	glm::mat4 lightView = glm::lookAt(140.0f * lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 lightProjection = orthgonalProjection * lightView;
+
+	//-------spot lights
+	//glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+	//glm::mat4 lightProjection = perspectiveProjection * lightView;
 
 	shadowMapProgram.Activate();
 	glUniformMatrix4fv(glGetUniformLocation(shadowMapProgram.ID, "lightProjection"), 1, GL_FALSE, glm::value_ptr(lightProjection));
 	//0.29, 1.00, 0.62,
-
+	
 	ImVec4 backroundColor = ImVec4(0.5, 0.5, 0.5, 0.55);
 	ImVec4 TitleColor = ImVec4(0, 0, 0, 0.95);
 	ImVec4 BorderColor = ImVec4(0, 0, 0, 1);
@@ -680,7 +686,7 @@ int main()
 		// Draw scene for shadow map
 		if (run == true) {
 			if (renderShadows == 1) {
-				calibericon.Draw(shadowMapProgram, camera, glm::vec3(0, 7, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(1, 1, 1));
+				calibericon.Draw(shadowMapProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 				
 				
 			}
@@ -711,9 +717,9 @@ int main()
 			}
 
 
-			SimpleCollisionX(11, -11, 10, -10, camera);
+			//SimpleCollisionX(11, -11, 10, -10, camera);
 			//right left || size X, sizeZ
-			SimpleCollisionZ(10, -10, 11, -11, camera);
+			//SimpleCollisionZ(10, -10, 11, -11, camera);
 			//front - back || sizeX, sizeZ
 			if (colidedX)
 			{
@@ -752,7 +758,7 @@ int main()
 
 		
 		// Updates and exports the camera matrix to the Vertex Shader
-		camera.updateMatrix(60.0f, 0.1f, 500.0f);
+		camera.updateMatrix(60.0f, 0.1f, farPlane);
 		
 
 
@@ -781,7 +787,7 @@ int main()
 		//camera.Position = glm::vec3(localSpace.position.x, localSpace.position.y, localSpace.position.z);
 		
 	
-		calibericon.Draw(shaderProgram, camera, glm::vec3(0, 7, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(1, 1, 1));
+		calibericon.Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 		if (!run) {
 			grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(10.5f, 1, 10));
 		}
@@ -799,7 +805,7 @@ int main()
 			// We make the mat4 into a mat3 and then a mat4 again in order to get rid of the last row and column
 			// The last row and column affect the translation of the skybox (which we don't want to affect)
 			view = glm::mat4(glm::mat3(glm::lookAt(camera.Position, camera.Position + camera.Orientation, camera.Up)));
-			projection = glm::perspective(glm::radians(60.0f), (float)width / height, 0.1f, 100.0f);
+			projection = glm::perspective(glm::radians(60.0f), (float)width / height, 0.1f, 500.0f);
 			glUniformMatrix4fv(glGetUniformLocation(skyboxShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
 			glUniformMatrix4fv(glGetUniformLocation(skyboxShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
@@ -938,6 +944,9 @@ int main()
 						ImGui::Checkbox("Enable shadows", &renSha);
 						ImGui::Checkbox("Enable high qualtiy shadows (Needs restart to change)", &hqs);
 
+						style.Colors[ImGuiCol_Text] = ImVec4(1, 0, 0, 1);
+						ImGui::Text("This will make your shadows go longer with a cost of shadow resolution");
+						style.Colors[ImGuiCol_Text] = windowWhite;
 						ImGui::Checkbox("Enable high resulotion light view point (Needs restart to change)", &lightVLow);
 						
 
