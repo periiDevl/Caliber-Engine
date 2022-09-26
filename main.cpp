@@ -450,14 +450,13 @@ int main()
 	glUniformMatrix4fv(glGetUniformLocation(shadowMapProgram.ID, "lightProjection"), 1, GL_FALSE, glm::value_ptr(lightProjection));
 	//0.29, 1.00, 0.62,
 	
-	ImVec4 backroundColor = ImVec4(0.5, 0.5, 0.5, 0.55);
-	ImVec4 TitleColor = ImVec4(0, 0, 0, 0.95);
-	ImVec4 BorderColor = ImVec4(0, 0, 0, 1);
+	ImVec4 backroundColor = ImVec4(0.22, 0.23, 0.25, 1);
+	ImVec4 TitleColor = ImVec4(0.43, 0.54, 0.05, 0.95);
+	ImVec4 BorderColor = ImVec4(0, 0, 0, 0.2);
 	ImVec4 wigitsInsideHover = ImVec4(0.2, 0.2, 0.2, 1);
 	ImVec4 wigitsInside = ImVec4(0.3, 0.30, 0.30, 1);
 	ImVec4 wigitsInsideActive = ImVec4(0.1, 0.1, 0.10, 1);
 	ImVec4 windowWhite = ImVec4(1, 1, 1, 1);
-	
 
 	ImGuiStyle& style = ImGui::GetStyle();
 	style.WindowRounding = 0;
@@ -465,6 +464,7 @@ int main()
 	style.Colors[ImGuiCol_Border] = windowWhite;
 	style.Colors[ImGuiCol_CheckMark] = windowWhite;
 	style.Colors[ImGuiCol_Text] = windowWhite;
+	
 	
 	
 	style.Colors[ImGuiCol_Border] = BorderColor;
@@ -477,7 +477,7 @@ int main()
 	style.Colors[ImGuiCol_TabActive] = wigitsInsideActive;
 	style.Colors[ImGuiCol_TabHovered] = wigitsInsideHover;
 	style.Colors[ImGuiCol_Tab] = wigitsInside;
-	style.WindowRounding = 7;
+	style.WindowRounding = 0;
 	
 
 	bool v = true;
