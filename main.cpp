@@ -6,34 +6,39 @@
 #include<iostream>
 #include<fstream>
 #include<string>
-#include"src/settings.h"
+
+bool run = false;
+
 
 void SimpleCollisionX(float x1, float x2, float z1, float z2, Camera camera);
 void SimpleCollisionZ(float x1, float x2, float z1, float z2, Camera camera);
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+//finished
+int vsync;
+int renderShadows;
+int samples;
+int bloom;
+int highQualtiyShdows;
+int HighLightView;
+int wireframe;
+int width;
+int height;
+float gamma;
+float exposure;
+float normalSpeed;
+float ctrlSpeed;
+//not finished
 
-bool run = false;
-int width = IwindowW;
-int height = IwindowH;
 
-int mockwidth = width;
-int mockheight = height;
 
-float normalSpeed = InormalSpeed;
-float ctrlSpeed = Ictrlspeed;
 
-int samples = Isampels;
-int vsync = Ivsync;
-int wireframe = Iwire;
-int renderShadows = IrenderShadow;
-int highQualtiyShdows = Ihqs;
-int bloom = Ibloom;
-float gamma = Igamma;
-float exposure = Iexposure;
 
-int HighLightView = IlightViewSetting;
+
+
+
+
 
 int enableskybox = 0;
 
@@ -97,7 +102,48 @@ unsigned int skyboxIndices[] =
 
 int main()
 {
+	std::ifstream vsync_input("save/vsync.pve");
+	vsync_input >> vsync;
+	
+	std::ifstream rsh_input("save/rsh.pve");
+	rsh_input >> renderShadows;
 
+	std::ifstream mssa_input("save/mssa.pve");
+	mssa_input >> samples;
+
+	std::ifstream bloom_input("save/bloom.pve");
+	bloom_input >> bloom;
+
+	std::ifstream hqs_input("save/hqs.pve");
+	hqs_input >> highQualtiyShdows;
+
+	std::ifstream hqlv_input("save/hqlv.pve");
+	hqlv_input >> HighLightView;
+
+	std::ifstream winh_input("save/winh.pve");
+	winh_input >> height;
+
+	std::ifstream winw_input("save/winw.pve");
+	winw_input >> width;
+
+	std::ifstream wirf_input("save/wirf.pve");
+	wirf_input >> wireframe;
+
+	std::ifstream gamma_input("save/gamma.pve");
+	gamma_input >> gamma;
+
+	std::ifstream expo_input("save/expo.pve");
+	expo_input >> exposure;
+
+	std::ifstream cospeed_input("save/cospeed.pve");
+	cospeed_input >> ctrlSpeed;
+
+	std::ifstream speed_input("save/speed.pve");
+	speed_input >> normalSpeed;
+
+	int mockwidth = width;
+	int mockheight = height;
+	
 	float realExposure = exposure;
 	float realGamma = gamma;
 	// Initialize GLFW
@@ -106,6 +152,7 @@ int main()
 	// Tell GLFW what version of OpenGL we are using 
 	// In this case we are using OpenGL 3.3
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	// Only use this if you don't have a framebuffer
 	//glfwWindowHint(GLFW_SAMPLES, samples);
@@ -118,6 +165,7 @@ int main()
 	
 	
 	//GLFWwindow* window = glfwCreateWindow(width, height, "Caliber window", glfwGetPrimaryMonitor(), NULL);
+	
 	
 	
 	GLFWwindow* window = glfwCreateWindow(width, height, "Caliber window", NULL, NULL);
@@ -379,7 +427,7 @@ int main()
 	// Matrices needed for the light's perspective
 	float farPlane = 200.0f;
 	glm::mat4 orthgonalProjection;
-	glm::mat4 orthgonalProjectionLow = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, farPlane);
+	glm::mat4 orthgonalProjectionLow = glm::ortho(-40.0f, 40.0f, -40.0f, 40.0f, 1.0f, farPlane);
 	glm::mat4 orthgonalProjectionHigh = glm::ortho(-70.0f, 70.0f, -70.0f, 70.0f, 1.0f, farPlane);
 	//you can change how far shadows go!!! from 10 to 70 and more
 	glm::mat4 perspectiveProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, farPlane);
@@ -888,6 +936,7 @@ int main()
 			
 			ImGui::Begin("Cockpit");
 			{
+				
 				if (ImGui::Button("play"))
 				{
 					if (run == false) {
@@ -919,8 +968,8 @@ int main()
 
 					if (ImGui::BeginTabItem("General"))
 					{
-						ImGui::InputInt("Window width", &mockwidth, 20, 1, 0);
-						ImGui::InputInt("Window height", &mockheight, 20, 1, 0);
+						ImGui::InputInt("Window width (restart to apply changes)", &mockwidth, 20, 1, 0);
+						ImGui::InputInt("Window height (restart to apply changes)", &mockheight, 20, 1, 0);
 
 						ImGui::EndTabItem();
 					}
@@ -1002,17 +1051,13 @@ int main()
 		
 	
 		
+
 	}
 	
 
+	
 
-	std::ofstream file("src/settings.h");
 
-	file << "";
-
-	std::vector<std::string> stuff;
-	//DO NOT TOUCH
-	stuff.push_back("#pragma once");
 
 	if (v == true)
 	{
@@ -1037,46 +1082,7 @@ int main()
 		highQualtiyShdows = 0;
 	}
 	
-	std::string tsamples = std::to_string(samples);
-	std::string tvsync = std::to_string(vsync);
-	std::string tgamma = std::to_string(gamma);
-	std::string twidth = std::to_string(mockwidth);
-	std::string theight = std::to_string(mockheight);
-	std::string twire = std::to_string(wireframe);
-	std::string texpose = std::to_string(realExposure);
-	std::string tenableshadows = std::to_string(renSha);
-	std::string thqs = std::to_string(hqs);
-	std::string thighlightview = std::to_string(lightVLow);
-	std::string tbloom = std::to_string(bloom);
-	std::string tnormalSpeed = std::to_string(normalSpeed);
-	std::string tctrlspeed = std::to_string(ctrlSpeed);
-	std::string tenskybox = std::to_string(enableskybox);
 	
-
-	stuff.push_back("int IwindowW = " + twidth + ";");
-	stuff.push_back("int IwindowH = " + theight + ";");
-	stuff.push_back("int Isampels = " + tsamples + ";");
-	stuff.push_back("bool Ivsync = " + tvsync + ";");
-	stuff.push_back("float Igamma = " + tgamma + ";");
-	stuff.push_back("int Iwire = " + twire + ";");
-	stuff.push_back("float Iexposure = " + texpose + ";");
-	stuff.push_back("int IrenderShadow = " + tenableshadows + ";");
-	stuff.push_back("int Ihqs = " + thqs + ";");
-	stuff.push_back("int IlightViewSetting = " + thighlightview + ";");
-	stuff.push_back("int Ibloom = " + tbloom + ";");
-	stuff.push_back("int InormalSpeed = " + tnormalSpeed + ";");
-	stuff.push_back("int Ictrlspeed = " + tctrlspeed + ";");
-	stuff.push_back("int IenSkybox = " + tenskybox + ";");
-
-	
-	for (std::string sufff : stuff)
-	{
-		//file << sufff << std::endl;
-		file << sufff << std::endl;
-	}
-
-
-	file.close();
 
 	// Delete all the objects we've created
 	shaderProgram.Delete();
@@ -1088,14 +1094,53 @@ int main()
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
 
+
 	
 	// Delete window before ending the program
 	glfwDestroyWindow(window);
 	// Terminate GLFW before ending the program
 	glfwTerminate();
+
+	
+	//writing
+	std::ofstream vsync_output("save/vsync.pve");
+	vsync_output << vsync;
+	std::ofstream rsh_output("save/rsh.pve");
+	rsh_output << renSha;
+	std::ofstream mssa_output("save/mssa.pve");
+	mssa_output << samples;
+	std::ofstream bloom_output("save/bloom.pve");
+	bloom_output << bloom;
+	std::ofstream hqs_output("save/hqs.pve");
+	hqs_output << highQualtiyShdows;
+
+	std::ofstream hqlv_output("save/hqlv.pve");
+	hqlv_output << lightVLow;
+
+	std::ofstream winh_output("save/winh.pve");
+	winh_output << mockheight;
+
+	std::ofstream winw_output("save/winw.pve");
+	winw_output << mockwidth;
+	
+	std::ofstream wirf_output("save/wirf.pve");
+	wirf_output << wireframe;
+	
+	std::ofstream gamma_output("save/gamma.pve");
+	gamma_output << gamma;
+
+	std::ofstream expo_output("save/expo.pve");
+	expo_output << exposure;
+	
+	std::ofstream cospeed_output("save/cospeed.pve");
+	cospeed_output << ctrlSpeed;
+
+	std::ofstream speed_output("save/speed.pve");
+	speed_output << normalSpeed;
+
 	return 0;
 
-
+	
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
