@@ -1130,7 +1130,7 @@ int main()
 	gamma_output << gamma;
 
 	std::ofstream expo_output("save/expo.pve");
-	expo_output << exposure;
+	expo_output << realExposure;
 	
 	std::ofstream cospeed_output("save/cospeed.pve");
 	cospeed_output << ctrlSpeed;
