@@ -765,9 +765,9 @@ int main()
 			}
 
 
-			//SimpleCollisionX(11, -11, 10, -10, camera);
+			SimpleCollisionX(11, -11, 10, -10, camera);
 			//right left || size X, sizeZ
-			//SimpleCollisionZ(10, -10, 11, -11, camera);
+			SimpleCollisionZ(10, -10, 11, -11, camera);
 			//front - back || sizeX, sizeZ
 			if (colidedX)
 			{
