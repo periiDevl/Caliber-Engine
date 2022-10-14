@@ -30,7 +30,8 @@ float exposure;
 float normalSpeed;
 float ctrlSpeed;
 //not finished
-
+bool FullCockpit = true;
+bool enableskybox = true;
 
 
 
@@ -58,7 +59,6 @@ glm::quat euler_to_quat(double roll, double pitch, double yaw)
 
 
 
-int enableskybox = 0;
 
 //collision
 //__________
@@ -158,6 +158,12 @@ int main()
 
 	std::ifstream speed_input("save/speed.pve");
 	speed_input >> normalSpeed;
+
+	std::ifstream skybox_input("save/skybox.pve");
+	skybox_input >> enableskybox;
+
+	std::ifstream FV_input("save/FullView.pve");
+	FV_input >> FullCockpit;
 
 	int mockwidth = width;
 	int mockheight = height;
@@ -628,7 +634,7 @@ int main()
 		if (wireBool == true && !run) {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		}
-		if (run == true) {
+		if (run == true || FullCockpit) {
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);;
 			exposure = realExposure; 
@@ -650,7 +656,7 @@ int main()
 			}
 			
 		} 
-		else
+		else if (!FullCockpit || !run)
 		{
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);
@@ -744,14 +750,14 @@ int main()
 		glEnable(GL_DEPTH_TEST);
 
 		// Preparations for the Shadow Map
-		if (renderShadows == 1 || run) {
+		if (renderShadows == 1 || run || FullCockpit) {
 			glViewport(0, 0, shadowMapWidth, shadowMapHeight);
 			glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFBO);
 		}
 		glClear(GL_DEPTH_BUFFER_BIT);
 
 		// Draw scene for shadow map
-		if (run == true) {
+		if (run == true || FullCockpit) {
 			if (renderShadows == 1) {
 				calibericon.Draw(shadowMapProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 				
@@ -853,7 +859,7 @@ int main()
 			grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), euler_to_quat(90, 0, 0), glm::vec3(10.5f, 1, 10));
 		}
 		
-		if (run == true || enableskybox == 0 && run == true) {
+		if (run == true && enableskybox || FullCockpit && enableskybox) {
 			// Since the cubemap will always have a depth of 1.0, we need that equal sign so it doesn't get discarded
 			glDepthFunc(GL_LEQUAL);
 
@@ -931,7 +937,7 @@ int main()
 		glActiveTexture(GL_TEXTURE1);
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		if (run) {
+		if (run || FullCockpit) {
 			glBindTexture(GL_TEXTURE_2D, pingpongBuffer[!horizontal]);
 		}
 		else
@@ -1009,14 +1015,16 @@ int main()
 						style.Colors[ImGuiCol_Text] = windowWhite;
 						ImGui::Checkbox("Enable high resulotion light view point (Needs restart to change)", &lightVLow);
 						
+						ImGui::Checkbox("Enable skybox", &enableskybox);
 
 						ImGui::EndTabItem();
 					}
 
-					if (ImGui::BeginTabItem("Viewport settings"))
+					if (ImGui::BeginTabItem("Cockpit settings"))
 					{
 						ImGui::InputFloat("Shift speed speed", &normalSpeed, 0.3f, 1, "%.3f", 0);
 						ImGui::InputFloat("Normal speed", &ctrlSpeed, 0.3f, 1, "%.3f", 0);
+						ImGui::Checkbox("Enable full cockpit", &FullCockpit);
 
 						ImGui::EndTabItem();
 					}
@@ -1150,6 +1158,12 @@ int main()
 
 	std::ofstream speed_output("save/speed.pve");
 	speed_output << normalSpeed;
+
+	std::ofstream skybox_output("save/skybox.pve");
+	skybox_output << enableskybox;
+
+	std::ofstream FV_output("save/FullView.pve");
+	FV_output << FullCockpit;
 
 	return 0;
 
