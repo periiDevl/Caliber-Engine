@@ -35,6 +35,24 @@ float ctrlSpeed;
 
 
 
+glm::quat euler_to_quat(double roll, double pitch, double yaw)
+{
+	double cr = cos(roll * 0.5);
+	double sr = sin(roll * 0.5);
+	double cp = cos(pitch * 0.5);
+	double sp = sin(pitch * 0.5);
+	double cy = cos(yaw * 0.5);
+	double sy = sin(yaw * 0.5);
+
+	glm::quat q;
+	q.w = cr * cp * cy + sr * sp * sy;
+	q.x = sr * cp * cy - cr * sp * sy;
+	q.y = cr * sp * cy + sr * cp * sy;
+	q.z = cr * cp * sy - sr * sp * cy;
+
+	return q;
+
+}
 
 
 
@@ -264,7 +282,7 @@ int main()
 	Camera camera(width, height, glm::vec3(22.0f, 15.0, 0.0f));
 	
 
-
+	
 	
 	
 	
@@ -599,6 +617,7 @@ int main()
 
 	float cameraPosYCol;
 	float floorLev = 0;
+	glm::quat gridRotation = glm::quat();
 	// Main while loop
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
@@ -825,26 +844,14 @@ int main()
 
 		glUniform1i(glGetUniformLocation(shaderProgram.ID, "shadowMap"), 2);
 		
-		/*
-		glm::vec3 translation = glm::vec3(0.0f, 0.0f, 0.0f),
-			glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f),
-			glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f)
-		*/
-
-		// Create a box at the origin with width, height, depth = (1.0, 1.0, 1.0)
-		// and add it to a rigid body. The transform is defined relative to the owning body
-		// Draw the normal model
-		// Take care of all the light related things
-		//camera.Position = glm::vec3(localSpace.position.x, localSpace.position.y, localSpace.position.z);
+		
+		
 		
 		
 		calibericon.Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 		if (!run) {
-			grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(10.5f, 1, 10));
+			grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), euler_to_quat(90, 0, 0), glm::vec3(10.5f, 1, 10));
 		}
-	
-		
-			
 		
 		if (run == true || enableskybox == 0 && run == true) {
 			// Since the cubemap will always have a depth of 1.0, we need that equal sign so it doesn't get discarded
@@ -961,6 +968,7 @@ int main()
 			ImGui::Begin("backround", 0, ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 			style.Colors[ImGuiCol_WindowBg] = backroundColor;
 			
+
 			ImGui::End();
 
 			
@@ -1026,7 +1034,7 @@ int main()
 			}
 		}
 		
-
+		
 			
 		if (camera.cinamaticview)
 		{
@@ -1039,6 +1047,8 @@ int main()
 		
 		
 		
+		
+
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -1182,7 +1192,12 @@ void SimpleCollisionZ(float x1, float x2, float z1, float z2, Camera camera) {
 		colidedZ = false;
 	}
 }
-	
+
+
+
+
+
+
 
 
 
