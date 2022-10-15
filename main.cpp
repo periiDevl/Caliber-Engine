@@ -869,7 +869,7 @@ int main()
 		
 			grid.Draw(shaderProgram, camera, glm::vec3(0, 0, 0), euler_to_quat(0, 0, 0), glm::vec3(10.5f, 1, 10));
 
-			grid.Draw(shaderProgram, camera, direction_to_forward(glm::vec3(), 0, 20) * glm::vec3(20), euler_to_quat(0, 20, 0), glm::vec3(5, 1, 5));
+			//grid.Draw(shaderProgram, camera, direction_to_forward(glm::vec3(), 0, 20) * glm::vec3(20), euler_to_quat(0, 20, 0), glm::vec3(5, 1, 5));
 			
 		}
 		
