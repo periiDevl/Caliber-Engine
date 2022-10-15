@@ -71,6 +71,7 @@ glm::quat QuatLookAt(
 	glm::vec3 const& up
 	)
 {
+	//you want to.y to be -
 	glm::vec3  direction = to - from;
 	float directionLength = glm::length(direction);
 
