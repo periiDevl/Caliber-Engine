@@ -65,7 +65,27 @@ glm::vec3 direction_to_forward(glm::vec3 vector3, double yaw, double pitch)
 }
 
 
+glm::quat QuatLookAt(
+	glm::vec3 const& lookFrom,
+	glm::vec3 const& lookTo,
+	glm::vec3 const& up,
+	glm::vec3 const& alternativeUp)
+{
+	glm::vec3  direction = lookTo - lookFrom;
+	float      directionLength = glm::length(direction);
 
+	if (!(directionLength > 0.0001))
+		return glm::quat(1, 0, 0, 0);
+
+	direction /= directionLength;
+
+	if (glm::abs(glm::dot(direction, up)) > .9999f) {
+		return glm::quatLookAt(direction, alternativeUp);
+	}
+	else {
+		return glm::quatLookAt(direction, up);
+	}
+}
 
 
 
@@ -865,14 +885,14 @@ int main()
 		
 		calibericon.Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(20, 20, 20));
 		if (!run) {
-			//grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), euler_to_quat(90, 0, 0), glm::vec3(10.5f, 1, 10));
-		
-			grid.Draw(shaderProgram, camera, glm::vec3(0, 0, 0), euler_to_quat(0, 0, 0), glm::vec3(10.5f, 1, 10));
+			grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(10.5f, 1, 10));
 
+			//look at fuction
+			//grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), QuatLookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(camera.Position.x, -camera.Position.y, camera.Position.z), -camera.Up, glm::vec3(0)), glm::vec3(10.5f, 1, 10));
+			//forward direction function
 			//grid.Draw(shaderProgram, camera, direction_to_forward(glm::vec3(), 0, 20) * glm::vec3(20), euler_to_quat(0, 20, 0), glm::vec3(5, 1, 5));
 			
 		}
-		
 		if (run == true && enableskybox || FullCockpit && enableskybox) {
 			// Since the cubemap will always have a depth of 1.0, we need that equal sign so it doesn't get discarded
 			glDepthFunc(GL_LEQUAL);
@@ -898,6 +918,7 @@ int main()
 			// Switch back to the normal depth function
 			glDepthFunc(GL_LESS);
 		}
+		
 
 		// Make it so the multisampling FBO is read while the post-processing FBO is drawn
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
