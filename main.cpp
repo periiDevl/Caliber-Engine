@@ -55,6 +55,15 @@ glm::quat euler_to_quat(double roll, double pitch, double yaw)
 
 }
 
+glm::vec3 direction_to_forward(glm::vec3 vector3, double yaw, double pitch)
+{
+	vector3.x = cos(yaw) * cos(pitch);
+	vector3.y = sin(yaw) * cos(pitch);
+	vector3.z = sin(pitch);
+
+	return vector3;
+}
+
 
 
 
@@ -852,11 +861,16 @@ int main()
 		
 		
 		
+		///Drawing///
 		
-		
-		calibericon.Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
+		calibericon.Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(20, 20, 20));
 		if (!run) {
-			grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), euler_to_quat(90, 0, 0), glm::vec3(10.5f, 1, 10));
+			//grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), euler_to_quat(90, 0, 0), glm::vec3(10.5f, 1, 10));
+		
+			grid.Draw(shaderProgram, camera, glm::vec3(0, 0, 0), euler_to_quat(0, 0, 0), glm::vec3(10.5f, 1, 10));
+
+			grid.Draw(shaderProgram, camera, direction_to_forward(glm::vec3(), 0, 20) * glm::vec3(20), euler_to_quat(0, 20, 0), glm::vec3(5, 1, 5));
+			
 		}
 		
 		if (run == true && enableskybox || FullCockpit && enableskybox) {
