@@ -66,13 +66,13 @@ glm::vec3 direction_to_forward(glm::vec3 vector3, double yaw, double pitch)
 
 
 glm::quat QuatLookAt(
-	glm::vec3 const& lookFrom,
-	glm::vec3 const& lookTo,
-	glm::vec3 const& up,
-	glm::vec3 const& alternativeUp)
+	glm::vec3 const& from,
+	glm::vec3 const& to,
+	glm::vec3 const& up
+	)
 {
-	glm::vec3  direction = lookTo - lookFrom;
-	float      directionLength = glm::length(direction);
+	glm::vec3  direction = to - from;
+	float directionLength = glm::length(direction);
 
 	if (!(directionLength > 0.0001))
 		return glm::quat(1, 0, 0, 0);
@@ -80,7 +80,8 @@ glm::quat QuatLookAt(
 	direction /= directionLength;
 
 	if (glm::abs(glm::dot(direction, up)) > .9999f) {
-		return glm::quatLookAt(direction, alternativeUp);
+		//you might to have add an alternative variable
+		return glm::quatLookAt(direction, glm::vec3(0));
 	}
 	else {
 		return glm::quatLookAt(direction, up);
@@ -888,7 +889,7 @@ int main()
 			grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(10.5f, 1, 10));
 
 			//look at fuction
-			//grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), QuatLookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(camera.Position.x, -camera.Position.y, camera.Position.z), -camera.Up, glm::vec3(0)), glm::vec3(10.5f, 1, 10));
+			//grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), QuatLookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(camera.Position.x, -camera.Position.y, camera.Position.z), -camera.Up), glm::vec3(10.5f, 1, 10));
 			//forward direction function
 			//grid.Draw(shaderProgram, camera, direction_to_forward(glm::vec3(), 0, 20) * glm::vec3(20), euler_to_quat(0, 20, 0), glm::vec3(5, 1, 5));
 			
