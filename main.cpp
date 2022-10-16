@@ -190,8 +190,7 @@ int main()
 	int mockwidth = width;
 	int mockheight = height;
 	
-	float realExposure = exposure;
-	float realGamma = gamma;
+	
 	// Initialize GLFW
 	glfwInit();
 
@@ -653,9 +652,7 @@ int main()
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		}
 		if (run == true || FullCockpit) {
-			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
-			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);;
-			exposure = realExposure; 
+
 			
 			
 			
@@ -668,13 +665,7 @@ int main()
 			}
 			
 		} 
-		else if (!FullCockpit || !run)
-		{
-			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
-			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);
-			exposure = 5.0f;
-			
-		}
+		
 		if (v == true)
 		{
 			vsync = 1;
@@ -776,14 +767,8 @@ int main()
 				
 			}
 			
-			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
 		}
-		else
-		{
-			exposure = 0.037f;
-
-			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
-		}
+	
 	
 		
 		
@@ -1023,9 +1008,8 @@ int main()
 						ImGui::Checkbox("Enable vsync", &v);
 						ImGui::InputFloat("Gamma correction value", &gamma, 0.3f, 1, "%.3f", 0);
 
-						ImGui::InputFloat("Exposure value", &realExposure, 0.3f, 1, "%.3f", 0);
-						exposure = realExposure;
-						glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), realGamma);
+						ImGui::InputFloat("Exposure value", &exposure, 0.3f, 1, "%.3f", 0);
+						glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);
 						//gamma = realGamma;
 						glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
 
@@ -1168,7 +1152,7 @@ int main()
 	SaveFileWr << "\n";
 	SaveFileWr << gamma * saveFloatCurve;
 	SaveFileWr << "\n";
-	SaveFileWr << realExposure * saveFloatCurve;
+	SaveFileWr << exposure * saveFloatCurve;
 	SaveFileWr << "\n" + std::to_string(bloom);
 	SaveFileWr << "\n" + std::to_string(renderShadows);
 	SaveFileWr << "\n" + std::to_string(highQualtiyShdows);
