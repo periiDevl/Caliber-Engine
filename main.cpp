@@ -17,7 +17,7 @@ void SimpleCollisionZ(float x1, float x2, float z1, float z2, Camera camera);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 //finished
 int vsync;
-int renderShadows;
+bool renderShadows;
 int samples;
 int bloom;
 int highQualtiyShdows;
@@ -33,8 +33,7 @@ float ctrlSpeed;
 bool FullCockpit = true;
 bool enableskybox = true;
 
-
-
+std::array save = {1};
 
 glm::quat euler_to_quat(double roll, double pitch, double yaw)
 {
@@ -152,51 +151,41 @@ unsigned int skyboxIndices[] =
 int main()
 {
 	
-	std::ifstream vsync_input("save/vsync.pve");
-	vsync_input >> vsync;
+
+
+
+	std::string line;
+	std::ifstream saveFile("projectname.caliber");
+	int i = 0;
+	while (!saveFile.eof())
+	{
+		std::getline(saveFile, line);
+		if (saveFile.good())
+		{
+			save[i] = stoi(line);
+			i++;
+		}
+
+	}
+	samples = save[0];
+	vsync = save[1];
+	gamma = save[2];
+	exposure = save[3];
+	bloom = save[4];
+	renderShadows = save[5];
+	highQualtiyShdows = save[6];
+	HighLightView = save[7];
+	enableskybox = save[8];
+
+	height = save[9];
+	width = save[10];
+	wireframe = save[11];
+	ctrlSpeed = save[12];
+	normalSpeed = save[13];
+	FullCockpit = save[14];
+
+
 	
-	std::ifstream rsh_input("save/rsh.pve");
-	rsh_input >> renderShadows;
-
-	std::ifstream mssa_input("save/mssa.pve");
-	mssa_input >> samples;
-
-	std::ifstream bloom_input("save/bloom.pve");
-	bloom_input >> bloom;
-
-	std::ifstream hqs_input("save/hqs.pve");
-	hqs_input >> highQualtiyShdows;
-
-	std::ifstream hqlv_input("save/hqlv.pve");
-	hqlv_input >> HighLightView;
-
-	std::ifstream winh_input("save/winh.pve");
-	winh_input >> height;
-
-	std::ifstream winw_input("save/winw.pve");
-	winw_input >> width;
-
-	std::ifstream wirf_input("save/wirf.pve");
-	wirf_input >> wireframe;
-
-	std::ifstream gamma_input("save/gamma.pve");
-	gamma_input >> gamma;
-
-	std::ifstream expo_input("save/expo.pve");
-	expo_input >> exposure;
-
-	std::ifstream cospeed_input("save/cospeed.pve");
-	cospeed_input >> ctrlSpeed;
-
-	std::ifstream speed_input("save/speed.pve");
-	speed_input >> normalSpeed;
-
-	std::ifstream skybox_input("save/skybox.pve");
-	skybox_input >> enableskybox;
-
-	std::ifstream FV_input("save/FullView.pve");
-	FV_input >> FullCockpit;
-
 	int mockwidth = width;
 	int mockheight = height;
 	
@@ -281,7 +270,7 @@ int main()
 
 	glUniform4f(glGetUniformLocation(shaderProgram.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
-	glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), 0.005f);
+	glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), 0.00f);
 
 	skyboxShader.Activate();
 	glUniform1i(glGetUniformLocation(skyboxShader.ID, "skybox"), 0);
@@ -547,14 +536,7 @@ int main()
 	else {
 		v = false;
 	}
-	bool renSha = true;
-	if (renderShadows == 1)
-	{
-		renSha = true;
-	}
-	else {
-		renSha = false;
-	}
+	
 	
 	bool wireBool = false;
 	if (wireframe == 0) {
@@ -674,13 +656,7 @@ int main()
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);;
 			exposure = realExposure; 
 			
-			if (renSha == true)
-			{
-				renderShadows = 1;
-			}
-			else {
-				renderShadows = 0;
-			}
+			
 			
 			if (lightVLow == false)
 			{
@@ -1053,7 +1029,7 @@ int main()
 						glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
 
 						ImGui::DragInt("bloom amount", &bloom, 0.012f, 0, std::numeric_limits<int>::max());
-						ImGui::Checkbox("Enable shadows", &renSha);
+						ImGui::Checkbox("Enable shadows", &renderShadows);
 						ImGui::Checkbox("Enable high qualtiy shadows (Needs restart to change)", &hqs);
 
 						style.Colors[ImGuiCol_Text] = ImVec4(1, 0, 0, 1);
@@ -1178,46 +1154,33 @@ int main()
 
 	
 	//writing
-	std::ofstream vsync_output("save/vsync.pve");
-	vsync_output << vsync;
-	std::ofstream rsh_output("save/rsh.pve");
-	rsh_output << renSha;
-	std::ofstream mssa_output("save/mssa.pve");
-	mssa_output << samples;
-	std::ofstream bloom_output("save/bloom.pve");
-	bloom_output << bloom;
-	std::ofstream hqs_output("save/hqs.pve");
-	hqs_output << highQualtiyShdows;
 
-	std::ofstream hqlv_output("save/hqlv.pve");
-	hqlv_output << lightVLow;
 
-	std::ofstream winh_output("save/winh.pve");
-	winh_output << mockheight;
 
-	std::ofstream winw_output("save/winw.pve");
-	winw_output << mockwidth;
+
 	
-	std::ofstream wirf_output("save/wirf.pve");
-	wirf_output << wireframe;
+	std::ofstream SaveFileWr("projectname.caliber");
 	
-	std::ofstream gamma_output("save/gamma.pve");
-	gamma_output << gamma;
 
-	std::ofstream expo_output("save/expo.pve");
-	expo_output << realExposure;
-	
-	std::ofstream cospeed_output("save/cospeed.pve");
-	cospeed_output << ctrlSpeed;
+	SaveFileWr << std::to_string(samples);
+	SaveFileWr << "\n" + std::to_string(vsync);
+	SaveFileWr << "\n" + std::to_string(gamma);
+	SaveFileWr << "\n" + std::to_string(realExposure);
+	SaveFileWr << "\n" + std::to_string(bloom);
+	SaveFileWr << "\n" + std::to_string(renderShadows);
+	SaveFileWr << "\n" + std::to_string(highQualtiyShdows);
+	SaveFileWr << "\n" + std::to_string(lightVLow);
+	SaveFileWr << "\n" + std::to_string(enableskybox);
+	SaveFileWr << "\n" + std::to_string(mockheight);
+	SaveFileWr << "\n" + std::to_string(mockwidth);
+	SaveFileWr << "\n" + std::to_string(wireframe);
+	SaveFileWr << "\n" + std::to_string(ctrlSpeed);
+	SaveFileWr << "\n" + std::to_string(normalSpeed);
+	SaveFileWr << "\n" + std::to_string(FullCockpit);
 
-	std::ofstream speed_output("save/speed.pve");
-	speed_output << normalSpeed;
+	SaveFileWr << "\n";
 
-	std::ofstream skybox_output("save/skybox.pve");
-	skybox_output << enableskybox;
 
-	std::ofstream FV_output("save/FullView.pve");
-	FV_output << FullCockpit;
 
 	return 0;
 
