@@ -218,7 +218,7 @@ vec4 spotLight()
 	return (texture(diffuse0, texCoord) * (diffuse * (1.0f - shadow) * inten + ambient) + texture(specular0, texCoord).r * specular * (1.0f - shadow) * inten) * lightColor;
 }
 
-float near = 0.00005f;
+float near = 0.0005f;
 float far = 100.0f;
 
 float linearizeDepth(float depth)
@@ -226,10 +226,18 @@ float linearizeDepth(float depth)
 	return (2.0 * near * far) / (far + near - (depth * 2.0 - 1.0) * (far - near));
 }
 
+
+
 void main()
 {
-	
+	//linear fog
+	//black fog
+	//FragColor = direcLight() + vec4(linearizeDepth(gl_FragCoord.z) * vec3(-1.0f, -1.0f, -1.0f), 1.0f);
+	//normal
 	FragColor = direcLight() + vec4(linearizeDepth(gl_FragCoord.z) * vec3(1.0f, 1.0f, 1.0f), 1.0f);
+
+
+
 	//FragColor = direcLight();
 	
 
