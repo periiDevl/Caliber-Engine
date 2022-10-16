@@ -147,7 +147,7 @@ unsigned int skyboxIndices[] =
 	6, 2, 3
 };
 
-
+int saveFloatCurve = 10;
 int main()
 {
 	
@@ -162,7 +162,7 @@ int main()
 		std::getline(saveFile, line);
 		if (saveFile.good())
 		{
-			save[i] = stoi(line);
+			save[i] = std::stof(line);
 			i++;
 		}
 
@@ -185,7 +185,8 @@ int main()
 	FullCockpit = save[14];
 
 
-	
+	exposure = exposure / saveFloatCurve;
+	gamma = gamma / saveFloatCurve;
 	int mockwidth = width;
 	int mockheight = height;
 	
@@ -1164,8 +1165,10 @@ int main()
 
 	SaveFileWr << std::to_string(samples);
 	SaveFileWr << "\n" + std::to_string(vsync);
-	SaveFileWr << "\n" + std::to_string(gamma);
-	SaveFileWr << "\n" + std::to_string(realExposure);
+	SaveFileWr << "\n";
+	SaveFileWr << gamma * saveFloatCurve;
+	SaveFileWr << "\n";
+	SaveFileWr << realExposure * saveFloatCurve;
 	SaveFileWr << "\n" + std::to_string(bloom);
 	SaveFileWr << "\n" + std::to_string(renderShadows);
 	SaveFileWr << "\n" + std::to_string(highQualtiyShdows);
