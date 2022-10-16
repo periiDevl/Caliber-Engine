@@ -34,6 +34,8 @@ uniform vec3 lPos;
 // Gets the position of the camera from the main function
 uniform vec3 camPos;
 
+uniform float near = 0.0005f;
+uniform float far = 100.0f;
 
 vec4 pointLight()
 {	
@@ -218,8 +220,7 @@ vec4 spotLight()
 	return (texture(diffuse0, texCoord) * (diffuse * (1.0f - shadow) * inten + ambient) + texture(specular0, texCoord).r * specular * (1.0f - shadow) * inten) * lightColor;
 }
 
-float near = 0.0005f;
-float far = 100.0f;
+
 
 float linearizeDepth(float depth)
 {

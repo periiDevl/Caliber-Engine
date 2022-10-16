@@ -151,6 +151,7 @@ unsigned int skyboxIndices[] =
 
 int main()
 {
+	
 	std::ifstream vsync_input("save/vsync.pve");
 	vsync_input >> vsync;
 	
@@ -276,11 +277,11 @@ int main()
 	// Take care of all the light related things
 	glm::vec4 lightColor = glm::vec4(1, 1, 1, 1.0f);
 	glm::vec3 lightPos = glm::vec3(0.5f, 1, 0.5f);
-
 	shaderProgram.Activate();
 
 	glUniform4f(glGetUniformLocation(shaderProgram.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
+	glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), 0.005f);
 
 	skyboxShader.Activate();
 	glUniform1i(glGetUniformLocation(skyboxShader.ID, "skybox"), 0);
@@ -1063,6 +1064,13 @@ int main()
 						ImGui::Checkbox("Enable skybox", &enableskybox);
 
 						ImGui::EndTabItem();
+
+						if (ImGui::BeginTabBar("fog"))
+						{
+							ImGui::Checkbox("Enable skybox", &enableskybox);
+							
+						}
+						ImGui::EndTabBar();
 					}
 
 					if (ImGui::BeginTabItem("Cockpit settings"))
@@ -1080,6 +1088,7 @@ int main()
 						ImGui::EndTabItem();
 					}
 					ImGui::EndTabBar();
+					
 				}
 
 				ImGui::End();
