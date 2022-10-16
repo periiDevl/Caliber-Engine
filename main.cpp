@@ -317,6 +317,7 @@ int main()
 
 	// Creates camera object
 	Camera camera(width, height, glm::vec3(22.0f, 15.0, 0.0f));
+	Camera camera2(width, height, glm::vec3(22.0f, 15.0, 0.0f));
 	
 
 	
@@ -852,13 +853,6 @@ int main()
 		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 		// Specify the color of the background
 		
-		//glClearColor(pow(0.07f, gamma), pow(0.13f, gamma), pow(0.17f, gamma), 1.0f);
-		glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
-		
-		// Clean the back buffer and depth buffer
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-		// Enable depth testing since it's disabled when drawing the framebuffer rectangle
-		glEnable(GL_DEPTH_TEST);
 
 
 
@@ -866,6 +860,7 @@ int main()
 		
 		// Updates and exports the camera matrix to the Vertex Shader
 		camera.updateMatrix(60.0f, 0.1f, farPlane);
+		camera2.updateMatrix(60.0f, 0.1f, farPlane);
 		
 
 
@@ -882,10 +877,16 @@ int main()
 		glUniform1i(glGetUniformLocation(shaderProgram.ID, "shadowMap"), 2);
 		
 		
+		//glClearColor(pow(0.07f, gamma), pow(0.13f, gamma), pow(0.17f, gamma), 1.0f);
+		glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
 		
+		// Clean the back buffer and depth buffer
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		// Enable depth testing since it's disabled when drawing the framebuffer rectangle
+		glEnable(GL_DEPTH_TEST);
+		calibericon.Draw(shaderProgram, camera2, glm::vec3(0, 0, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(20, 20, 20));
 		///Drawing///
 		
-		calibericon.Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(20, 20, 20));
 		if (!run) {
 			grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(10.5f, 1, 10));
 
