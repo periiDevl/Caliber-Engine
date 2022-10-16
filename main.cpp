@@ -317,7 +317,9 @@ int main()
 
 	// Creates camera object
 	Camera camera(width, height, glm::vec3(22.0f, 15.0, 0.0f));
-	Camera camera2(width, height, glm::vec3(22.0f, 15.0, 0.0f));
+
+	//camera stacking
+	//Camera camera2(width, height, glm::vec3(22.0f, 15.0, 0.0f));
 	
 
 	
@@ -860,7 +862,9 @@ int main()
 		
 		// Updates and exports the camera matrix to the Vertex Shader
 		camera.updateMatrix(60.0f, 0.1f, farPlane);
-		camera2.updateMatrix(60.0f, 0.1f, farPlane);
+
+		//camera stack
+		//camera2.updateMatrix(60.0f, 0.1f, farPlane);
 		
 
 
@@ -884,7 +888,10 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		// Enable depth testing since it's disabled when drawing the framebuffer rectangle
 		glEnable(GL_DEPTH_TEST);
-		calibericon.Draw(shaderProgram, camera2, glm::vec3(0, 0, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(20, 20, 20));
+		//camera stacking
+		//calibericon.Draw(shaderProgram, camera2, glm::vec3(0, 0, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(20, 20, 20));
+
+		calibericon.Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(20, 20, 20));
 		///Drawing///
 		
 		if (!run) {
