@@ -29,9 +29,11 @@ float gamma;
 float exposure;
 float normalSpeed;
 float ctrlSpeed;
-//not finished
 bool FullCockpit = true;
 bool enableskybox = true;
+//not finished
+float FogNear = 0.0f;
+
 
 std::array save = {1};
 
@@ -183,6 +185,7 @@ int main()
 	ctrlSpeed = save[12];
 	normalSpeed = save[13];
 	FullCockpit = save[14];
+	FogNear = save[15];
 
 
 	exposure = exposure / saveFloatCurve;
@@ -263,14 +266,15 @@ int main()
 	Shader blurProgram("shaders/framebuffer.vert", "shaders/blur.frag");
 	Shader skyboxShader("shaders/skybox.vert", "shaders/skybox.frag");
 
+	
+
 	// Take care of all the light related things
 	glm::vec4 lightColor = glm::vec4(1, 1, 1, 1.0f);
 	glm::vec3 lightPos = glm::vec3(0.5f, 1, 0.5f);
 	shaderProgram.Activate();
-
 	glUniform4f(glGetUniformLocation(shaderProgram.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
-	glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), 0.00f);
+	glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), FogNear);
 
 	skyboxShader.Activate();
 	glUniform1i(glGetUniformLocation(skyboxShader.ID, "skybox"), 0);
@@ -1028,8 +1032,9 @@ int main()
 
 						if (ImGui::BeginTabBar("fog"))
 						{
-							ImGui::Checkbox("Enable skybox", &enableskybox);
-							
+							ImGui::InputFloat("Fog near value", &FogNear, 0.3f, 1, "%.3f", 0);
+							glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), FogNear);
+
 						}
 						ImGui::EndTabBar();
 					}
@@ -1164,6 +1169,7 @@ int main()
 	SaveFileWr << "\n" + std::to_string(ctrlSpeed);
 	SaveFileWr << "\n" + std::to_string(normalSpeed);
 	SaveFileWr << "\n" + std::to_string(FullCockpit);
+	SaveFileWr << "\n" + std::to_string(FogNear);
 
 	SaveFileWr << "\n";
 

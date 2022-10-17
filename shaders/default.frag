@@ -34,7 +34,7 @@ uniform vec3 lPos;
 // Gets the position of the camera from the main function
 uniform vec3 camPos;
 
-uniform float near = 0.0005f;
+uniform float near;
 uniform float far = 100.0f;
 
 vec4 pointLight()
@@ -222,7 +222,7 @@ vec4 spotLight()
 
 
 
-float linearizeDepth(float depth)
+float linearizeDepth(float depth, float near, float far)
 {
 	return (2.0 * near * far) / (far + near - (depth * 2.0 - 1.0) * (far - near));
 }
@@ -235,7 +235,7 @@ void main()
 	//black fog
 	//FragColor = direcLight() + vec4(linearizeDepth(gl_FragCoord.z) * vec3(-1.0f, -1.0f, -1.0f), 1.0f);
 	//normal
-	FragColor = direcLight() + vec4(linearizeDepth(gl_FragCoord.z) * vec3(1.0f, 1.0f, 1.0f), 1.0f);
+	FragColor = direcLight() + vec4(linearizeDepth(gl_FragCoord.z, near, far) * vec3(1.0f, 1.0f, 1.0f), 1.0f);
 
 
 
