@@ -772,7 +772,7 @@ int main()
 				
 				for (int i = 0; i < sceneObjects.size(); i++)
 				{
-					sceneObjects[i].Draw(shadowMapProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
+					sceneObjects[i].Draw(shadowMapProgram, camera, glm::vec3(3, 3, 3.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 				}
 			}
 			
@@ -866,8 +866,9 @@ int main()
 		///Drawing///
 		for (int i = 0; i < sceneObjects.size(); i++)
 		{
-			sceneObjects[i].Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
+			sceneObjects[i].Draw(shaderProgram, camera, glm::vec3(3, 3, 3.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 		}
+		
 		if (!run) {
 			grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(10.5f, 1, 10));
 
