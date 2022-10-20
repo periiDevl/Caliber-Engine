@@ -35,7 +35,7 @@ uniform vec3 lPos;
 uniform vec3 camPos;
 
 uniform float near;
-uniform float far = 100.0f;
+uniform float far;
 
 vec4 pointLight()
 {	

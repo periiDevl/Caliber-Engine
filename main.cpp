@@ -15,6 +15,7 @@ void SimpleCollisionZ(float x1, float x2, float z1, float z2, Camera camera);
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+std::array save = {1};
 //finished
 int vsync;
 bool renderShadows;
@@ -31,11 +32,12 @@ float normalSpeed;
 float ctrlSpeed;
 bool FullCockpit = true;
 bool enableskybox = true;
-//not finished
 float FogNear = 0.0f;
+int viewFarPlane = 50;
+//not finished
 
 
-std::array save = {1};
+
 
 glm::quat euler_to_quat(double roll, double pitch, double yaw)
 {
@@ -152,10 +154,6 @@ unsigned int skyboxIndices[] =
 int saveFloatCurve = 10;
 int main()
 {
-	
-
-
-
 	std::string line;
 	std::ifstream saveFile("projectname.caliber");
 	int i = 0;
@@ -186,10 +184,12 @@ int main()
 	normalSpeed = save[13];
 	FullCockpit = save[14];
 	FogNear = save[15];
+	viewFarPlane = save[16];
 
 
 	exposure = exposure / saveFloatCurve;
 	gamma = gamma / saveFloatCurve;
+	FogNear = FogNear / saveFloatCurve;
 	int mockwidth = width;
 	int mockheight = height;
 	
@@ -275,16 +275,17 @@ int main()
 	glUniform4f(glGetUniformLocation(shaderProgram.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 	glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), FogNear);
-
+	glUniform1f(glGetUniformLocation(shaderProgram.ID, "far"), viewFarPlane);
 	skyboxShader.Activate();
 	glUniform1i(glGetUniformLocation(skyboxShader.ID, "skybox"), 0);
-
-	glm::vec4 lColor = glm::vec4(1, 1, 1, 1);
+	/*
+	glm::vec4 lColor = glm::vec4(10, 10, 10, 1);
 	glm::vec3 lPos = glm::vec3(1.9f, 1, 0.5f);
 
 
 	glUniform4f(glGetUniformLocation(shaderProgram.ID, "lColor"), lColor.x, lColor.y, lColor.z, lColor.w);
 	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lPos"), lPos.x, lPos.y, lPos.z);
+	*/
 
 	framebufferProgram.Activate();
 	glUniform1i(glGetUniformLocation(framebufferProgram.ID, "screenTexture"), 0);
@@ -321,15 +322,16 @@ int main()
 	
 	
 	// Load in models
-	Model calibericon("models/crowI/scene.gltf");
 
 	
 	
 
 
+
+
+	std::vector<Model> sceneObjects = {"models/crowI/scene.gltf" };
 
 	Model grid("models/grid/scene.gltf");
-
 
 	// Prepare framebuffer rectangle VBO and VAO
 	unsigned int rectVAO, rectVBO;
@@ -555,6 +557,7 @@ int main()
 	if (HighLightView == 0) {
 		lightVLow = false;
 	}
+
 	else
 	{
 		lightVLow = true;
@@ -766,9 +769,11 @@ int main()
 		// Draw scene for shadow map
 		if (run == true || FullCockpit) {
 			if (renderShadows == 1) {
-				calibericon.Draw(shadowMapProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 				
-				
+				for (int i = 0; i < sceneObjects.size(); i++)
+				{
+					sceneObjects[i].Draw(shadowMapProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
+				}
 			}
 			
 		}
@@ -828,7 +833,7 @@ int main()
 
 		
 		// Updates and exports the camera matrix to the Vertex Shader
-		camera.updateMatrix(60.0f, 0.1f, farPlane);
+		camera.updateMatrix(60.0f, 0.1f, viewFarPlane);
 
 		//camera stack
 		//camera2.updateMatrix(60.0f, 0.1f, farPlane);
@@ -858,9 +863,11 @@ int main()
 		//camera stacking
 		//calibericon.Draw(shaderProgram, camera2, glm::vec3(0, 0, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(20, 20, 20));
 
-		calibericon.Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(20, 20, 20));
 		///Drawing///
-		
+		for (int i = 0; i < sceneObjects.size(); i++)
+		{
+			sceneObjects[i].Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
+		}
 		if (!run) {
 			grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(10.5f, 1, 10));
 
@@ -1028,12 +1035,15 @@ int main()
 						
 						ImGui::Checkbox("Enable skybox", &enableskybox);
 
+
 						ImGui::EndTabItem();
 
 						if (ImGui::BeginTabBar("fog"))
 						{
+							ImGui::InputInt("Far plane view distance", &viewFarPlane, 1, 30);
 							ImGui::InputFloat("Fog near value", &FogNear, 0.3f, 1, "%.3f", 0);
 							glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), FogNear);
+							glUniform1f(glGetUniformLocation(shaderProgram.ID, "far"), viewFarPlane);
 
 						}
 						ImGui::EndTabBar();
@@ -1043,13 +1053,13 @@ int main()
 					{
 						ImGui::InputFloat("Shift speed speed", &normalSpeed, 0.3f, 1, "%.3f", 0);
 						ImGui::InputFloat("Normal speed", &ctrlSpeed, 0.3f, 1, "%.3f", 0);
-						ImGui::Checkbox("Enable full cockpit", &FullCockpit);
 
 						ImGui::EndTabItem();
 					}
 
 					if (ImGui::BeginTabItem("Debug"))
 					{
+						ImGui::Checkbox("Enable full cockpit", &FullCockpit);
 						ImGui::Checkbox("Enable wireframe", &wireBool);
 						ImGui::EndTabItem();
 					}
@@ -1169,8 +1179,8 @@ int main()
 	SaveFileWr << "\n" + std::to_string(ctrlSpeed);
 	SaveFileWr << "\n" + std::to_string(normalSpeed);
 	SaveFileWr << "\n" + std::to_string(FullCockpit);
-	SaveFileWr << "\n" + std::to_string(FogNear);
-
+	SaveFileWr << "\n" + std::to_string(FogNear * saveFloatCurve);
+	SaveFileWr << "\n" + std::to_string(viewFarPlane);
 	SaveFileWr << "\n";
 
 
