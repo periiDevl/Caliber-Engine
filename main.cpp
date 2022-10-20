@@ -328,8 +328,8 @@ int main()
 
 
 
-	const int objectsAbout = 2;
-	Model sceneObjects[objectsAbout] = {"models/crowI/scene.gltf", "models/grid/scene.gltf"};
+	const int objectsAmount = 2;
+	Model sceneObjects[objectsAmount] = {"models/crowI/scene.gltf", "models/grid/scene.gltf"};
 
 	Model grid("models/grid/scene.gltf");
 
@@ -770,7 +770,7 @@ int main()
 		if (run == true || FullCockpit) {
 			if (renderShadows == 1) {
 				
-				for (int i = 0; i < objectsAbout; i++)
+				for (int i = 0; i < objectsAmount; i++)
 				{
 					sceneObjects[i].Draw(shadowMapProgram, camera, glm::vec3(3, 3, 3.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 				}
@@ -864,11 +864,11 @@ int main()
 		//calibericon.Draw(shaderProgram, camera2, glm::vec3(0, 0, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(20, 20, 20));
 
 		///Drawing///
-		for (int i = 0; i < objectsAbout; i++)
+		for (int i = 0; i < objectsAmount; i++)
 		{
-			sceneObjects[i].Draw(shaderProgram, camera, glm::vec3(200, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
+			sceneObjects[i].Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 		}
-		
+		sceneObjects[0].Draw(shaderProgram, camera, glm::vec3(200, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 		if (!run) {
 			grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(10.5f, 1, 10));
 
