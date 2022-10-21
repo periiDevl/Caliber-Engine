@@ -7,12 +7,11 @@
 #include<fstream>
 #include<string>
 
+const int objectsAmount = 2;
 bool run = false;
 
 
-void SimpleCollisionX(float x1, float x2, float z1, float z2, Camera camera);
-void SimpleCollisionZ(float x1, float x2, float z1, float z2, Camera camera);
-
+void DrawSeneObject(Shader shader, Camera camera, Model model);
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 std::array save = {1};
@@ -324,12 +323,11 @@ int main()
 	// Load in models
 
 	
+	Model sceneObjects[objectsAmount] = { "models/crowI/scene.gltf", "models/grid/scene.gltf" };
+
+
+
 	
-
-
-
-	const int objectsAmount = 2;
-	Model sceneObjects[objectsAmount] = {"models/crowI/scene.gltf", "models/grid/scene.gltf"};
 
 	Model grid("models/grid/scene.gltf");
 
@@ -796,10 +794,7 @@ int main()
 			}
 
 
-			SimpleCollisionX(11, -11, 10, -10, camera);
-			//right left || size X, sizeZ
-			SimpleCollisionZ(10, -10, 11, -11, camera);
-			//front - back || sizeX, sizeZ
+			
 			if (colidedX)
 			{
 				camera.Position.x = camPosX;
@@ -858,17 +853,17 @@ int main()
 		
 		// Clean the back buffer and depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-		// Enable depth testing since it's disabled when drawing the framebuffer rectangle
+		// Enable depth testing since it's disabled when the framebuffer rectangle
 		glEnable(GL_DEPTH_TEST);
 		//camera stacking
 		//calibericon.Draw(shaderProgram, camera2, glm::vec3(0, 0, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(20, 20, 20));
 
 		///Drawing///
-		for (int i = 0; i < objectsAmount; i++)
-		{
-			sceneObjects[i].Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
-		}
-		sceneObjects[0].Draw(shaderProgram, camera, glm::vec3(200, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
+		//for (int i = 0; i < objectsAmount; i++)
+		//{
+			//sceneObjects[i].Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
+		//}
+		DrawSeneObject(shaderProgram, camera, sceneObjects[0]);
 		if (!run) {
 			grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(10.5f, 1, 10));
 
@@ -1191,6 +1186,7 @@ int main()
 	
 }
 
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	// make sure the viewport matches the new window dimensions; note that width and 
@@ -1198,34 +1194,13 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 }
 
+void DrawSeneObject(Shader shader, Camera camera, Model model)
+{
+	glm::vec3 pos;
+	ImGui::Begin("object properties");
+	ImGui::InputFloat("x :", &pos.x, 1, 10);
 
-
-void SimpleCollisionX(float x1, float x2, float z1, float z2, Camera camera){
-
-	if (camera.Position.x < x1 && camera.Position.x > x2 && camera.Position.z < z1 && camera.Position.z > z2)
-	{
-
-		colidedX = true;
-	}
-	else
-	{
-		colidedX = false;
-	}
-
-
-
-}
-
-void SimpleCollisionZ(float x1, float x2, float z1, float z2, Camera camera) {
-	if (camera.Position.x < x1 && camera.Position.x > x2 && camera.Position.z < z1 && camera.Position.z > z2)
-	{
-
-		colidedZ = true;
-	}
-	else
-	{
-		colidedZ = false;
-	}
+	model.Draw(shader, camera, pos);
 }
 
 
