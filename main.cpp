@@ -91,13 +91,16 @@ glm::quat QuatLookAt(
 	}
 }
 
-glm::vec3 UIvec3()
+glm::vec3 UIvec3(bool selected)
 {
-	glm::vec3 hi;
-	ImGui::Begin("object properties");
-	ImGui::InputFloat("x :", &hi.x, 1, 10);
-
-	return hi;
+	glm::vec3 position;
+	float Fpos[3] = { position.x, position.y, position.z };
+	if (selected) {
+		ImGui::Begin("object properties");
+		ImGui::InputFloat3("location", Fpos);
+	}
+	position = glm::vec3(Fpos[0], Fpos[1], Fpos[2]);
+	return position;
 
 }
 
@@ -871,7 +874,8 @@ int main()
 		//{
 			//sceneObjects[i].Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 		//}
-		sceneObjects[0].Draw(shaderProgram, camera, UIvec3(), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
+		sceneObjects[0].Draw(shaderProgram, camera, UIvec3(true), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
+		sceneObjects[0].Draw(shaderProgram, camera, UIvec3(false), glm::quat(0, 0, 0, 0), glm::vec3(15, 15, 15));
 		if (!run) {
 			grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(10.5f, 1, 10));
 
