@@ -31,8 +31,7 @@ float ctrlSpeed;
 bool FullCockpit = true;
 bool enableskybox = true;
 float FogNear = 0.0f;
-int viewFarPlane = 50;
-//not finished
+int viewFarPlane;
 
 
 
@@ -779,10 +778,8 @@ int main()
 		if (run == true || FullCockpit) {
 			if (renderShadows == 1) {
 				
-				for (int i = 0; i < objectsAmount; i++)
-				{
-					sceneObjects[i].Draw(shadowMapProgram, camera, glm::vec3(3, 3, 3.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
-				}
+				sceneObjects[0].Draw(shadowMapProgram, camera, UIvec3(true), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
+				sceneObjects[0].Draw(shadowMapProgram, camera, UIvec3(false), glm::quat(0, 0, 0, 0), glm::vec3(15, 15, 15));
 			}
 			
 		}
