@@ -90,44 +90,43 @@ glm::quat QuatLookAt(
 	}
 }
 
-glm::vec3 UIvec3(bool selected)
+glm::vec3 UIlocation(bool selected)
 {
 	glm::vec3 position;
-	float Fpos[3] = { position.x, position.y, position.z };
+	float F[3] = { position.x, position.y, position.z };
 	if (selected) {
 		ImGui::Begin("object properties");
-		ImGui::InputFloat3("location", Fpos);
+		ImGui::InputFloat3("location", F);
 	}
-	position = glm::vec3(Fpos[0], Fpos[1], Fpos[2]);
+	position = glm::vec3(F[0], F[1], F[2]);
 	return position;
+
+}
+
+glm::vec3 UIsacle(bool selected)
+{
+	glm::vec3 sacle;
+	float F[3] = { sacle.x, sacle.y, sacle.z };
+	if (selected) {
+		ImGui::Begin("object properties");
+		ImGui::InputFloat3("scale", F);
+	}
+	sacle = glm::vec3(F[0], F[1], F[2]);
+	return sacle;
 
 }
 
 glm::quat UIeular(bool selected)
 {
-
-	float Fpos[3];
+	float F[3];
 	if (selected) {
 		ImGui::Begin("object properties");
-		ImGui::InputFloat3("rotation", Fpos);
+		ImGui::InputFloat3("rotation", F);
 	}
-	double cr = cos(Fpos[0] * 0.5);
-	double sr = sin(Fpos[0] * 0.5);
-	double cp = cos(Fpos[1] * 0.5);
-	double sp = sin(Fpos[1] * 0.5);
-	double cy = cos(Fpos[2] * 0.5);
-	double sy = sin(Fpos[2] * 0.5);
-
-	glm::quat q;
-	q.w = cr * cp * cy + sr * sp * sy;
-	q.x = sr * cp * cy - cr * sp * sy;
-	q.y = cr * sp * cy + sr * cp * sy;
-	q.z = cr * cp * sy - sr * sp * cy;
-
-	return q;
+	glm::quat finalRotation = euler_to_quat(F[0], F[1], F[2] );
+	return finalRotation;
 
 }
-
 //collision
 //__________
 bool colidedX = false;
@@ -803,8 +802,8 @@ int main()
 		if (run == true || FullCockpit) {
 			if (renderShadows == 1) {
 				
-				sceneObjects[0].Draw(shadowMapProgram, camera, UIvec3(true), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
-				sceneObjects[0].Draw(shadowMapProgram, camera, UIvec3(false), glm::quat(0, 0, 0, 0), glm::vec3(15, 15, 15));
+				//drawing shadowmaps
+				sceneObjects[0].Draw(shadowMapProgram, camera, UIlocation(true), UIeular(true), UIsacle(true));
 			}
 			
 		}
@@ -896,8 +895,7 @@ int main()
 		//{
 			//sceneObjects[i].Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 		//}
-		sceneObjects[0].Draw(shaderProgram, camera, UIvec3(true),UIeular(true), glm::vec3(20, 20, 20));
-		sceneObjects[0].Draw(shaderProgram, camera, UIvec3(false), glm::quat(0, 0, 0, 0), glm::vec3(15, 15, 15));
+		sceneObjects[0].Draw(shaderProgram, camera, UIlocation(true), UIeular(true), UIsacle(true));
 		if (!run) {
 			grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(10.5f, 1, 10));
 
