@@ -803,12 +803,10 @@ int main()
 			if (renderShadows == 1) {
 				
 				//drawing shadowmaps
-				sceneObjects[0].Draw(shadowMapProgram, camera, UIlocation(true), UIeular(true), UIsacle(true));
+				//sceneObjects[0].Draw(shadowMapProgram, camera, UIlocation(true), UIeular(true), UIsacle(true));
 			}
 			
 		}
-	
-	
 		
 		
 
@@ -889,13 +887,29 @@ int main()
 		glEnable(GL_DEPTH_TEST);
 		//camera stacking
 		//calibericon.Draw(shaderProgram, camera2, glm::vec3(0, 0, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(20, 20, 20));
+		
+		// Stores the coordinates of the cursor
+		double mouseX;
+		double mouseY;
+		// Fetches the coordinates of the cursor
+		glfwGetCursorPos(window, &mouseX, &mouseY);
 
+		
+		float rotX = camera.sensitivity * (float)(mouseY - (height / 2)) / height;
+		float rotY = camera.sensitivity * (float)(mouseX - (width / 2)) / width;
+
+
+		
+
+
+		// Sets mouse cursor to the middle of the screen so that it doesn't end up roaming around
+		//glfwSetCursorPos(window, (width / 2), (height / 2));
 		///Drawing///
 		//for (int i = 0; i < objectsAmount; i++)
 		//{
 			//sceneObjects[i].Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 		//}
-		sceneObjects[0].Draw(shaderProgram, camera, UIlocation(true), UIeular(true), UIsacle(true));
+		sceneObjects[0].Draw(shaderProgram, camera, direction_to_forward(glm::vec3(0, 0, 0), 0, -rotY) * glm::vec3(200), euler_to_quat(-rotX, -rotY, 0), glm::vec3(20));
 		if (!run) {
 			grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(10.5f, 1, 10));
 
@@ -1225,8 +1239,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	// height will be significantly larger than specified on retina displays.
 	glViewport(0, 0, width, height);
 }
-
-
 
 
 
