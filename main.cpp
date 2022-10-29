@@ -909,7 +909,7 @@ int main()
 		//{
 			//sceneObjects[i].Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 		//}
-		sceneObjects[0].Draw(shaderProgram, camera, direction_to_forward(glm::vec3(0, 0, 0), 0, -rotY) * glm::vec3(200), euler_to_quat(-rotX, -rotY, 0), glm::vec3(20));
+		sceneObjects[0].Draw(shaderProgram, camera, direction_to_forward(glm::vec3(0, 0, 0), 0, -rotY) * glm::vec3(500), euler_to_quat(-rotX, -rotY, 0), glm::vec3(20));
 		if (!run) {
 			grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(10.5f, 1, 10));
 
