@@ -13,6 +13,7 @@ bool run = false;
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+float MAINobjects[100];
 std::array save = {1};
 //finished
 int vsync;
@@ -89,13 +90,20 @@ glm::quat QuatLookAt(
 		return glm::quatLookAt(direction, up);
 	}
 }
-
-glm::vec3 UIlocation(bool selected)
+bool runOnce = false;
+glm::vec3 UIlocation(bool selected, int o, int n, int e)
 {
 	glm::vec3 position;
+	if (!runOnce) {
+		position.x = save[o];
+		position.y = save[n];
+		position.z = save[e ];
+	}
+	runOnce = true;
 	float F[3] = { position.x, position.y, position.z };
 	if (selected) {
 		ImGui::Begin("object properties");
+
 		ImGui::InputFloat3("location", F);
 	}
 	position = glm::vec3(F[0], F[1], F[2]);
@@ -127,14 +135,7 @@ glm::quat UIeular(bool selected)
 	return finalRotation;
 
 }
-//collision
-//__________
-bool colidedX = false;
-float camPosX;
 
-float camPosZ;
-bool colidedZ = false;
-//__________
 
 
 float rectangleVertices[] =
@@ -187,6 +188,7 @@ unsigned int skyboxIndices[] =
 int saveFloatCurve = 10;
 int main()
 {
+
 	std::string line;
 	std::ifstream saveFile("projectname.caliber");
 	int i = 0;
@@ -249,7 +251,8 @@ int main()
 	
 	
 	
-	GLFWwindow* window = glfwCreateWindow(width, height, "Caliber window", NULL, NULL);
+	//GLFWwindow* window = glfwCreateWindow(width, height, "Caliber window", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(1920, 1080, "Caliber window", NULL, NULL);
 	
 	// Error check if the window fails to create
 	if (window == NULL)
@@ -767,23 +770,7 @@ int main()
 					cameraPosYCol = camera.Position.y;
 				}
 
-				if (colidedX)
-				{
-					camera.Position.x = camPosX;
-				}
-				else {
-
-					camPosX = camera.Position.x;
-				}
-
-				if (colidedZ)
-				{
-					camera.Position.z = camPosZ;
-				}
-				else {
-
-					camPosZ = camera.Position.z;
-				}
+			
 			}
 		}
 
@@ -825,23 +812,7 @@ int main()
 
 
 			
-			if (colidedX)
-			{
-				camera.Position.x = camPosX;
-			}
-			else {
-
-				camPosX = camera.Position.x;
-			}
-
-			if (colidedZ)
-			{
-				camera.Position.z = camPosZ;
-			}
-			else {
-
-				camPosZ = camera.Position.z;
-			}
+			
 		}
 
 		// Switch back to the default framebuffer
@@ -909,7 +880,16 @@ int main()
 		//{
 			//sceneObjects[i].Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 		//}
-		sceneObjects[0].Draw(shaderProgram, camera, direction_to_forward(glm::vec3(0, 0, 0), 0, -rotY) * glm::vec3(500), euler_to_quat(-rotX, -rotY, 0), glm::vec3(20));
+		// forward direction
+		//sceneObjects[0].Draw(shaderProgram, camera, direction_to_forward(glm::vec3(0, 0, 0), 0, -rotY)* glm::vec3(500), euler_to_quat(-rotX, -rotY, 0), glm::vec3(20));
+		glm::vec3 location = glm::vec3(UIlocation(true, 17, 18, 19));
+		MAINobjects[0] = location.x;
+		MAINobjects[1] = location.y;
+		MAINobjects[2] = location.z;
+		sceneObjects[0].Draw(shaderProgram, camera, glm::vec3(MAINobjects[0], MAINobjects[1], MAINobjects[2]));
+
+
+		
 		if (!run) {
 			grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(10.5f, 1, 10));
 
@@ -1223,6 +1203,14 @@ int main()
 	SaveFileWr << "\n" + std::to_string(FullCockpit);
 	SaveFileWr << "\n" + std::to_string(FogNear * saveFloatCurve);
 	SaveFileWr << "\n" + std::to_string(viewFarPlane);
+
+	
+	SaveFileWr << "\n" + std::to_string(MAINobjects[0]);
+	SaveFileWr << "\n" + std::to_string(MAINobjects[1]);
+	SaveFileWr << "\n" + std::to_string(MAINobjects[2]);
+	
+	 
+
 	SaveFileWr << "\n";
 
 
