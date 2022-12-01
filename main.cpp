@@ -859,11 +859,13 @@ int main()
 		//{
 			//sceneObjects[i].Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 		//}
-		sceneObjects[0].Draw(shaderProgram, camera, glm::vec3(0), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
+		glm::vec3 target = glm::vec3(2, 0, 5);
+		sceneObjects[1].Draw(shaderProgram, camera, glm::vec3(0), QuatLookAt(glm::vec3(0, 0, 0), target, camera.Up), glm::vec3(20, 2, 2));
+		sceneObjects[1].Draw(shaderProgram, camera, glm::vec3(0, 0, -100), QuatLookAt(glm::vec3(0, 0, -100), target * glm::vec3(0), camera.Up), glm::vec3(20, 2, 2));
 
 
 		if (!run) {
-			grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(10.5f, 1, 10));
+			//grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(10.5f, 1, 10));
 
 			//look at fuction
 			//grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), QuatLookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(camera.Position.x, -camera.Position.y, camera.Position.z), -camera.Up), glm::vec3(10.5f, 1, 10));
