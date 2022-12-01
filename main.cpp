@@ -90,43 +90,7 @@ glm::quat QuatLookAt(
 	}
 }
 
-glm::vec3 UIvec3(bool selected)
-{
-	glm::vec3 position;
-	float Fpos[3] = { position.x, position.y, position.z };
-	if (selected) {
-		ImGui::Begin("object properties");
-		ImGui::InputFloat3("location", Fpos);
-	}
-	position = glm::vec3(Fpos[0], Fpos[1], Fpos[2]);
-	return position;
 
-}
-
-glm::quat UIeular(bool selected)
-{
-
-	float Fpos[3];
-	if (selected) {
-		ImGui::Begin("object properties");
-		ImGui::InputFloat3("rotation", Fpos);
-	}
-	double cr = cos(Fpos[0] * 0.5);
-	double sr = sin(Fpos[0] * 0.5);
-	double cp = cos(Fpos[1] * 0.5);
-	double sp = sin(Fpos[1] * 0.5);
-	double cy = cos(Fpos[2] * 0.5);
-	double sy = sin(Fpos[2] * 0.5);
-
-	glm::quat q;
-	q.w = cr * cp * cy + sr * sp * sy;
-	q.x = sr * cp * cy - cr * sp * sy;
-	q.y = cr * sp * cy + sr * cp * sy;
-	q.z = cr * cp * sy - sr * sp * cy;
-
-	return q;
-
-}
 
 //collision
 //__________
@@ -488,7 +452,7 @@ int main()
 	}
 	else
 	{
-		shadowMapWidth = 800, shadowMapHeight = 800;
+		shadowMapWidth = 550, shadowMapHeight = 550;
 
 	}
 	
@@ -803,8 +767,7 @@ int main()
 		if (run == true || FullCockpit) {
 			if (renderShadows == 1) {
 				
-				sceneObjects[0].Draw(shadowMapProgram, camera, UIvec3(true), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
-				sceneObjects[0].Draw(shadowMapProgram, camera, UIvec3(false), glm::quat(0, 0, 0, 0), glm::vec3(15, 15, 15));
+				sceneObjects[0].Draw(shadowMapProgram, camera, glm::vec3(0), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 			}
 			
 		}
@@ -896,8 +859,9 @@ int main()
 		//{
 			//sceneObjects[i].Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 		//}
-		sceneObjects[0].Draw(shaderProgram, camera, UIvec3(true),UIeular(true), glm::vec3(20, 20, 20));
-		sceneObjects[0].Draw(shaderProgram, camera, UIvec3(false), glm::quat(0, 0, 0, 0), glm::vec3(15, 15, 15));
+		sceneObjects[0].Draw(shaderProgram, camera, glm::vec3(0), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
+
+
 		if (!run) {
 			grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(10.5f, 1, 10));
 
