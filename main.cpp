@@ -789,24 +789,49 @@ int main()
 				cameraPosYCol = camera.Position.y;
 			}
 
-
-			
-			if (colidedX)
+			if (
+				camera.Position.x < 64.5 && camera.Position.x > 46 && camera.Position.z < 96.3 && camera.Position.z > -34.6
+				
+				)
 			{
-				camera.Position.x = camPosX;
-			}
-			else {
 
-				camPosX = camera.Position.x;
+				colidedX = true;
 			}
-
-			if (colidedZ)
+			else
 			{
-				camera.Position.z = camPosZ;
+				colidedX = false;
 			}
-			else {
+			if (
+				camera.Position.x < 63.5 && camera.Position.x > 48 && camera.Position.z < 99.3 && camera.Position.z > -36.6
+				
+				)
+			{
+				colidedZ = true;
+				printf("z");
+			}
+			else
+			{
+				colidedZ = false;
+			}
 
-				camPosZ = camera.Position.z;
+			if (!glfwGetKey(window,GLFW_KEY_E)) {
+				if (colidedX)
+				{
+					camera.Position.x = camPosX;
+				}
+				else {
+
+					camPosX = camera.Position.x;
+				}
+
+				if (colidedZ)
+				{
+					camera.Position.z = camPosZ;
+				}
+				else {
+
+					camPosZ = camera.Position.z;
+				}
 			}
 		}
 
@@ -860,8 +885,13 @@ int main()
 			//sceneObjects[i].Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 		//}
 		glm::vec3 target = glm::vec3(2, 0, 5);
-		sceneObjects[1].Draw(shaderProgram, camera, glm::vec3(0), QuatLookAt(glm::vec3(0, 0, 0), target, camera.Up), glm::vec3(20, 2, 2));
-		sceneObjects[1].Draw(shaderProgram, camera, glm::vec3(0, 0, -100), QuatLookAt(glm::vec3(0, 0, -100), target * glm::vec3(0), camera.Up), glm::vec3(20, 2, 2));
+		sceneObjects[1].Draw(shaderProgram, camera, -camera.Position, QuatLookAt(glm::vec3(0), glm::vec3(camera.Orientation.x, -camera.Orientation.y, camera.Orientation.z), camera.Up), glm::vec3(20, 2, 2));
+		//camera.Position.x < 64.5 && camera.Position.x > 46 && camera.Position.z < 96.3 && camera.Position.z > -34.6;
+		grid.Draw(shaderProgram, camera, glm::vec3(-64.5, 0, 0), euler_to_quat(0, 0, 0), glm::vec3(1,400 ,1));
+		grid.Draw(shaderProgram, camera, glm::vec3(-46, 0, 0), euler_to_quat(0, 0, 0), glm::vec3(1, 400, 1));
+
+		grid.Draw(shaderProgram, camera, glm::vec3(-55.25, 0, -96.3), euler_to_quat(0, 0, 0), glm::vec3(1, 400, 1));
+		grid.Draw(shaderProgram, camera, glm::vec3(-55.25, 0, 34.6), euler_to_quat(0, 0, 0), glm::vec3(1, 400, 1));
 
 
 		if (!run) {
