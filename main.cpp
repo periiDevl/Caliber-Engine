@@ -887,6 +887,8 @@ int main()
 		glm::vec3 target = glm::vec3(2, 0, 5);
 		sceneObjects[1].Draw(shaderProgram, camera, -camera.Position, QuatLookAt(glm::vec3(0), glm::vec3(camera.Orientation.x, -camera.Orientation.y, camera.Orientation.z), camera.Up), glm::vec3(20, 2, 2));
 		//camera.Position.x < 64.5 && camera.Position.x > 46 && camera.Position.z < 96.3 && camera.Position.z > -34.6;
+		//raycast
+		//grid.Draw(shaderProgram, camera, glm::vec3(-camera.Position.x, camera.Position.y, -camera.Position.z) + glm::vec3(-camera.Orientation.x * 100, camera.Orientation.y * 100, -camera.Orientation.z * 100), euler_to_quat(0, 0, 0), glm::vec3(1, 400, 1));
 		grid.Draw(shaderProgram, camera, glm::vec3(-64.5, 0, 0), euler_to_quat(0, 0, 0), glm::vec3(1,400 ,1));
 		grid.Draw(shaderProgram, camera, glm::vec3(-46, 0, 0), euler_to_quat(0, 0, 0), glm::vec3(1, 400, 1));
 
