@@ -148,10 +148,10 @@ unsigned int skyboxIndices[] =
 	3, 7, 6,
 	6, 2, 3
 };
-
 int saveFloatCurve = 10;
 int main()
 {
+	int rayDistance = 100;
 	std::string line;
 	std::ifstream saveFile("projectname.caliber");
 	int i = 0;
@@ -322,9 +322,9 @@ int main()
 	// Load in models
 
 	
-	Model sceneObjects[objectsAmount] = { "models/crowI/scene.gltf", "models/grid/scene.gltf" };
+	Model sceneObjects[objectsAmount] = { "models/crowI/scene.gltf", "models/grid/scene.gltf",};
 
-
+	Model Gizmos = ("models/DebugCube/scene.gltf");
 
 	
 
@@ -645,6 +645,7 @@ int main()
 	float cameraPosYCol;
 	float floorLev = 0;
 	glm::quat gridRotation = glm::quat();
+	bool rayGo = true;
 	// Main while loop
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
@@ -886,18 +887,37 @@ int main()
 		//{
 			//sceneObjects[i].Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 		//}
+
 		sceneObjects[1].Draw(shaderProgram, camera, -camera.Position, QuatLookAt(glm::vec3(0), glm::vec3(camera.Orientation.x, -camera.Orientation.y, camera.Orientation.z), camera.Up), glm::vec3(20, 2, 2));
 		//camera.Position.x < 64.5 && camera.Position.x > 46 && camera.Position.z < 96.3 && camera.Position.z > -34.6;
 		//raycast
-		glm::vec3 rayPoistion = glm::vec3(-camera.Position.x, camera.Position.y, -camera.Position.z) + glm::vec3(-camera.Orientation.x * 100, camera.Orientation.y * 100, -camera.Orientation.z * 100);
-		grid.Draw(shaderProgram, camera,rayPoistion, euler_to_quat(0, 0, 0), glm::vec3(1, 400, 1));
-
+		if (rayDistance <= 0)
+		{
+			rayGo = false;
+		}
+		if (rayDistance >= 100) { rayGo = true; }
+		
+		if (rayGo) { rayDistance= rayDistance - 1; }
+		if (!rayGo) { rayDistance = rayDistance + 1; }
+		
+		glm::vec3 rayPoistion = glm::vec3(-camera.Position.x, camera.Position.y, -camera.Position.z) + glm::vec3(-camera.Orientation.x * rayDistance, camera.Orientation.y * rayDistance, -camera.Orientation.z * rayDistance);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		grid.Draw(shaderProgram, camera,rayPoistion, euler_to_quat(0, 0, 0), glm::vec3(1, 400, 1), false);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		
 		if (-rayPoistion.x < 64.5 && -rayPoistion.x > 46 && -rayPoistion.z < 96.3 && -rayPoistion.z > -34.6)
 		{
+			if (rayGo)
+			{
+				grid.Draw(shaderProgram, camera, rayPoistion, euler_to_quat(0, 0, 0), glm::vec3(1, 400, 1), false);
+			}
+
 
 			printf("collided");
+
+
+			rayGo = true;
 		}
 
 		
