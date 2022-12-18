@@ -152,6 +152,7 @@ int saveFloatCurve = 10;
 int main()
 {
 	int rayDistance = 100;
+	glm::vec3 PointRayPos = glm::vec3(0);
 	std::string line;
 	std::ifstream saveFile("projectname.caliber");
 	int i = 0;
@@ -264,6 +265,9 @@ int main()
 	Shader blurProgram("shaders/framebuffer.vert", "shaders/blur.frag");
 	Shader skyboxShader("shaders/skybox.vert", "shaders/skybox.frag");
 
+	Shader outlineShader("shaders/outlining.vert", "shaders/outlining.frag");
+
+
 	
 
 	// Take care of all the light related things
@@ -298,6 +302,11 @@ int main()
 	// Enables the Depth Buffer
 	glEnable(GL_DEPTH_TEST);
 
+	//outlining
+	glEnable(GL_STENCIL_TEST);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+
 	// Enables Multisampling
 	glEnable(GL_MULTISAMPLE);
 
@@ -326,7 +335,7 @@ int main()
 
 	Model Gizmos = ("models/DebugCube/scene.gltf");
 
-	
+	Model House = ("models/caliberHouse/scene.gltf");
 
 	Model grid("models/grid/scene.gltf");
 
@@ -768,7 +777,7 @@ int main()
 		if (run == true || FullCockpit) {
 			if (renderShadows == 1) {
 				
-				sceneObjects[0].Draw(shadowMapProgram, camera, glm::vec3(0), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
+				House.Draw(shadowMapProgram, camera, glm::vec3(0), euler_to_quat(0, 0, 0), glm::vec3(10));
 			}
 			
 		}
@@ -871,14 +880,18 @@ int main()
 
 		glUniform1i(glGetUniformLocation(shaderProgram.ID, "shadowMap"), 2);
 		
+		// Enable depth testing since it's disabled when the framebuffer rectangle
+		glEnable(GL_DEPTH_TEST);
 		
 		//glClearColor(pow(0.07f, gamma), pow(0.13f, gamma), pow(0.17f, gamma), 1.0f);
 		glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
 		
 		// Clean the back buffer and depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-		// Enable depth testing since it's disabled when the framebuffer rectangle
-		glEnable(GL_DEPTH_TEST);
+
+		
+
+
 		//camera stacking
 		//calibericon.Draw(shaderProgram, camera2, glm::vec3(0, 0, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(20, 20, 20));
 
@@ -888,39 +901,91 @@ int main()
 			//sceneObjects[i].Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 		//}
 
+		// Since the cubemap will always have a depth of 1.0, we need that equal sign so it doesn't get discarded
+
+		//SKYBOX
+		//------------
+		glDepthFunc(GL_LEQUAL);
+
+		skyboxShader.Activate();
+		glm::mat4 view = glm::mat4(1.0f);
+		glm::mat4 projection = glm::mat4(1.0f);
+		// We make the mat4 into a mat3 and then a mat4 again in order to get rid of the last row and column
+		// The last row and column affect the translation of the skybox (which we don't want to affect)
+		view = glm::mat4(glm::mat3(glm::lookAt(camera.Position, camera.Position + camera.Orientation, camera.Up)));
+		projection = glm::perspective(glm::radians(60.0f), (float)width / height, 0.1f, 500.0f);
+		glUniformMatrix4fv(glGetUniformLocation(skyboxShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
+		glUniformMatrix4fv(glGetUniformLocation(skyboxShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+
+		// Draws the cubemap as the last object so we can save a bit of performance by discarding all fragments
+		// where an object is present (a depth of 1.0f will always fail against any object's depth value)
+		glBindVertexArray(skyboxVAO);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+
+		// Switch back to the normal depth function
+		glDepthFunc(GL_LESS);
+		//------------
+
+		
+		//OUTLINE
+		//-----------
+
+		// Make it so the stencil test always passes
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+		// Enable modifying of the stencil buffer
+		glStencilMask(0xFF);
+		// Draw the normal model
+		House.Draw(shaderProgram, camera, glm::vec3(0), euler_to_quat(0, 0, 0), glm::vec3(10));
+		// Make it so only the pixels without the value 1 pass the test
+		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+		// Disable modifying of the stencil buffer
+		glStencilMask(0x00);
+		// Disable the depth buffer
+		glDisable(GL_DEPTH_TEST);
+		// Second method from the tutorial
+		outlineShader.Activate();
+		glUniform1f(glGetUniformLocation(outlineShader.ID, "outlining"), 0.05f);
+		House.Draw(outlineShader, camera, glm::vec3(0), euler_to_quat(0, 0, 0), glm::vec3(10));
+		// Enable modifying of the stencil buffer
+		glStencilMask(0xFF);
+		// Clear stencil buffer
+		glStencilFunc(GL_ALWAYS, 0, 0xFF);
+		// Enable the depth buffer
+		glEnable(GL_DEPTH_TEST);
+
+		//-----------
+
 		sceneObjects[1].Draw(shaderProgram, camera, -camera.Position, QuatLookAt(glm::vec3(0), glm::vec3(camera.Orientation.x, -camera.Orientation.y, camera.Orientation.z), camera.Up), glm::vec3(20, 2, 2));
 		//camera.Position.x < 64.5 && camera.Position.x > 46 && camera.Position.z < 96.3 && camera.Position.z > -34.6;
 		//raycast
-		if (rayDistance <= 0)
+		if (rayDistance <= 15)
 		{
 			rayGo = false;
 		}
 		if (rayDistance >= 100) { rayGo = true; }
 		
-		if (rayGo) { rayDistance= rayDistance - 1; }
-		if (!rayGo) { rayDistance = rayDistance + 1; }
+		if (rayGo) { rayDistance= rayDistance - 15; }
+		if (!rayGo) { rayDistance = rayDistance + 15; }
 		
 		glm::vec3 rayPoistion = glm::vec3(-camera.Position.x, camera.Position.y, -camera.Position.z) + glm::vec3(-camera.Orientation.x * rayDistance, camera.Orientation.y * rayDistance, -camera.Orientation.z * rayDistance);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		grid.Draw(shaderProgram, camera,rayPoistion, euler_to_quat(0, 0, 0), glm::vec3(1, 400, 1), false);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		//grid.Draw(shaderProgram, camera,rayPoistion, euler_to_quat(0, 0, 0), glm::vec3(1, 400, 1), false);
 
 		
 		if (-rayPoistion.x < 64.5 && -rayPoistion.x > 46 && -rayPoistion.z < 96.3 && -rayPoistion.z > -34.6)
 		{
-			if (rayGo)
-			{
-				grid.Draw(shaderProgram, camera, rayPoistion, euler_to_quat(0, 0, 0), glm::vec3(1, 400, 1), false);
-			}
+			
 
-
+			PointRayPos = rayPoistion;
 			printf("collided");
 
 
 			rayGo = true;
 		}
+		grid.Draw(shaderProgram, camera, PointRayPos, euler_to_quat(0, 0, 0), glm::vec3(1, 400, 1), false);
 
-		
 	
 
 		grid.Draw(shaderProgram, camera, glm::vec3(-64.5, 0, 0), euler_to_quat(0, 0, 0), glm::vec3(1,400 ,1));
@@ -930,42 +995,12 @@ int main()
 		grid.Draw(shaderProgram, camera, glm::vec3(-55.25, 0, 34.6), euler_to_quat(0, 0, 0), glm::vec3(1, 400, 1));
 
 
-		if (!run) {
-			//grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(10.5f, 1, 10));
-
-			//look at fuction
-			//grid.Draw(shaderProgram, camera, glm::vec3(0.0f, 0.0f, 0.0f), QuatLookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(camera.Position.x, -camera.Position.y, camera.Position.z), -camera.Up), glm::vec3(10.5f, 1, 10));
-			//forward direction function
-			//grid.Draw(shaderProgram, camera, direction_to_forward(glm::vec3(), 0, 20) * glm::vec3(20), euler_to_quat(0, 20, 0), glm::vec3(5, 1, 5));
-			
-		}
-		if (run == true && enableskybox || FullCockpit && enableskybox) {
-			// Since the cubemap will always have a depth of 1.0, we need that equal sign so it doesn't get discarded
-			glDepthFunc(GL_LEQUAL);
-
-			skyboxShader.Activate();
-			glm::mat4 view = glm::mat4(1.0f);
-			glm::mat4 projection = glm::mat4(1.0f);
-			// We make the mat4 into a mat3 and then a mat4 again in order to get rid of the last row and column
-			// The last row and column affect the translation of the skybox (which we don't want to affect)
-			view = glm::mat4(glm::mat3(glm::lookAt(camera.Position, camera.Position + camera.Orientation, camera.Up)));
-			projection = glm::perspective(glm::radians(60.0f), (float)width / height, 0.1f, 500.0f);
-			glUniformMatrix4fv(glGetUniformLocation(skyboxShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
-			glUniformMatrix4fv(glGetUniformLocation(skyboxShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-
-			// Draws the cubemap as the last object so we can save a bit of performance by discarding all fragments
-			// where an object is present (a depth of 1.0f will always fail against any object's depth value)
-			glBindVertexArray(skyboxVAO);
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-			glBindVertexArray(0);
-
-			// Switch back to the normal depth function
-			glDepthFunc(GL_LESS);
-		}
 		
-
+		
+		
+		
+		
+		
 		// Make it so the multisampling FBO is read while the post-processing FBO is drawn
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, postProcessingFBO);
