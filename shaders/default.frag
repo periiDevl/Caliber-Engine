@@ -37,6 +37,8 @@ uniform vec3 camPos;
 uniform float near;
 uniform float far;
 
+const float levelShade = 3.0;
+
 vec4 pointLight()
 {	
 	// used in two variables so I calculate it here to not have to do it twice
@@ -112,6 +114,8 @@ vec4 direcLight()
 	vec3 normal = normalize(Normal);
 	vec3 lightDirection = normalize(lightPos);
 	float diffuse = max(dot(normal, lightDirection), 0.0f);
+	float level = floor(diffuse * levelShade);
+	diffuse = level / levelShade;
 
 	// specular lighting
 	float specular = 0.0f;
@@ -121,6 +125,8 @@ vec4 direcLight()
 		vec3 viewDirection = normalize(camPos - crntPos);
 		vec3 halfwayVec = normalize(viewDirection + lightDirection);
 		float specAmount = pow(max(dot(normal, halfwayVec), 0.0f), 16);
+		level = floor(specAmount * levelShade);
+		specAmount = level / levelShade;
 		specular = specAmount * specularLight;
 	};
 

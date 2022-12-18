@@ -217,13 +217,14 @@
     <Image Include="top.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="outlining.vert" />
+    <None Include="shaders\ambient.frag" />
     <None Include="shaders\blur.frag" />
     <None Include="shaders\default.frag" />
     <None Include="shaders\default.vert" />
     <None Include="shaders\framebuffer.frag" />
     <None Include="shaders\framebuffer.vert" />
     <None Include="shaders\outlining.frag" />
+    <None Include="shaders\outlining.vert" />
     <None Include="shaders\shadowMap.frag" />
     <None Include="shaders\shadowMap.vert" />
     <None Include="shaders\skybox.frag" />

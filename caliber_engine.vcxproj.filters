@@ -219,10 +219,13 @@
     <None Include="shaders\skybox.vert">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="outlining.vert">
+    <None Include="shaders\outlining.frag">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="shaders\outlining.frag">
+    <None Include="shaders\outlining.vert">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\ambient.frag">
       <Filter>Resource Files\shaders</Filter>
     </None>
   </ItemGroup>
