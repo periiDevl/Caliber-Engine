@@ -6,7 +6,7 @@
 #include<iostream>
 #include<fstream>
 #include<string>
-
+#include<Windows.h>
 const int objectsAmount = 2;
 bool run = false;
 
@@ -151,6 +151,8 @@ unsigned int skyboxIndices[] =
 int saveFloatCurve = 10;
 int main()
 {
+	//PlaySound(TEXT("balls.wav"), NULL, SND_ASYNC);
+	
 	int rayDistance = 100;
 	glm::vec3 PointRayPos = glm::vec3(0);
 	std::string line;
@@ -1118,7 +1120,7 @@ int main()
 						ImGui::Text("This will change how your game looks, make sure you have the proper graphics card.");
 						style.Colors[ImGuiCol_Text] = windowWhite;
 
-						ImGui::DragInt("MSSA samples (Needs restart to change)", &samples, 0.03f, 1, std::numeric_limits<int>::max());
+						ImGui::DragInt("MSSA samples (Needs restart to change)", &samples, 0.03f, 1, 40);
 						ImGui::Checkbox("Enable vsync", &v);
 						ImGui::InputFloat("Gamma correction value", &gamma, 0.3f, 1, "%.3f", 0);
 
@@ -1127,7 +1129,7 @@ int main()
 						//gamma = realGamma;
 						glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
 
-						ImGui::DragInt("bloom amount", &bloom, 0.012f, 0, std::numeric_limits<int>::max());
+						ImGui::DragInt("bloom amount", &bloom, 0.012f, 0, 40);
 						ImGui::Checkbox("Enable shadows", &renderShadows);
 						ImGui::Checkbox("Enable high qualtiy shadows (Needs restart to change)", &hqs);
 
