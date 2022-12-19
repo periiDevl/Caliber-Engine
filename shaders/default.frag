@@ -37,7 +37,7 @@ uniform vec3 camPos;
 uniform float near;
 uniform float far;
 
-const float levelShade = 3.0;
+const float levelShade = 3000000000.0;
 
 vec4 pointLight()
 {	

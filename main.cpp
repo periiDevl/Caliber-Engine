@@ -337,6 +337,8 @@ int main()
 
 	Model House = ("models/caliberHouse/scene.gltf");
 
+	Model sphere = ("models/sphere/scene.gltf");
+
 	Model grid("models/grid/scene.gltf");
 
 	// Prepare framebuffer rectangle VBO and VAO
@@ -938,7 +940,9 @@ int main()
 		// Enable modifying of the stencil buffer
 		glStencilMask(0xFF);
 		// Draw the normal model
-		House.Draw(shaderProgram, camera, glm::vec3(0), euler_to_quat(0, 0, 0), glm::vec3(10));
+		//House.Draw(shaderProgram, camera, glm::vec3(0), euler_to_quat(0, 0, 0), glm::vec3(10));
+		
+		sphere.Draw(shaderProgram, camera, glm::vec3(0), euler_to_quat(0, 0, 0), glm::vec3(10));
 		// Make it so only the pixels without the value 1 pass the test
 		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 		// Disable modifying of the stencil buffer
@@ -948,7 +952,9 @@ int main()
 		// Second method from the tutorial
 		outlineShader.Activate();
 		glUniform1f(glGetUniformLocation(outlineShader.ID, "outlining"), 0.05f);
-		House.Draw(outlineShader, camera, glm::vec3(0), euler_to_quat(0, 0, 0), glm::vec3(10));
+		//House.Draw(outlineShader, camera, glm::vec3(0), euler_to_quat(0, 0, 0), glm::vec3(10));
+		sphere.Draw(outlineShader, camera, glm::vec3(0), euler_to_quat(0, 0, 0), glm::vec3(10));
+
 		// Enable modifying of the stencil buffer
 		glStencilMask(0xFF);
 		// Clear stencil buffer
