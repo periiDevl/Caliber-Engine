@@ -189,6 +189,7 @@
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\EBO.h" />
+    <ClInclude Include="src\FlightController.h" />
     <ClInclude Include="src\Mesh.h" />
     <ClInclude Include="src\Model.h" />
     <ClInclude Include="src\settings.h" />

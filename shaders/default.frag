@@ -34,7 +34,7 @@ uniform vec3 lPos;
 // Gets the position of the camera from the main function
 uniform vec3 camPos;
 
-uniform float near;
+float near = 0.0000000000001f;
 uniform float far;
 
 const float levelShade = 3000000000.0;

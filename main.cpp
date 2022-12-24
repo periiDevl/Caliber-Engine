@@ -7,6 +7,7 @@
 #include<fstream>
 #include<string>
 #include<Windows.h>
+#include"src/FlightController.h"
 const int objectsAmount = 2;
 bool run = false;
 
@@ -340,8 +341,10 @@ int main()
 	Model House = ("models/caliberHouse/scene.gltf");
 
 	Model sphere = ("models/sphere/scene.gltf");
+	Model rocket = ("models/rocket/scene.gltf");
 
 	Model grid("models/grid/scene.gltf");
+	Model gound("models/ground/scene.gltf");
 
 	// Prepare framebuffer rectangle VBO and VAO
 	unsigned int rectVAO, rectVBO;
@@ -659,9 +662,28 @@ int main()
 	float floorLev = 0;
 	glm::quat gridRotation = glm::quat();
 	bool rayGo = true;
+
+
+	float forward = 0;
+	float pit = 0;
+	float ya = 0;
+	glm::vec3 position = glm::vec3(0);
+	glm::quat rot = euler_to_quat(0,0,0);
+	float horizontal = 0;
+
+
+
+
+	// Create a flight controller
+	FlightController flightController;
+	
+	
 	// Main while loop
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
+		// Update the flight controller with user input
+		flightController.update(0.1f, window);
+
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE))
 		{
 			run = false;
@@ -781,7 +803,7 @@ int main()
 		if (run == true || FullCockpit) {
 			if (renderShadows == 1) {
 				
-				House.Draw(shadowMapProgram, camera, glm::vec3(0), euler_to_quat(0, 0, 0), glm::vec3(10));
+				//gound.Draw(shadowMapProgram, camera, glm::vec3(0), euler_to_quat(0, 0, 0), glm::vec3(10));
 			}
 			
 		}
@@ -934,6 +956,7 @@ int main()
 		//------------
 
 		
+		gound.Draw(shaderProgram, camera, glm::vec3(0), euler_to_quat(0, 0, 0), glm::vec3(10));
 		//OUTLINE
 		//-----------
 
@@ -944,7 +967,7 @@ int main()
 		// Draw the normal model
 		//House.Draw(shaderProgram, camera, glm::vec3(0), euler_to_quat(0, 0, 0), glm::vec3(10));
 		
-		sphere.Draw(shaderProgram, camera, glm::vec3(0), euler_to_quat(0, 0, 0), glm::vec3(10));
+		//sphere.Draw(shaderProgram, camera, glm::vec3(0), euler_to_quat(0, 0, 0), glm::vec3(10));
 		// Make it so only the pixels without the value 1 pass the test
 		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 		// Disable modifying of the stencil buffer
@@ -955,7 +978,7 @@ int main()
 		outlineShader.Activate();
 		glUniform1f(glGetUniformLocation(outlineShader.ID, "outlining"), 0.05f);
 		//House.Draw(outlineShader, camera, glm::vec3(0), euler_to_quat(0, 0, 0), glm::vec3(10));
-		sphere.Draw(outlineShader, camera, glm::vec3(0), euler_to_quat(0, 0, 0), glm::vec3(10));
+		//sphere.Draw(outlineShader, camera, glm::vec3(0), euler_to_quat(0, 0, 0), glm::vec3(10));
 
 		// Enable modifying of the stencil buffer
 		glStencilMask(0xFF);
@@ -965,7 +988,6 @@ int main()
 		glEnable(GL_DEPTH_TEST);
 
 		//-----------
-
 		sceneObjects[1].Draw(shaderProgram, camera, -camera.Position, QuatLookAt(glm::vec3(0), glm::vec3(camera.Orientation.x, -camera.Orientation.y, camera.Orientation.z), camera.Up), glm::vec3(20, 2, 2));
 		//camera.Position.x < 64.5 && camera.Position.x > 46 && camera.Position.z < 96.3 && camera.Position.z > -34.6;
 		//raycast
@@ -994,9 +1016,14 @@ int main()
 		}
 		grid.Draw(shaderProgram, camera, PointRayPos, euler_to_quat(0, 0, 0), glm::vec3(1, 400, 1), false);
 
-	
+		
 
-		grid.Draw(shaderProgram, camera, glm::vec3(-64.5, 0, 0), euler_to_quat(0, 0, 0), glm::vec3(1,400 ,1));
+
+		rocket.Draw(shaderProgram, camera, flightController.getPosition(), flightController.getOrientation(), glm::vec3(1, 1, 1), false);
+		
+
+		
+
 		grid.Draw(shaderProgram, camera, glm::vec3(-46, 0, 0), euler_to_quat(0, 0, 0), glm::vec3(1, 400, 1));
 
 		grid.Draw(shaderProgram, camera, glm::vec3(-55.25, 0, -96.3), euler_to_quat(0, 0, 0), glm::vec3(1, 400, 1));
