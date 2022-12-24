@@ -220,7 +220,6 @@
     <Image Include="top.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\ambient.frag" />
     <None Include="shaders\blur.frag" />
     <None Include="shaders\default.frag" />
     <None Include="shaders\default.vert" />

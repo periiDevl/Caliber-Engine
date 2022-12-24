@@ -234,8 +234,5 @@
     <None Include="shaders\outlining.vert">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="shaders\ambient.frag">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
   </ItemGroup>
 </Project>

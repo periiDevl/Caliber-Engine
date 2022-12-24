@@ -671,7 +671,7 @@ int main()
 	glm::quat rot = euler_to_quat(0,0,0);
 	float horizontal = 0;
 
-
+	
 
 
 	// Create a flight controller
@@ -681,6 +681,12 @@ int main()
 	// Main while loop
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
+
+		
+		
+
+
+
 		// Update the flight controller with user input
 		flightController.update(0.1f, window);
 
