@@ -13,9 +13,15 @@ public:
 	glm::vec3 translation = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 	glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
-	glm::vec3 ID;
+	glm::vec3 ID = glm::vec3(0,0,0);
+	const char* file = "models/rocket/scene.gltf";
+	
 	// Loads in a model from a file and stores tha information in 'data', 'JSON', and 'file'
-	Model(const char* file, glm::vec3 id, glm::vec3 tran, glm::quat rotn, glm::vec3 sca);
+	Model(const char* fl = "models/rocket/scene.gltf",
+		glm::vec3 trans = glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::quat rot = glm::quat(1.0f, 0.0f, 0.0f, 0.0f),
+		glm::vec3 sca = glm::vec3(1.0f, 1.0f, 1.0f),
+		glm::vec3 id = glm::vec3(0, 0, 0));
 
 	void Draw
 	(
@@ -43,12 +49,20 @@ public:
 		glm::vec3 scale;
 		char comma1, comma2;
 		ss >> comma1 >> file >> comma2 >> ID.x >> ID.y >> ID.z >> comma2 >> translation.x >> translation.y >> translation.z >> rotation.x >> rotation.y >> rotation.z >> rotation.w >> scale.x >> scale.y >> scale.z;
-		return Model(file.c_str(), ID, translation, rotation, scale);
+
+		Model model;
+		model.file = file.c_str();
+		model.translation = translation;
+		model.ID = ID;
+		model.rotation = rotation;
+		model.scale = scale;
+		
+
+		return model;
 	}
 
 private:
 	// Variables for easy access
-	const char* file;
 	std::vector<unsigned char> data;
 	json JSON;
 

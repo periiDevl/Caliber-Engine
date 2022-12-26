@@ -13,6 +13,7 @@
 
 Functions func;
 FlightController flightController;
+Component scene;
 //Component scene;
 // Create a new component object
 //Component component;
@@ -295,7 +296,7 @@ int main()
 	
 
 	
-	Model rocket("models/rocket/scene.gltf", glm::vec3(0), glm::vec3(0), glm::quat(0,0,0,0), glm::vec3(0));
+	//Model rocket("models/rocket/scene.gltf", glm::vec3(0), glm::vec3(0), glm::quat(0,0,0,0), glm::vec3(0));
 
 	
 
@@ -745,7 +746,7 @@ int main()
 		if (run == true || FullCockpit) {
 			if (renderShadows == 1) {
 				
-				rocket.Draw(shadowMapProgram, camera);
+				//rocket.Draw(shadowMapProgram, camera);
 			}
 			
 		}
@@ -876,10 +877,10 @@ int main()
 		//-----------
 		
 
-		rocket.Draw(shaderProgram, camera);
-		rocket.translation = flightController.getPosition();
-		rocket.rotation = flightController.getOrientation();
-		rocket.scale = glm::vec3(1, 1, 1);
+		//rocket.Draw(shaderProgram, camera);
+		//rocket.translation = flightController.getPosition();
+		//rocket.rotation = flightController.getOrientation();
+		//rocket.scale = glm::vec3(1, 1, 1);
 		
 		// Make it so the multisampling FBO is read while the post-processing FBO is drawn
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);

@@ -2,7 +2,8 @@
 
 void::Component::AddObject(const char* location)
 {
-    OSWsave[objects] = Model(location, glm::vec3(0), glm::vec3(0), glm::quat(0, 0, 0, 0), glm::vec3(0));
+    OSWsave[objects] = Model();
+    OSWsave[objects].file = location;
     objects++;
     SuffleObjectsID();
 }
@@ -130,7 +131,7 @@ Model Component::FindObjectID(GLFWwindow* window)
         }
     }
 
-    return Model("", glm::vec3(0), glm::vec3(0), glm::quat(0, 0, 0, 0), glm::vec3(0));
+    return Model();
 }
 
 

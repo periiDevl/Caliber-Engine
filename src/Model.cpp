@@ -1,11 +1,16 @@
 #include"Model.h"
 
-Model::Model(const char* file, glm::vec3 id, glm::vec3 tran, glm::quat rotn, glm::vec3 sca)
+Model::Model(const char* fl,
+	glm::vec3 trans,
+	glm::quat rot,
+	glm::vec3 sca,
+	glm::vec3 id)
 {
-	id = ID;
-	tran = translation;
-	rotn = rotation;
-	sca = scale;
+	translation = trans;
+	rotation = rot;
+	scale = sca;
+	ID = id;
+	file = fl;
 	// Make a JSON object
 	std::string text = get_file_contents(file);
 	JSON = json::parse(text);
