@@ -1,7 +1,11 @@
 #include"Model.h"
 
-Model::Model(const char* file)
+Model::Model(const char* file, glm::vec3 id, glm::vec3 tran, glm::quat rotn, glm::vec3 sca)
 {
+	id = ID;
+	tran = translation;
+	rotn = rotation;
+	sca = scale;
 	// Make a JSON object
 	std::string text = get_file_contents(file);
 	JSON = json::parse(text);
@@ -14,15 +18,12 @@ Model::Model(const char* file)
 	traverseNode(0);
 }
 
-void Model::Draw(Shader& shader, Camera& camera, glm::vec3 translation, glm::quat rotation, glm::vec3 scale, bool cap)
+void Model::Draw(Shader& shader, Camera& camera)
 {
 	// Go over all meshes and draw each one
 	for (unsigned int i = 0; i < meshes.size(); i++)
 	{
-		if (translation.y < 0 && cap)
-		{
-			translation.y = 0;
-		}
+		
 		meshes[i].Mesh::Draw(shader, camera, matricesMeshes[i], translation, rotation, scale);
 	}
 }

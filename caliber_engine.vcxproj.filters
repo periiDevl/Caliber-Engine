@@ -90,6 +90,9 @@
     <ClCompile Include="src\PhysicsManager.cpp">
       <Filter>Source Files\src</Filter>
     </ClCompile>
+    <ClCompile Include="src\Component.cpp">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h">
@@ -144,6 +147,12 @@
       <Filter>Header Files\src</Filter>
     </ClInclude>
     <ClInclude Include="src\PhysicsManager.h">
+      <Filter>Header Files\src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Component.h">
+      <Filter>Header Files\src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Functions.h">
       <Filter>Header Files\src</Filter>
     </ClInclude>
   </ItemGroup>

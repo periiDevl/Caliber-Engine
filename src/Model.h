@@ -10,18 +10,41 @@ using json = nlohmann::json;
 class Model
 {
 public:
+	glm::vec3 translation = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+	glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
+	glm::vec3 ID;
 	// Loads in a model from a file and stores tha information in 'data', 'JSON', and 'file'
-	Model(const char* file);
+	Model(const char* file, glm::vec3 id, glm::vec3 tran, glm::quat rotn, glm::vec3 sca);
 
 	void Draw
 	(
 		Shader& shader,
-		Camera& camera,
-		glm::vec3 translation = glm::vec3(0.0f, 0.0f, 0.0f),
-		glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f),
-		glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f),
-		bool cap = true
+		Camera& camera
 	);
+
+	std::string To_string()
+	{
+		std::stringstream ss;
+		ss << "Model(" << file << ", " << std::to_string(ID.x) << " " << std::to_string(ID.y) << " " << std::to_string(ID.z) << ", "
+			<< std::to_string(translation.x) << " " << std::to_string(translation.y) << " " << std::to_string(translation.z) << ", "
+			<< std::to_string(rotation.x) << " " << std::to_string(rotation.y) << " " << std::to_string(rotation.z) << " " << std::to_string(rotation.w) << ", "
+			<< std::to_string(scale.x) << " " << std::to_string(scale.y) << " " << std::to_string(scale.z) << ")";
+		return ss.str();
+	}
+
+	static Model From_string(const std::string& str)
+	{
+		std::stringstream ss(str);
+		std::string file;
+		glm::vec3 ID;
+		glm::vec3 translation;
+		glm::quat rotation;
+		glm::vec3 scale;
+		char comma1, comma2;
+		ss >> comma1 >> file >> comma2 >> ID.x >> ID.y >> ID.z >> comma2 >> translation.x >> translation.y >> translation.z >> rotation.x >> rotation.y >> rotation.z >> rotation.w >> scale.x >> scale.y >> scale.z;
+		return Model(file.c_str(), ID, translation, rotation, scale);
+	}
 
 private:
 	// Variables for easy access

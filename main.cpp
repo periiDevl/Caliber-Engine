@@ -8,9 +8,14 @@
 #include<string>
 #include<Windows.h>
 #include"src/FlightController.h"
+#include"src/Functions.h"
+#include"src/Component.h"
+
+Functions func;
+FlightController flightController;
+
 const int objectsAmount = 2;
 bool run = false;
-
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -37,59 +42,6 @@ int viewFarPlane;
 
 
 
-glm::quat euler_to_quat(double roll, double pitch, double yaw)
-{
-	double cr = cos(roll * 0.5);
-	double sr = sin(roll * 0.5);
-	double cp = cos(pitch * 0.5);
-	double sp = sin(pitch * 0.5);
-	double cy = cos(yaw * 0.5);
-	double sy = sin(yaw * 0.5);
-
-	glm::quat q;
-	q.w = cr * cp * cy + sr * sp * sy;
-	q.x = sr * cp * cy - cr * sp * sy;
-	q.y = cr * sp * cy + sr * cp * sy;
-	q.z = cr * cp * sy - sr * sp * cy;
-
-	return q;
-
-}
-
-
-glm::vec3 direction_to_forward(glm::vec3 vector3, double yaw, double pitch)
-{
-	vector3.x = cos(yaw) * cos(pitch);
-	vector3.y = sin(yaw) * cos(pitch);
-	vector3.z = sin(pitch);
-
-	return vector3;
-}
-
-
-glm::quat QuatLookAt(
-	glm::vec3 const& from,
-	glm::vec3 const& to,
-	glm::vec3 const& up
-	)
-{
-	//you want to.y to be -
-	glm::vec3  direction = to - from;
-	float directionLength = glm::length(direction);
-
-	if (!(directionLength > 0.0001))
-		return glm::quat(1, 0, 0, 0);
-
-	direction /= directionLength;
-
-	if (glm::abs(glm::dot(direction, up)) > .9999f) {
-		//you might to have add an alternative variable
-		return glm::quatLookAt(direction, glm::vec3(0));
-	}
-	else {
-		return glm::quatLookAt(direction, up);
-	}
-}
 
 
 
@@ -153,9 +105,9 @@ int saveFloatCurve = 10;
 int main()
 {
 	//PlaySound(TEXT("balls.wav"), NULL, SND_ASYNC);
+
 	
-	int rayDistance = 100;
-	glm::vec3 PointRayPos = glm::vec3(0);
+
 	std::string line;
 	std::ifstream saveFile("projectname.caliber");
 	int i = 0;
@@ -334,17 +286,12 @@ int main()
 	// Load in models
 
 	
-	Model sceneObjects[objectsAmount] = { "models/crowI/scene.gltf", "models/grid/scene.gltf",};
+	
 
-	Model Gizmos = ("models/DebugCube/scene.gltf");
+	
+	Model rocket("models/rocket/scene.gltf", glm::vec3(0), glm::vec3(0), glm::quat(0,0,0,0), glm::vec3(0));
 
-	Model House = ("models/caliberHouse/scene.gltf");
-
-	Model sphere = ("models/sphere/scene.gltf");
-	Model rocket = ("models/rocket/scene.gltf");
-
-	Model grid("models/grid/scene.gltf");
-	Model gound("models/ground/scene.gltf");
+	
 
 	// Prepare framebuffer rectangle VBO and VAO
 	unsigned int rectVAO, rectVBO;
@@ -658,24 +605,12 @@ int main()
 
 
 
-	float cameraPosYCol;
-	float floorLev = 0;
-	glm::quat gridRotation = glm::quat();
-	bool rayGo = true;
 
-
-	float forward = 0;
-	float pit = 0;
-	float ya = 0;
-	glm::vec3 position = glm::vec3(0);
-	glm::quat rot = euler_to_quat(0,0,0);
-	float horizontal = 0;
 
 	
 
 
-	// Create a flight controller
-	FlightController flightController;
+	
 	
 	
 	// Main while loop
@@ -705,8 +640,9 @@ int main()
 		float a = pixel[3] / 255.0f;
 		
 		std::cout << std::to_string(r) + "," + std::to_string(g) + "," + std::to_string(b) << std::endl;
-
-
+		
+		//float randomFloat = static_cast<float>(rand()) / RAND_MAX;
+		//std::cout << randomFloat << std::endl;
 		// Update the flight controller with user input
 		flightController.update(0.1f, window);
 
@@ -784,40 +720,14 @@ int main()
 			// Use this if you have disabled VSync
 			if (vsync == 0 && !run) {
 				camera.Inputs(window, ctrlSpeed, normalSpeed);
-				if (camera.Position.y < floorLev)
-				{
-			
-					camera.Position.y = cameraPosYCol;
-				}
-				else
-				{
-					cameraPosYCol = camera.Position.y;
-				}
-
-				if (colidedX)
-				{
-					camera.Position.x = camPosX;
-				}
-				else {
-
-					camPosX = camera.Position.x;
-				}
-
-				if (colidedZ)
-				{
-					camera.Position.z = camPosZ;
-				}
-				else {
-
-					camPosZ = camera.Position.z;
-				}
+				
 			}
 		}
 
 		
 		
 		glEnable(GL_DEPTH_TEST);
-
+		
 		// Preparations for the Shadow Map
 		if (renderShadows == 1 || run || FullCockpit) {
 			glViewport(0, 0, shadowMapWidth, shadowMapHeight);
@@ -829,11 +739,10 @@ int main()
 		if (run == true || FullCockpit) {
 			if (renderShadows == 1) {
 				
-				//gound.Draw(shadowMapProgram, camera, glm::vec3(0), euler_to_quat(0, 0, 0), glm::vec3(10));
+				rocket.Draw(shadowMapProgram, camera);
 			}
 			
 		}
-	
 	
 		
 		
@@ -841,62 +750,6 @@ int main()
 		// Handles camera inputs (delete this if you have disabled VSync)
 		if (vsync == 1 && !run) {
 			camera.Inputs(window, ctrlSpeed, normalSpeed);
-			if (camera.Position.y < floorLev)
-			{
-
-				camera.Position.y = cameraPosYCol;
-			}
-			else
-			{
-				cameraPosYCol = camera.Position.y;
-			}
-
-
-			//COLLISION
-			if (
-				camera.Position.x < 64.5 && camera.Position.x > 46 && camera.Position.z < 96.3 && camera.Position.z > -34.6
-				
-				)
-			{
-
-				colidedX = true;
-			}
-			else
-			{
-				colidedX = false;
-			}
-			if (
-				camera.Position.x < 63.5 && camera.Position.x > 48 && camera.Position.z < 99.3 && camera.Position.z > -36.6
-				
-				)
-			{
-				colidedZ = true;
-				printf("z");
-			}
-			else
-			{
-				colidedZ = false;
-			}
-
-			if (!glfwGetKey(window,GLFW_KEY_E)) {
-				if (colidedX)
-				{
-					camera.Position.x = camPosX;
-				}
-				else {
-
-					camPosX = camera.Position.x;
-				}
-
-				if (colidedZ)
-				{
-					camera.Position.z = camPosZ;
-				}
-				else {
-
-					camPosZ = camera.Position.z;
-				}
-			}
 		}
 
 		// Switch back to the default framebuffer
@@ -935,6 +788,8 @@ int main()
 		// Enable depth testing since it's disabled when the framebuffer rectangle
 		glEnable(GL_DEPTH_TEST);
 		
+
+
 		//glClearColor(pow(0.07f, gamma), pow(0.13f, gamma), pow(0.17f, gamma), 1.0f);
 		glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
 		
@@ -982,7 +837,6 @@ int main()
 		//------------
 
 		
-		gound.Draw(shaderProgram, camera, glm::vec3(0), euler_to_quat(0, 0, 0), glm::vec3(10));
 		//OUTLINE
 		//-----------
 
@@ -1014,53 +868,12 @@ int main()
 		glEnable(GL_DEPTH_TEST);
 
 		//-----------
-		sceneObjects[1].Draw(shaderProgram, camera, -camera.Position, QuatLookAt(glm::vec3(0), glm::vec3(camera.Orientation.x, -camera.Orientation.y, camera.Orientation.z), camera.Up), glm::vec3(20, 2, 2));
-		//camera.Position.x < 64.5 && camera.Position.x > 46 && camera.Position.z < 96.3 && camera.Position.z > -34.6;
-		//raycast
-		if (rayDistance <= 15)
-		{
-			rayGo = false;
-		}
-		if (rayDistance >= 100) { rayGo = true; }
-		
-		if (rayGo) { rayDistance= rayDistance - 15; }
-		if (!rayGo) { rayDistance = rayDistance + 15; }
-		
-		glm::vec3 rayPoistion = glm::vec3(-camera.Position.x, camera.Position.y, -camera.Position.z) + glm::vec3(-camera.Orientation.x * rayDistance, camera.Orientation.y * rayDistance, -camera.Orientation.z * rayDistance);
-		//grid.Draw(shaderProgram, camera,rayPoistion, euler_to_quat(0, 0, 0), glm::vec3(1, 400, 1), false);
-
-		
-		if (-rayPoistion.x < 64.5 && -rayPoistion.x > 46 && -rayPoistion.z < 96.3 && -rayPoistion.z > -34.6)
-		{
-			
-
-			PointRayPos = rayPoistion;
-			printf("collided");
-
-
-			rayGo = true;
-		}
-		grid.Draw(shaderProgram, camera, PointRayPos, euler_to_quat(0, 0, 0), glm::vec3(1, 400, 1), false);
-
 		
 
-
-		rocket.Draw(shaderProgram, camera, flightController.getPosition(), flightController.getOrientation(), glm::vec3(1, 1, 1), false);
-		
-
-		
-
-		grid.Draw(shaderProgram, camera, glm::vec3(-46, 0, 0), euler_to_quat(0, 0, 0), glm::vec3(1, 400, 1));
-
-		grid.Draw(shaderProgram, camera, glm::vec3(-55.25, 0, -96.3), euler_to_quat(0, 0, 0), glm::vec3(1, 400, 1));
-		grid.Draw(shaderProgram, camera, glm::vec3(-55.25, 0, 34.6), euler_to_quat(0, 0, 0), glm::vec3(1, 400, 1));
-
-
-		
-		
-		
-		
-		
+		rocket.Draw(shaderProgram, camera);
+		rocket.translation = flightController.getPosition();
+		rocket.rotation = flightController.getOrientation();
+		rocket.scale = glm::vec3(1, 1, 1);
 		
 		// Make it so the multisampling FBO is read while the post-processing FBO is drawn
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
@@ -1070,11 +883,6 @@ int main()
 
 		// Bounce the image data around to blur multiple times
 		bool horizontal = true, first_iteration = true;
-		
-		// Amount of time to bounce the blur
-		
-			
-		
 		int Blur_amount = bloom;
 		blurProgram.Activate();
 		for (unsigned int i = 0; i < Blur_amount; i++)
@@ -1295,6 +1103,12 @@ int main()
 
 	// Delete all the objects we've created
 	shaderProgram.Delete();
+	framebufferProgram.Delete();
+	shadowMapProgram.Delete();
+	blurProgram.Delete();
+	skyboxShader.Delete();
+	outlineShader.Delete();
+
 	glDeleteFramebuffers(1, &FBO);
 	glDeleteFramebuffers(1, &postProcessingFBO);
 
@@ -1311,35 +1125,30 @@ int main()
 	glfwTerminate();
 
 	
-	//writing
 
-
-
+	
 
 	
 	std::ofstream SaveFileWr("projectname.caliber");
 	
 
-	SaveFileWr << std::to_string(samples);
-	SaveFileWr << "\n" + std::to_string(vsync);
-	SaveFileWr << "\n";
-	SaveFileWr << gamma * saveFloatCurve;
-	SaveFileWr << "\n";
-	SaveFileWr << exposure * saveFloatCurve;
-	SaveFileWr << "\n" + std::to_string(bloom);
-	SaveFileWr << "\n" + std::to_string(renderShadows);
-	SaveFileWr << "\n" + std::to_string(highQualtiyShdows);
-	SaveFileWr << "\n" + std::to_string(lightVLow);
-	SaveFileWr << "\n" + std::to_string(enableskybox);
-	SaveFileWr << "\n" + std::to_string(mockheight);
-	SaveFileWr << "\n" + std::to_string(mockwidth);
-	SaveFileWr << "\n" + std::to_string(wireframe);
-	SaveFileWr << "\n" + std::to_string(ctrlSpeed);
-	SaveFileWr << "\n" + std::to_string(normalSpeed);
-	SaveFileWr << "\n" + std::to_string(FullCockpit);
-	SaveFileWr << "\n" + std::to_string(FogNear * saveFloatCurve);
-	SaveFileWr << "\n" + std::to_string(viewFarPlane);
-	SaveFileWr << "\n";
+	SaveFileWr << samples << "\n";
+	SaveFileWr << vsync << "\n";
+	SaveFileWr << gamma * saveFloatCurve << "\n";
+	SaveFileWr << exposure * saveFloatCurve << "\n";
+	SaveFileWr << bloom << "\n";
+	SaveFileWr << renderShadows << "\n";
+	SaveFileWr << highQualtiyShdows << "\n";
+	SaveFileWr << lightVLow << "\n";
+	SaveFileWr << enableskybox << "\n";
+	SaveFileWr << mockheight << "\n";
+	SaveFileWr << mockwidth << "\n";
+	SaveFileWr << wireframe << "\n";
+	SaveFileWr << ctrlSpeed << "\n";
+	SaveFileWr << normalSpeed << "\n";
+	SaveFileWr << FullCockpit << "\n";
+	SaveFileWr << FogNear * saveFloatCurve << "\n";
+	SaveFileWr << viewFarPlane << "\n";
 
 
 
