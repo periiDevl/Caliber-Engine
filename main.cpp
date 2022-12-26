@@ -682,9 +682,29 @@ int main()
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
 
-		
-		
+		GLint viewport[4];
+		glGetIntegerv(GL_VIEWPORT, viewport);
 
+		double mouseX, mouseY;
+		// Get the mouse position in screen coordinates
+		glfwGetCursorPos(window, &mouseX, &mouseY);
+
+		// Flip the y coordinate, since screen coordinates start at the top left,
+		// but OpenGL coordinates start at the bottom left
+		mouseY = viewport[3] - mouseY;
+
+		// Read the color values of the pixel under the mouse cursor
+		GLubyte pixel[4];
+		glReadPixels(mouseX, mouseY, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
+
+		// The pixel array now contains the color values of the pixel under the mouse cursor
+		// You can access the individual color components like this:
+		float r = pixel[0] / 255.0f;
+		float g = pixel[1] / 255.0f;
+		float b = pixel[2] / 255.0f;
+		float a = pixel[3] / 255.0f;
+		
+		std::cout << std::to_string(r) + "," + std::to_string(g) + "," + std::to_string(b) << std::endl;
 
 
 		// Update the flight controller with user input
