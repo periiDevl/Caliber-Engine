@@ -13,6 +13,12 @@
 
 Functions func;
 FlightController flightController;
+//Component scene;
+// Create a new component object
+//Component component;
+
+// Add an object to the component
+//component.AddObject("path/to/object.obj");
 
 const int objectsAmount = 2;
 bool run = false;
