@@ -1,6 +1,6 @@
 #include "Component.h"
 
-void::Object::AddObject(const char* location)
+void::Component::AddObject(const char* location)
 {
     OSWsave[objects] = Model();
     OSWsave[objects].file = location;
@@ -10,7 +10,7 @@ void::Object::AddObject(const char* location)
 
 
 
-void::Object::TRY_OBJ_RECOVERING_TEST()
+void::Component::TRY_OBJ_RECOVERING_TEST()
 {
     std::string line;
     std::ifstream OSWFile("projectname[OSW].caliber");
@@ -34,7 +34,7 @@ void::Object::TRY_OBJ_RECOVERING_TEST()
     std::cout << i + " OBJECTS RECOVERD" << std::endl;
 }
 
-void::Object::TRY_OBJ_SORTER_TEST()
+void::Component::TRY_OBJ_SORTER_TEST()
 {
     std::ofstream OSWFileWr("projectname[OSW].caliber");
 
@@ -45,7 +45,7 @@ void::Object::TRY_OBJ_SORTER_TEST()
     }
 }
 
-void::Object::SuffleObjectsID()
+void::Component::SuffleObjectsID()
 {
     std::vector<glm::vec3> allIDs;
 
@@ -67,30 +67,37 @@ void::Object::SuffleObjectsID()
 }
 
 
-void::Object::TRY_SAFE_MODE()
+void::Component::TRY_SAFE_MODE()
 {
-    // Create a set to store the IDs
-    std::set<glm::vec3> IDset;
-
     // Iterate through the objects in OSWsave
     for (int i = 0; i < OSWsave.size(); i++)
     {
-        // If the ID is already in the set, return true
-        if (IDset.count(OSWsave[i].ID) > 0)
+        // Check if the current object's ID is already in use
+        bool idInUse = false;
+        for (int j = 0; j < i; j++)
         {
-            printf("[SAFE TEST PASSED POORLY WAIT UNTIL ERRORS ARE FIXED]");
-            SuffleObjectsID();
+            if (OSWsave[j].ID == OSWsave[i].ID)
+            {
+                idInUse = true;
+                break;
+            }
         }
 
-        // Otherwise, add the ID to the set
-        IDset.insert(OSWsave[i].ID);
+        if (idInUse)
+        {
+            // If the ID is already in use, shuffle the object IDs and start the loop over
+            printf("[SAFE TEST PASSED POORLY WAIT UNTIL ERRORS ARE FIXED]");
+            SuffleObjectsID();
+            i = -1; // Reset the loop counter to 0
+        }
     }
 
-    // If no duplicate IDs were found, return false
+    // If no duplicate IDs were found, print a message
     printf("[SAFE TEST PASSED SUCCESFULLY]");
 }
 
-Model Object::FindObjectID(GLFWwindow* window)
+
+Model Component::FindObjectID(GLFWwindow* window)
 {
     // Get the mouse position in screen coordinates
     double mouseX, mouseY;
@@ -124,15 +131,11 @@ Model Object::FindObjectID(GLFWwindow* window)
         }
     }
 
-<<<<<<< HEAD
     return Model();
-=======
-
->>>>>>> parent of 5eccf01 (dont forget to change model.cpp)
 }
 
 
-void::Object::Error()
+void::Component::Error()
 {
     printf("[FAILED GENRATING/LOADING FILES]");
 }
