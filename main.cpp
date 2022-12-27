@@ -13,6 +13,7 @@
 
 Functions func;
 FlightController flightController;
+<<<<<<< HEAD
 Component scene;
 //Component scene;
 // Create a new component object
@@ -20,6 +21,8 @@ Component scene;
 
 // Add an object to the component
 //component.AddObject("path/to/object.obj");
+=======
+>>>>>>> parent of 5eccf01 (dont forget to change model.cpp)
 
 const int objectsAmount = 2;
 bool run = false;
