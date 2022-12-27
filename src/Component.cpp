@@ -1,16 +1,10 @@
 #include "Component.h"
 
-void::Component::AddObject(const char* location)
-{
-    OSWsave[objects] = Model();
-    OSWsave[objects].file = location;
-    objects++;
-    SuffleObjectsID();
-}
 
 
 
-void::Component::TRY_OBJ_RECOVERING_TEST()
+
+void::Component::TRY_OBJ_RECOVERING_TEST(int objects, Model OSWsave[])
 {
     std::string line;
     std::ifstream OSWFile("projectname[OSW].caliber");
@@ -34,43 +28,55 @@ void::Component::TRY_OBJ_RECOVERING_TEST()
     std::cout << i + " OBJECTS RECOVERD" << std::endl;
 }
 
-void::Component::TRY_OBJ_SORTER_TEST()
+std::ofstream OSWFileWr("projectname[OSW].caliber");
+void::Component::TRY_OBJ_SORTER_TEST(int objects, Model OSWsave[])
 {
-    std::ofstream OSWFileWr("projectname[OSW].caliber");
 
-    for (int i = 0; i < objects; i++)
+    
+
+    for (int i = 0; i < objects + 1; i++)
     {
         std::string str = OSWsave[i].To_string();
         OSWFileWr << str << "\n";
     }
 }
 
-void::Component::SuffleObjectsID()
+void::Component::TRY_DRAWING(int objects, Model OSWsave[], Shader shader, Camera camera)
 {
-    std::vector<glm::vec3> allIDs;
-
-    // Initialize allIDs with a list of all possible IDs
-    for (int i = 0; i < objects; i++)
+    for (int i = 0; i < objects + 1; i++)
     {
-        allIDs.push_back(glm::vec3(i, i, i));
+        OSWsave[i].Draw(shader,camera);
+    }
+}
+
+void::Component::SuffleObjectsID(int objects , Model OSWsave[])
+{
+    // Initialize vectors of all possible values for the x, y, and z components
+    std::vector<float> allXValues;
+    std::vector<float> allYValues;
+    std::vector<float> allZValues;
+    for (float i = 0.0f; i <= 1.0f; i += 0.000001f) {
+        allXValues.push_back(i);
+        allYValues.push_back(i);
+        allZValues.push_back(i);
     }
 
-    // Shuffle the list of IDs
+    // Shuffle the x, y, and z values for each object
     std::random_device rd;
     std::mt19937 mt(rd());
-    std::shuffle(allIDs.begin(), allIDs.end(), mt);
-
-    for (int i = 0; i < objects; i++)
-    {
-        OSWsave[i].ID = allIDs[i];
+    for (int i = 0; i < objects; i++) {
+        std::shuffle(allXValues.begin(), allXValues.end(), mt);
+        std::shuffle(allYValues.begin(), allYValues.end(), mt);
+        std::shuffle(allZValues.begin(), allZValues.end(), mt);
+        OSWsave[i].ID = glm::vec3(allXValues[0], allYValues[0], allZValues[0]);
     }
 }
 
 
-void::Component::TRY_SAFE_MODE()
+void::Component::TRY_SAFE_MODE(int objects, Model OSWsave[1])
 {
     // Iterate through the objects in OSWsave
-    for (int i = 0; i < OSWsave.size(); i++)
+    for (int i = 0; i < objects + 1; i++)
     {
         // Check if the current object's ID is already in use
         bool idInUse = false;
@@ -87,7 +93,7 @@ void::Component::TRY_SAFE_MODE()
         {
             // If the ID is already in use, shuffle the object IDs and start the loop over
             printf("[SAFE TEST PASSED POORLY WAIT UNTIL ERRORS ARE FIXED]");
-            SuffleObjectsID();
+            SuffleObjectsID(objects, OSWsave);
             i = -1; // Reset the loop counter to 0
         }
     }
@@ -97,7 +103,7 @@ void::Component::TRY_SAFE_MODE()
 }
 
 
-Model Component::FindObjectID(GLFWwindow* window)
+Model Component::FindObjectID(GLFWwindow* window, int objects, Model OSWsave[])
 {
     // Get the mouse position in screen coordinates
     double mouseX, mouseY;
@@ -123,7 +129,7 @@ Model Component::FindObjectID(GLFWwindow* window)
     glm::vec3 ID = glm::vec3(r, g, b);
 
     // Search the objects in OSWsave for an object with the matching ID
-    for (int i = 0; i < objects; i++)
+    for (int i = 0; i < objects + 1; i++)
     {
         if (OSWsave[i].ID == ID)
         {
@@ -131,9 +137,17 @@ Model Component::FindObjectID(GLFWwindow* window)
         }
     }
 
-    return Model();
+    return Model("models/rocket/scene.gltf");
 }
 
+
+void::Component::CLEAR()
+{
+    //std::fstream file("projectname[OSW].caliber", std::fstream::out | std::fstream::trunc);
+    //file.close();
+
+    remove("projectname[OSW].caliber");
+}
 
 void::Component::Error()
 {

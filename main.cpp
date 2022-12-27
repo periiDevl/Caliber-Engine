@@ -13,7 +13,6 @@
 
 Functions func;
 FlightController flightController;
-Component scene;
 //Component scene;
 // Create a new component object
 //Component component;
@@ -108,12 +107,18 @@ unsigned int skyboxIndices[] =
 	3, 7, 6,
 	6, 2, 3
 };
+
 int saveFloatCurve = 10;
+
+
+
 int main()
 {
+	//scene.TRY_OBJ_RECOVERING_TEST(objectAmt, sceneObjects);
 	//PlaySound(TEXT("balls.wav"), NULL, SND_ASYNC);
 
 	
+
 
 	std::string line;
 	std::ifstream saveFile("projectname.caliber");
@@ -295,8 +300,16 @@ int main()
 	
 	
 
-	
-	//Model rocket("models/rocket/scene.gltf", glm::vec3(0), glm::vec3(0), glm::quat(0,0,0,0), glm::vec3(0));
+	Component scene;
+	const int ObjectsAmt = 3;
+	Model sceneObjects[ObjectsAmt] = { Model("models/rocket/scene.gltf"), Model("models/cube/scene.gltf"), Model("models/caliberHouse/scene.gltf") };
+	scene.TRY_OBJ_RECOVERING_TEST(ObjectsAmt, sceneObjects);
+
+	scene.SuffleObjectsID(ObjectsAmt, sceneObjects);
+	scene.TRY_SAFE_MODE(ObjectsAmt, sceneObjects);
+
+	sceneObjects[0].translation = glm::vec3(100, 100, 100);
+	//Model rocket("models/rocket/scene.gltf");
 
 	
 
@@ -743,13 +756,13 @@ int main()
 		glClear(GL_DEPTH_BUFFER_BIT);
 
 		// Draw scene for shadow map
-		if (run == true || FullCockpit) {
-			if (renderShadows == 1) {
+		
+		if (renderShadows == 1) {
 				
-				//rocket.Draw(shadowMapProgram, camera);
-			}
-			
+			scene.TRY_DRAWING(ObjectsAmt, sceneObjects, shadowMapProgram, camera);
 		}
+			
+		
 	
 		
 		
@@ -814,7 +827,7 @@ int main()
 		//{
 			//sceneObjects[i].Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 		//}
-
+		scene.TRY_DRAWING(ObjectsAmt, sceneObjects, shaderProgram, camera);
 		// Since the cubemap will always have a depth of 1.0, we need that equal sign so it doesn't get discarded
 
 		//SKYBOX
@@ -1077,8 +1090,14 @@ int main()
 		
 
 	}
-	
+	scene.TRY_OBJ_SORTER_TEST(objectsAmount, sceneObjects);
+	// Wait for 10 seconds after the window is closed
+	//double desiredTime = glfwGetTime() + 1.0;  // Wait for 1 seconds
+	//while (glfwGetTime() < desiredTime) {
 
+	//}
+
+	
 	
 
 
@@ -1130,8 +1149,6 @@ int main()
 	glfwDestroyWindow(window);
 	// Terminate GLFW before ending the program
 	glfwTerminate();
-
-	
 
 	
 

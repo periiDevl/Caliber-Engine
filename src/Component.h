@@ -13,30 +13,26 @@
 class Component
 {
 public:
-    std::array<Model, 1000> OSWsave;
-    int objects;
 
     // Default constructor for the Component class
     Component()
     {
         // Initialize the object counter to 0
-        objects = 0;
+        //objects = 0;
 
         // Initialize all elements in the OSWsave array to default values
-        for (int i = 0; i < 1000; i++)
-        {
-            OSWsave[i] = Model();
-        }
+        
     }
 
-    void AddObject(const char* location);
-    void RemoveObject(glm::vec3 ID);
-    void TRY_OBJ_RECOVERING_TEST();
-    void TRY_OBJ_SORTER_TEST();
-    void SuffleObjectsID();
-    void TRY_SAFE_MODE();
-    Model FindObjectID(GLFWwindow* window);
-
+    void TRY_OBJ_RECOVERING_TEST(int objects, Model OSWsave[]);
+    void TRY_OBJ_SORTER_TEST(int objects, Model OSWsave[]);
+    void SuffleObjectsID(int objects, Model OSWsave[]);
+    void TRY_SAFE_MODE(int objects, Model OSWsave[]);
+    void TRY_DRAWING(int objects, Model OSWsave[], Shader shader, Camera camera);
+    void CLEAR();
+    Model FindObjectID(GLFWwindow* window, int objects, Model OSWsave[1]);
+    
 private:
+    Model OSWsave[1];
     void Error();
 };
