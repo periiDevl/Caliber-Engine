@@ -302,13 +302,16 @@ int main()
 
 	Component scene;
 	const int ObjectsAmt = 3;
-	Model sceneObjects[ObjectsAmt] = { Model("models/rocket/scene.gltf"), Model("models/cube/scene.gltf"), Model("models/caliberHouse/scene.gltf") };
+	Model sceneObjects[ObjectsAmt] = { Model("models/rocket/scene.gltf"), Model("models/cube/scene.gltf"), Model("models/cliberDeafult/scene.gltf") };
 	scene.TRY_OBJ_RECOVERING_TEST(ObjectsAmt, sceneObjects);
 
 	scene.SuffleObjectsID(ObjectsAmt, sceneObjects);
 	scene.TRY_SAFE_MODE(ObjectsAmt, sceneObjects);
 
 	sceneObjects[0].translation = glm::vec3(100, 100, 100);
+
+	sceneObjects[2].scale = glm::vec3(2.0f);
+	
 	//Model rocket("models/rocket/scene.gltf");
 
 	

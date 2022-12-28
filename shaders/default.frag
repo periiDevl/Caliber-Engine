@@ -145,7 +145,7 @@ vec4 direcLight()
 
 		// Smoothens out the shadows
 		int sampleRadius = 5;
-		vec2 pixelSize = 1.0 / textureSize(shadowMap, 0);
+		vec2 pixelSize = 2.5 / textureSize(shadowMap, 0);
 		for(int y = -sampleRadius; y <= sampleRadius; y++)
 		{
 		    for(int x = -sampleRadius; x <= sampleRadius; x++)
