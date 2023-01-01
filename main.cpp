@@ -983,7 +983,7 @@ int main()
 			}
 			ImGui::End();
 			style.Colors[ImGuiCol_WindowBg] = ImVec4(0.6, 0.6, 0.6, 1);
-			ImGui::Begin("backround", 0, ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+			//ImGui::Begin("backround", 0, ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 			style.Colors[ImGuiCol_WindowBg] = backroundColor;
 			
 
