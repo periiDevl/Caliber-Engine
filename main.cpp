@@ -1017,7 +1017,7 @@ int main()
 						//gamma = realGamma;
 						glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
 
-						ImGui::DragInt("bloom amount", &bloom, 0.012f, 0, 40);
+						//ImGui::DragInt("bloom amount", &bloom, 0.012f, 0, 40);
 						ImGui::Checkbox("Enable shadows", &renderShadows);
 						ImGui::Checkbox("Enable high qualtiy shadows (Needs restart to change)", &hqs);
 
