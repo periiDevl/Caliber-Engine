@@ -648,6 +648,7 @@ int main()
 	
 	
 	
+	const float fixed_timestep = 1.0f / 239.0;
 	// Main while loop
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
@@ -730,7 +731,6 @@ int main()
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-		const float fixed_timestep = 1.0f / 60.0f;
 
 		if (timeDiff >= fixed_timestep) {
 			// Creates new title
@@ -751,12 +751,11 @@ int main()
 			}
 		}
 		
+		
 
 
 
 
-
-		std::cout << delta_time << std::endl;
 		
 		glEnable(GL_DEPTH_TEST);
 		
