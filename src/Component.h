@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <fstream>
+#include <chrono>
 #include <cstdlib>
 #include <string>
 #include <array>
@@ -13,7 +14,7 @@
 class Component
 {
 public:
-
+    
     // Default constructor for the Component class
     Component()
     {

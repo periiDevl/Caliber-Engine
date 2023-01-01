@@ -107,13 +107,24 @@ unsigned int skyboxIndices[] =
 	3, 7, 6,
 	6, 2, 3
 };
-
 int saveFloatCurve = 10;
+
+float delta_time() {
+	static double previous_time = glfwGetTime();
+
+	double current_time = glfwGetTime();
+	double elapsed_time = current_time - previous_time;
+	previous_time = current_time;
+
+	return static_cast<float>(elapsed_time);
+}
 
 
 
 int main()
 {
+
+	
 	//scene.TRY_OBJ_RECOVERING_TEST(objectAmt, sceneObjects);
 	//PlaySound(TEXT("balls.wav"), NULL, SND_ASYNC);
 
@@ -636,10 +647,10 @@ int main()
 	
 	
 	
+	
 	// Main while loop
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
-
 		GLint viewport[4];
 		glGetIntegerv(GL_VIEWPORT, viewport);
 
@@ -662,7 +673,7 @@ int main()
 		float b = pixel[2] / 255.0f;
 		float a = pixel[3] / 255.0f;
 		
-		std::cout << std::to_string(r) + "," + std::to_string(g) + "," + std::to_string(b) << std::endl;
+		
 		
 		//float randomFloat = static_cast<float>(rand()) / RAND_MAX;
 		//std::cout << randomFloat << std::endl;
@@ -719,35 +730,33 @@ int main()
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-		if (timeDiff >= 1.0 / 30.0)
-		{
+		const float fixed_timestep = 1.0f / 60.0f;
+
+		if (timeDiff >= fixed_timestep) {
 			// Creates new title
 			std::string FPS = std::to_string((1.0 / timeDiff) * counter);
 			std::string ms = std::to_string((timeDiff / counter) * 1000);
 			std::string newTitle = "Caliber renderer window - " + FPS + "FPS / " + ms + "ms";
 			glfwSetWindowTitle(window, newTitle.c_str());
 
-			
+
 			// Resets times and counter
 			prevTime = crntTime;
 			counter = 0;
 
-			//cinamatic mode
-			if (camera.cinamaticview)
-			{
-				run = true;
-			}
-			
-
-			
-			// Use this if you have disabled VSync
-			if (vsync == 0 && !run) {
-				camera.Inputs(window, ctrlSpeed, normalSpeed);
-				
+			// Update the camera using a fixed time step of 1/60 seconds
+			while (timeDiff >= fixed_timestep) {
+				camera.Inputs(window, 1, 1);
+				timeDiff -= fixed_timestep;
 			}
 		}
-
 		
+
+
+
+
+
+		std::cout << delta_time << std::endl;
 		
 		glEnable(GL_DEPTH_TEST);
 		
@@ -770,10 +779,6 @@ int main()
 		
 		
 
-		// Handles camera inputs (delete this if you have disabled VSync)
-		if (vsync == 1 && !run) {
-			camera.Inputs(window, ctrlSpeed, normalSpeed);
-		}
 
 		// Switch back to the default framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -788,8 +793,6 @@ int main()
 
 
 		
-		// Updates and exports the camera matrix to the Vertex Shader
-		camera.updateMatrix(60.0f, 0.1f, viewFarPlane);
 
 		//camera stack
 		//camera2.updateMatrix(60.0f, 0.1f, farPlane);
@@ -821,6 +824,8 @@ int main()
 
 		
 
+		// Updates and exports the camera matrix to the Vertex Shader
+		camera.updateMatrix(60.0f, 0.1f, viewFarPlane);
 
 		//camera stacking
 		//calibericon.Draw(shaderProgram, camera2, glm::vec3(0, 0, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(20, 20, 20));
@@ -1083,7 +1088,7 @@ int main()
 
 
 
-
+		
 		// Swap the back buffer with the front buffer
 		glfwSwapBuffers(window);
 		// Take care of all GLFW events
