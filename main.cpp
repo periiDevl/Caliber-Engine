@@ -10,7 +10,7 @@
 #include"src/FlightController.h"
 #include"src/Functions.h"
 #include"src/Component.h"
-
+#include <bullet/btBulletDynamicsCommon.h>
 Functions func;
 FlightController flightController;
 //Component scene;
@@ -642,7 +642,36 @@ int main()
 
 
 	
+	// Initialize the Bullet physics engine
+	btBroadphaseInterface* broadphase = new btDbvtBroadphase();
+	btDefaultCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();
+	btCollisionDispatcher* dispatcher = new btCollisionDispatcher(collisionConfiguration);
+	btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
+	btDiscreteDynamicsWorld* dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
+	dynamicsWorld->setGravity(btVector3(0, -10, 0));  // Apply gravity
 
+
+	// Create a floor
+	btCollisionShape* groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 1);
+	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0)));
+	btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, groundShape, btVector3(0, 0, 0));
+	btRigidBody* groundRigidBody = new btRigidBody(groundRigidBodyCI);
+	dynamicsWorld->addRigidBody(groundRigidBody);
+
+	// Create a falling box
+	btCollisionShape* boxShape = new btBoxShape(btVector3(1, 1, 1));
+	btDefaultMotionState* boxMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 100, 0)));
+	btScalar mass = 1;
+	btVector3 boxInertia(0, 0, 0);
+	boxShape->calculateLocalInertia(mass, boxInertia);
+	btRigidBody::btRigidBodyConstructionInfo boxRigidBodyCI(mass, boxMotionState, boxShape, boxInertia);
+	btRigidBody* boxRigidBody = new btRigidBody(boxRigidBodyCI);
+	dynamicsWorld->addRigidBody(boxRigidBody);
+
+	
+
+	// Perform simulation
+	const int substep = 10;
 
 	
 	
@@ -652,6 +681,11 @@ int main()
 	// Main while loop
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
+		dynamicsWorld->stepSimulation(1.f / 60.f, substep);
+		btTransform trans;
+		boxRigidBody->getMotionState()->getWorldTransform(trans);
+		printf("Box position: %f, %f, %f\n", trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ());
+		btQuaternion rotation = trans.getRotation();
 		GLint viewport[4];
 		glGetIntegerv(GL_VIEWPORT, viewport);
 
@@ -835,6 +869,10 @@ int main()
 			//sceneObjects[i].Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 		//}
 		scene.TRY_DRAWING(ObjectsAmt, sceneObjects, shaderProgram, camera);
+
+		btVector3 origin = trans.getOrigin();
+		sceneObjects[0].translation = glm::vec3(origin.getX(), origin.getY(), origin.getZ());
+		sceneObjects[0].rotation = glm::quat(rotation.getW(), rotation.getX(), rotation.getY(), rotation.getZ());
 		// Since the cubemap will always have a depth of 1.0, we need that equal sign so it doesn't get discarded
 
 		//SKYBOX
@@ -1133,7 +1171,16 @@ int main()
 	}
 	
 	
-
+	// Clean up
+	dynamicsWorld->removeRigidBody(boxRigidBody);
+	delete boxRigidBody->getMotionState();
+	delete boxRigidBody;
+	delete boxShape;
+	delete dynamicsWorld;
+	delete solver;
+	delete dispatcher;
+	delete collisionConfiguration;
+	delete broadphase;
 	// Delete all the objects we've created
 	shaderProgram.Delete();
 	framebufferProgram.Delete();
