@@ -107,7 +107,7 @@ unsigned int skyboxIndices[] =
 	3, 7, 6,
 	6, 2, 3
 };
-int saveFloatCurve = 10;
+int saveFloatCurve = 100;
 
 float delta_time() {
 	static double previous_time = glfwGetTime();
@@ -167,6 +167,10 @@ int main()
 	exposure = exposure / saveFloatCurve;
 	gamma = gamma / saveFloatCurve;
 	FogNear = FogNear / saveFloatCurve;
+
+	ctrlSpeed = ctrlSpeed / saveFloatCurve;
+	normalSpeed = normalSpeed / saveFloatCurve;
+
 	int mockwidth = width;
 	int mockheight = height;
 	
@@ -317,9 +321,7 @@ int main()
 	scene.TRY_OBJ_RECOVERING_TEST(ObjectsAmt, sceneObjects);
 
 	scene.SuffleObjectsID(ObjectsAmt, sceneObjects);
-	scene.TRY_SAFE_MODE(ObjectsAmt, sceneObjects);
 
-	sceneObjects[0].translation = glm::vec3(100, 100, 100);
 
 	sceneObjects[2].scale = glm::vec3(2.0f);
 	
@@ -648,15 +650,10 @@ int main()
 	btCollisionDispatcher* dispatcher = new btCollisionDispatcher(collisionConfiguration);
 	btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
 	btDiscreteDynamicsWorld* dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
-	dynamicsWorld->setGravity(btVector3(0, -10, 0));  // Apply gravity
+	dynamicsWorld->setGravity(btVector3(0, -9.81, 0));  // Apply gravity
 
 
-	// Create a floor
-	btCollisionShape* groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 1);
-	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0)));
-	btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, groundShape, btVector3(0, 0, 0));
-	btRigidBody* groundRigidBody = new btRigidBody(groundRigidBodyCI);
-	dynamicsWorld->addRigidBody(groundRigidBody);
+	
 
 	// Create a falling box
 	btCollisionShape* boxShape = new btBoxShape(btVector3(1, 1, 1));
@@ -668,8 +665,17 @@ int main()
 	btRigidBody* boxRigidBody = new btRigidBody(boxRigidBodyCI);
 	dynamicsWorld->addRigidBody(boxRigidBody);
 
-	
+	btCollisionShape* boxShape1 = new btBoxShape(btVector3(1, 1, 0.1f));
+	btDefaultMotionState* boxMotionState1 = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0)));
+	btScalar mass1 = 0;
+	btVector3 boxInertia1(0, 0, 0);
+	boxShape1->calculateLocalInertia(mass1, boxInertia1);
+	btRigidBody* boxRigidBody1 = new btRigidBody(mass1, boxMotionState1, boxShape1, boxInertia1);
+	boxRigidBody1->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
+	dynamicsWorld->addRigidBody(boxRigidBody1);
 
+
+	
 	// Perform simulation
 	const int substep = 10;
 
@@ -677,11 +683,15 @@ int main()
 	
 	
 	
-	const float fixed_timestep = 1.0f / 239.0;
+	const float fixed_timestep = 1.0f / 200.0;
+	\
 	// Main while loop
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
-		dynamicsWorld->stepSimulation(1.f / 60.f, substep);
+		if (run) {
+			dynamicsWorld->stepSimulation(1.f / 60.f, substep);
+		}
+
 		btTransform trans;
 		boxRigidBody->getMotionState()->getWorldTransform(trans);
 		printf("Box position: %f, %f, %f\n", trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ());
@@ -694,7 +704,7 @@ int main()
 		glfwGetCursorPos(window, &mouseX, &mouseY);
 
 		// Flip the y coordinate, since screen coordinates start at the top left,
-		// but OpenGL coordinates start at the bottom left
+		// but OpenGL coordinates start at the bottom left\
 		mouseY = viewport[3] - mouseY;
 
 		// Read the color values of the pixel under the mouse cursor
@@ -780,7 +790,7 @@ int main()
 
 			// Update the camera using a fixed time step of 1/60 seconds
 			while (timeDiff >= fixed_timestep) {
-				camera.Inputs(window, 1, 1);
+				camera.Inputs(window, ctrlSpeed, normalSpeed);
 				timeDiff -= fixed_timestep;
 			}
 		}
@@ -1222,8 +1232,8 @@ int main()
 	SaveFileWr << mockheight << "\n";
 	SaveFileWr << mockwidth << "\n";
 	SaveFileWr << wireframe << "\n";
-	SaveFileWr << ctrlSpeed << "\n";
-	SaveFileWr << normalSpeed << "\n";
+	SaveFileWr << ctrlSpeed * saveFloatCurve << "\n";
+	SaveFileWr << normalSpeed * saveFloatCurve << "\n";
 	SaveFileWr << FullCockpit << "\n";
 	SaveFileWr << FogNear * saveFloatCurve << "\n";
 	SaveFileWr << viewFarPlane << "\n";

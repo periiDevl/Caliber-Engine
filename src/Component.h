@@ -28,10 +28,8 @@ public:
     void TRY_OBJ_RECOVERING_TEST(int objects, Model OSWsave[]);
     void TRY_OBJ_SORTER_TEST(int objects, Model OSWsave[]);
     void SuffleObjectsID(int objects, Model OSWsave[]);
-    void TRY_SAFE_MODE(int objects, Model OSWsave[]);
     void TRY_DRAWING(int objects, Model OSWsave[], Shader shader, Camera camera);
     void CLEAR();
-    Model FindObjectID(GLFWwindow* window, int objects, Model OSWsave[1]);
     
 private:
     Model OSWsave[1];
