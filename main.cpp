@@ -119,6 +119,17 @@ float delta_time() {
 	return static_cast<float>(elapsed_time);
 }
 
+void createStaticBox(btDynamicsWorld* dynamicsWorld, btVector3 position, btVector3 scale, btQuaternion rotation)
+{
+	btCollisionShape* boxShape = new btBoxShape(scale);
+	btDefaultMotionState* boxMotionState = new btDefaultMotionState(btTransform(rotation, position));
+	btScalar mass = 0;
+	btVector3 boxInertia(0, 0, 0);
+	boxShape->calculateLocalInertia(mass, boxInertia);
+	btRigidBody* boxRigidBody = new btRigidBody(mass, boxMotionState, boxShape, boxInertia);
+	boxRigidBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
+	dynamicsWorld->addRigidBody(boxRigidBody);
+}
 
 
 int main()
@@ -657,7 +668,7 @@ int main()
 
 	// Create a falling box
 	btCollisionShape* boxShape = new btBoxShape(btVector3(1, 1, 1));
-	btDefaultMotionState* boxMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 100, 0)));
+	btDefaultMotionState* boxMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 15, 0)));
 	btScalar mass = 1;
 	btVector3 boxInertia(0, 0, 0);
 	boxShape->calculateLocalInertia(mass, boxInertia);
@@ -665,17 +676,16 @@ int main()
 	btRigidBody* boxRigidBody = new btRigidBody(boxRigidBodyCI);
 	dynamicsWorld->addRigidBody(boxRigidBody);
 
-	btCollisionShape* boxShape1 = new btBoxShape(btVector3(1, 1, 0.1f));
-	btDefaultMotionState* boxMotionState1 = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0)));
-	btScalar mass1 = 0;
-	btVector3 boxInertia1(0, 0, 0);
-	boxShape1->calculateLocalInertia(mass1, boxInertia1);
-	btRigidBody* boxRigidBody1 = new btRigidBody(mass1, boxMotionState1, boxShape1, boxInertia1);
-	boxRigidBody1->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
-	dynamicsWorld->addRigidBody(boxRigidBody1);
+	
+	createStaticBox(dynamicsWorld, btVector3(0, 0, 0), btVector3(1, 1, 1), btQuaternion(0, 0, 0, 1));
+
 
 
 	
+
+
+
+
 	// Perform simulation
 	const int substep = 10;
 
@@ -683,40 +693,22 @@ int main()
 	
 	
 	
-	const float fixed_timestep = 1.0f / 200.0;
-	\
+	const float fixed_timestep = 1.0f / 100.0;
+	
 	// Main while loop
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
-		if (run) {
-			dynamicsWorld->stepSimulation(1.f / 60.f, substep);
-		}
+		
+		
+
+		
+
 
 		btTransform trans;
 		boxRigidBody->getMotionState()->getWorldTransform(trans);
 		printf("Box position: %f, %f, %f\n", trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ());
 		btQuaternion rotation = trans.getRotation();
-		GLint viewport[4];
-		glGetIntegerv(GL_VIEWPORT, viewport);
-
-		double mouseX, mouseY;
-		// Get the mouse position in screen coordinates
-		glfwGetCursorPos(window, &mouseX, &mouseY);
-
-		// Flip the y coordinate, since screen coordinates start at the top left,
-		// but OpenGL coordinates start at the bottom left\
-		mouseY = viewport[3] - mouseY;
-
-		// Read the color values of the pixel under the mouse cursor
-		GLubyte pixel[4];
-		glReadPixels(mouseX, mouseY, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
-
-		// The pixel array now contains the color values of the pixel under the mouse cursor
-		// You can access the individual color components like this:
-		float r = pixel[0] / 255.0f;
-		float g = pixel[1] / 255.0f;
-		float b = pixel[2] / 255.0f;
-		float a = pixel[3] / 255.0f;
+		
 		
 		
 		
@@ -788,11 +780,13 @@ int main()
 			prevTime = crntTime;
 			counter = 0;
 
-			// Update the camera using a fixed time step of 1/60 seconds
-			while (timeDiff >= fixed_timestep) {
-				camera.Inputs(window, ctrlSpeed, normalSpeed);
-				timeDiff -= fixed_timestep;
+			camera.Inputs(window, ctrlSpeed, normalSpeed);
+			if (run) {
+				dynamicsWorld->stepSimulation(fixed_timestep, substep);
 			}
+			
+
+
 		}
 		
 		
@@ -883,7 +877,12 @@ int main()
 		btVector3 origin = trans.getOrigin();
 		sceneObjects[0].translation = glm::vec3(origin.getX(), origin.getY(), origin.getZ());
 		sceneObjects[0].rotation = glm::quat(rotation.getW(), rotation.getX(), rotation.getY(), rotation.getZ());
-		// Since the cubemap will always have a depth of 1.0, we need that equal sign so it doesn't get discarded
+
+
+
+		
+		
+		
 
 		//SKYBOX
 		//------------

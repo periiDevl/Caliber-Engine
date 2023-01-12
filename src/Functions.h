@@ -26,6 +26,13 @@ public:
 		return q;
 
 	}
+	glm::vec3 Quat_to_euler(const glm::quat& q)
+	{
+		double roll = atan2(2 * (q.w * q.x + q.y * q.z), 1 - 2 * (q.x * q.x + q.y * q.y));
+		double pitch = asin(2 * (q.w * q.y - q.z * q.x));
+		double yaw = atan2(2 * (q.w * q.z + q.x * q.y), 1 - 2 * (q.y * q.y + q.z * q.z));
+		return glm::vec3(roll, pitch, yaw);
+	}
 
 
 	glm::vec3 Direction_to_forward(glm::vec3 vector3, double yaw, double pitch)
