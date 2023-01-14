@@ -703,11 +703,14 @@ int main()
 	
 	const float fixed_timestep = 1.0f / 60.0;
 	bool CameraIsColliding;
+	camera.getInputAtRun = true;
 	// Main while loop
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
 		
-		
+		camera.run = run;
+		cameraRawPosition.run = run;
+
 		
 		
 		btTransform trans;
@@ -789,10 +792,7 @@ int main()
 			}
 			
 
-			camera.run = run;
-			cameraRawPosition.run = run;
-
-			camera.getInputAtRun = true;
+			
 			sphereRigidBody->setGravity(btVector3(0, 0, 0));
 
 			btTransform cameratrans;
