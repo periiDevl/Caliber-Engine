@@ -311,7 +311,9 @@ int main()
 	glFrontFace(GL_CCW);
 
 	// Creates camera object
-	Camera camera(width, height, glm::vec3(22.0f, 15.0, 0.0f));
+	Camera camera(width, height, glm::vec3(0, 0, 0.0f));
+	Camera cameraRawPosition(width, height, glm::vec3(0, 0, 0));
+
 
 	//camera stacking
 	//Camera camera2(width, height, glm::vec3(22.0f, 15.0, 0.0f));
@@ -677,12 +679,18 @@ int main()
 	dynamicsWorld->addRigidBody(boxRigidBody);
 
 	
-	createStaticBox(dynamicsWorld, btVector3(0, 0, 0), btVector3(1, 1, 1), btQuaternion(0, 0, 0, 1));
+	createStaticBox(dynamicsWorld, btVector3(0, 0, 0), btVector3(1000, 1, 1000), btQuaternion(0, 0, 0, 1));
 
 
-
+	btCollisionShape* sphereShape = new btSphereShape(1); // replace btBoxShape with btSphereShape and the size parameter with 1
+	btDefaultMotionState* sphereMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 20, 0))); // replace boxMotionState with sphereMotionState
 	
-
+	btVector3 sphereInertia(0, 0, 0);
+	sphereShape->calculateLocalInertia(1, sphereInertia);
+	btRigidBody::btRigidBodyConstructionInfo sphereRigidBodyCI(1, sphereMotionState, sphereShape, sphereInertia);
+	btRigidBody* sphereRigidBody = new btRigidBody(sphereRigidBodyCI);
+	dynamicsWorld->addRigidBody(sphereRigidBody); // replace boxRigidBody with sphereRigidBody
+	
 
 
 
@@ -694,24 +702,18 @@ int main()
 	
 	
 	const float fixed_timestep = 1.0f / 100.0;
-	
+	bool CameraIsColliding;
 	// Main while loop
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
 		
 		
-
 		
-
-
+		
 		btTransform trans;
 		boxRigidBody->getMotionState()->getWorldTransform(trans);
-		printf("Box position: %f, %f, %f\n", trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ());
+		//printf("Box position: %f, %f, %f\n", trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ());
 		btQuaternion rotation = trans.getRotation();
-		
-		
-		
-		
 		//float randomFloat = static_cast<float>(rand()) / RAND_MAX;
 		//std::cout << randomFloat << std::endl;
 		// Update the flight controller with user input
@@ -781,12 +783,52 @@ int main()
 			counter = 0;
 
 			camera.Inputs(window, ctrlSpeed, normalSpeed);
+			cameraRawPosition.Inputs(window, ctrlSpeed, normalSpeed);
 			if (run) {
 				dynamicsWorld->stepSimulation(fixed_timestep, substep);
 			}
 			
 
+			camera.run = run;
+			cameraRawPosition.run = run;
 
+			camera.getInputAtRun = true;
+			sphereRigidBody->setGravity(btVector3(0, 0, 0));
+
+			btTransform cameratrans;
+			sphereRigidBody->getMotionState()->getWorldTransform(cameratrans);
+
+			btVector3 startPosition = sphereRigidBody->getWorldTransform().getOrigin();
+			btVector3 endPosition = btVector3(cameraRawPosition.Position.x, cameraRawPosition.Position.y, cameraRawPosition.Position.z);
+			btScalar duration = 0.04; // time in seconds 
+
+			btVector3 velocity = (endPosition - startPosition) / duration;
+
+			sphereRigidBody->setLinearVelocity(velocity);
+			sphereRigidBody->setAngularVelocity(btVector3(0, 0, 0));
+
+
+
+
+			for (int i = 0; i < dispatcher->getNumManifolds(); i++) {
+				btPersistentManifold* contactManifold = dispatcher->getManifoldByIndexInternal(i);
+				if (contactManifold->getBody0() == sphereRigidBody || contactManifold->getBody1() == sphereRigidBody) {
+					CameraIsColliding = true;
+				}
+				else {
+					CameraIsColliding = false;
+				}
+			}
+
+			cameraRawPosition.Orientation = camera.Orientation;
+
+			camera.Position = glm::vec3(cameratrans.getOrigin().getX(), cameratrans.getOrigin().getY(), cameratrans.getOrigin().getZ());
+
+			if (endPosition.distance(cameratrans.getOrigin()) > 1.0f)
+			{
+				//printf("yay");
+				cameraRawPosition.Position = glm::vec3(cameratrans.getOrigin().getX(), cameratrans.getOrigin().getY(), cameratrans.getOrigin().getZ());
+			}
 		}
 		
 		
@@ -864,6 +906,7 @@ int main()
 		// Updates and exports the camera matrix to the Vertex Shader
 		camera.updateMatrix(60.0f, 0.1f, viewFarPlane);
 
+
 		//camera stacking
 		//calibericon.Draw(shaderProgram, camera2, glm::vec3(0, 0, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(20, 20, 20));
 
@@ -879,9 +922,10 @@ int main()
 		sceneObjects[0].rotation = glm::quat(rotation.getW(), rotation.getX(), rotation.getY(), rotation.getZ());
 
 
-
 		
 		
+		//sceneObjects[1].translation = glm::vec3(cameratrans.getOrigin().getX(), cameratrans.getOrigin().getY(), cameratrans.getOrigin().getZ());
+		//sceneObjects[1].rotation = glm::quat(cameratrans.getRotation().getW(), cameratrans.getRotation().getX(), cameratrans.getRotation().getY(), cameratrans.getRotation().getZ());
 		
 
 		//SKYBOX
