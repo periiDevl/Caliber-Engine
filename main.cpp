@@ -701,7 +701,7 @@ int main()
 	
 	
 	
-	const float fixed_timestep = 1.0f / 100.0;
+	const float fixed_timestep = 1.0f / 60.0;
 	bool CameraIsColliding;
 	// Main while loop
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
