@@ -708,8 +708,7 @@ int main()
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
 		
-		camera.run = run;
-		cameraRawPosition.run = run;
+		
 
 		
 		
