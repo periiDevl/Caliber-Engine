@@ -10,9 +10,11 @@
 #include"src/FlightController.h"
 #include"src/Functions.h"
 #include"src/Component.h"
+#include"src/Setup.h"
 #include <bullet/btBulletDynamicsCommon.h>
 Functions func;
 FlightController flightController;
+Setup setup;
 //Component scene;
 // Create a new component object
 //Component component;
@@ -187,18 +189,7 @@ int main()
 	
 	
 	// Initialize GLFW
-	glfwInit();
-
-	// Tell GLFW what version of OpenGL we are using 
-	// In this case we are using OpenGL 3.3
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	// Only use this if you don't have a framebuffer
-	//glfwWindowHint(GLFW_SAMPLES, samples);
-	// Tell GLFW we are using the CORE profile
-	// So that means we only have the modern functions
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	setup.SETUP_GLFW();
 	
 
 	
@@ -220,7 +211,18 @@ int main()
 	// Introduce the window into the current context
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	{
+		std::cout << "Failed to initialize GLAD" << std::endl;
+		return -1;
+	}
 	
+	if (setup.IsError)
+	{
+		return -1;
+	}
+
 	/*
 	//load Icon
 	int wid, hei;
@@ -243,13 +245,7 @@ int main()
 	glViewport(0, 0, width, height);
 
 
-	// Initialize ImGUI
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	ImGui::StyleColorsDark();
-	ImGui_ImplGlfw_InitForOpenGL(window, true);
-	ImGui_ImplOpenGL3_Init("#version 330");
+	setup.SETUP_IMGUI(window);
 
 	// Generates shaders
 	Shader shaderProgram("shaders/default.vert", "shaders/default.frag");
@@ -806,7 +802,7 @@ int main()
 
 			camera.Position = glm::vec3(cameratrans.getOrigin().getX(), cameratrans.getOrigin().getY(), cameratrans.getOrigin().getZ());
 
-			if (endPosition.distance(cameratrans.getOrigin()) > 0.1f)
+			if (endPosition.distance(cameratrans.getOrigin()) > 1.0f)
 			{
 				cameraRawPosition.Position = glm::vec3(cameratrans.getOrigin().getX(), cameratrans.getOrigin().getY(), cameratrans.getOrigin().getZ());
 			}
@@ -903,6 +899,8 @@ int main()
 		btVector3 origin = trans.getOrigin();
 		sceneObjects[0].translation = glm::vec3(origin.getX(), origin.getY(), origin.getZ());
 		sceneObjects[0].rotation = glm::quat(rotation.getW(), rotation.getX(), rotation.getY(), rotation.getZ());
+
+
 
 
 		
