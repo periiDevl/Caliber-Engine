@@ -695,7 +695,6 @@ int main()
 
 	float spee = 0;
 	
-	run = true;
 	
 	const float fixed_timestep = 1.0f / 60.0;
 	//camera.getInputAtRun = true;
@@ -1241,8 +1240,7 @@ int main()
 
 	
 
-	std::ofstream SaveFileWrr("Testing.caliberTest");
-	SaveFileWrr << spee << "\n";
+	
 	
 	std::ofstream SaveFileWr("projectname.caliber");
 	
