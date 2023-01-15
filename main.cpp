@@ -800,7 +800,7 @@ int main()
 			btVector3 endPosition = btVector3(cameraRawPosition.Position.x, cameraRawPosition.Position.y, cameraRawPosition.Position.z);
 			btScalar duration = 0.7; // time in seconds 
 
-			btVector3 velocity = (endPosition - startPosition) / duration;
+			btVector3 velocity = ((endPosition - startPosition) / duration) * fixed_timestep;
 
 			sphereRigidBody->setLinearVelocity(velocity);
 			sphereRigidBody->setAngularVelocity(btVector3(0, 0, 0));
