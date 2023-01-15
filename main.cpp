@@ -690,8 +690,8 @@ int main()
 	btRigidBody::btRigidBodyConstructionInfo sphereRigidBodyCI(1, sphereMotionState, sphereShape, sphereInertia);
 	btRigidBody* sphereRigidBody = new btRigidBody(sphereRigidBodyCI);
 	dynamicsWorld->addRigidBody(sphereRigidBody); // replace boxRigidBody with sphereRigidBody
-	
-
+	sphereRigidBody->setSleepingThresholds(0,0);
+	sphereRigidBody->setActivationState(DISABLE_DEACTIVATION);
 
 
 	// Perform simulation
@@ -699,7 +699,7 @@ int main()
 
 	
 	
-	
+	run = true;
 	
 	const float fixed_timestep = 1.0f / 60.0;
 	bool CameraIsColliding;
@@ -823,7 +823,7 @@ int main()
 
 			camera.Position = glm::vec3(cameratrans.getOrigin().getX(), cameratrans.getOrigin().getY(), cameratrans.getOrigin().getZ());
 
-			if (endPosition.distance(cameratrans.getOrigin()) > 1.0f)
+			if (endPosition.distance(cameratrans.getOrigin()) < 1.0f)
 			{
 				//printf("yay");
 				cameraRawPosition.Position = glm::vec3(cameratrans.getOrigin().getX(), cameratrans.getOrigin().getY(), cameratrans.getOrigin().getZ());
