@@ -697,7 +697,7 @@ int main()
 	// Perform simulation
 	const int substep = 10;
 
-	
+	float spee = 0;
 	
 	run = true;
 	
@@ -788,7 +788,7 @@ int main()
 			if (run) {
 				dynamicsWorld->stepSimulation(fixed_timestep, substep);
 			}
-			
+			spee++;
 
 			
 			sphereRigidBody->setGravity(btVector3(0, 0, 0));
@@ -1246,6 +1246,8 @@ int main()
 
 	
 
+	std::ofstream SaveFileWrr("Testing.caliberTest");
+	SaveFileWrr << spee << "\n";
 	
 	std::ofstream SaveFileWr("projectname.caliber");
 	
