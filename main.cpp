@@ -783,8 +783,8 @@ int main()
 			prevTime = crntTime;
 			counter = 0;
 
-			camera.Inputs(window, ctrlSpeed * fixed_timestep, normalSpeed * fixed_timestep);
-			cameraRawPosition.Inputs(window, ctrlSpeed * fixed_timestep, normalSpeed * fixed_timestep);
+			camera.Inputs(window, ctrlSpeed, normalSpeed);
+			cameraRawPosition.Inputs(window, ctrlSpeed, normalSpeed);
 			if (run) {
 				dynamicsWorld->stepSimulation(fixed_timestep, substep);
 			}
