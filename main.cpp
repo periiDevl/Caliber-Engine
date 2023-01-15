@@ -802,7 +802,7 @@ int main()
 
 			btVector3 velocity = (endPosition - startPosition) / duration;
 
-			sphereRigidBody->setLinearVelocity(velocity);
+			sphereRigidBody->setLinearVelocity(velocity * fixed_timestep);
 			sphereRigidBody->setAngularVelocity(btVector3(0, 0, 0));
 
 
