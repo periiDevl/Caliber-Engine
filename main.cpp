@@ -702,7 +702,6 @@ int main()
 	run = true;
 	
 	const float fixed_timestep = 1.0f / 60.0;
-	bool CameraIsColliding;
 	//camera.getInputAtRun = true;
 	// Main while loop
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
@@ -799,25 +798,13 @@ int main()
 
 			btVector3 startPosition = sphereRigidBody->getWorldTransform().getOrigin();
 			btVector3 endPosition = btVector3(cameraRawPosition.Position.x, cameraRawPosition.Position.y, cameraRawPosition.Position.z);
-			btScalar duration = 0.1; // time in seconds 
+			btScalar duration = 0.7; // time in seconds 
 
 			btVector3 velocity = (endPosition - startPosition) / duration;
 
 			sphereRigidBody->setLinearVelocity(velocity);
 			sphereRigidBody->setAngularVelocity(btVector3(0, 0, 0));
 
-
-
-
-			for (int i = 0; i < dispatcher->getNumManifolds(); i++) {
-				btPersistentManifold* contactManifold = dispatcher->getManifoldByIndexInternal(i);
-				if (contactManifold->getBody0() == sphereRigidBody || contactManifold->getBody1() == sphereRigidBody) {
-					CameraIsColliding = true;
-				}
-				else {
-					CameraIsColliding = false;
-				}
-			}
 
 			cameraRawPosition.Orientation = camera.Orientation;
 
@@ -1115,6 +1102,7 @@ int main()
 						ImGui::Text("This will make your shadows go longer with a cost of shadow resolution");
 						style.Colors[ImGuiCol_Text] = windowWhite;
 						ImGui::Checkbox("Enable high resulotion light view point (Needs restart to change)", &lightVLow);
+						ImGui::InputInt("Bloom amount", &bloom, 1, 30);
 						
 						ImGui::Checkbox("Enable skybox", &enableskybox);
 
