@@ -683,7 +683,7 @@ int main()
 
 
 	btCollisionShape* sphereShape = new btSphereShape(1); // replace btBoxShape with btSphereShape and the size parameter with 1
-	btDefaultMotionState* sphereMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 20, 0))); // replace boxMotionState with sphereMotionState
+	btDefaultMotionState* sphereMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 40, 0))); // replace boxMotionState with sphereMotionState
 	
 	btVector3 sphereInertia(0, 0, 0);
 	sphereShape->calculateLocalInertia(1, sphereInertia);
@@ -799,7 +799,7 @@ int main()
 
 			btVector3 startPosition = sphereRigidBody->getWorldTransform().getOrigin();
 			btVector3 endPosition = btVector3(cameraRawPosition.Position.x, cameraRawPosition.Position.y, cameraRawPosition.Position.z);
-			btScalar duration = 0.04; // time in seconds 
+			btScalar duration = 0.1; // time in seconds 
 
 			btVector3 velocity = (endPosition - startPosition) / duration;
 
@@ -823,7 +823,7 @@ int main()
 
 			camera.Position = glm::vec3(cameratrans.getOrigin().getX(), cameratrans.getOrigin().getY(), cameratrans.getOrigin().getZ());
 
-			if (endPosition.distance(cameratrans.getOrigin()) < 1.0f)
+			if (endPosition.distance(cameratrans.getOrigin()) > 0.1f)
 			{
 				//printf("yay");
 				cameraRawPosition.Position = glm::vec3(cameratrans.getOrigin().getX(), cameratrans.getOrigin().getY(), cameratrans.getOrigin().getZ());
