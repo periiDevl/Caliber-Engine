@@ -770,27 +770,24 @@ int main()
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-
 		if (timeDiff >= fixed_timestep) {
 			// Creates new title
-			std::string FPS = std::to_string((1.0 / timeDiff) * counter);
-			std::string ms = std::to_string((timeDiff / counter) * 1000);
+			std::string FPS = std::to_string((1.0 / fixed_timestep) * counter);
+			std::string ms = std::to_string((fixed_timestep / counter) * 1000);
 			std::string newTitle = "Caliber renderer window - " + FPS + "FPS / " + ms + "ms";
 			glfwSetWindowTitle(window, newTitle.c_str());
-
 
 			// Resets times and counter
 			prevTime = crntTime;
 			counter = 0;
 
-			camera.Inputs(window, ctrlSpeed, normalSpeed);
-			cameraRawPosition.Inputs(window, ctrlSpeed, normalSpeed);
+			camera.Inputs(window, ctrlSpeed * fixed_timestep, normalSpeed * fixed_timestep);
+			cameraRawPosition.Inputs(window, ctrlSpeed * fixed_timestep, normalSpeed * fixed_timestep);
 			if (run) {
 				dynamicsWorld->stepSimulation(fixed_timestep, substep);
 			}
 			spee++;
 
-			
 			sphereRigidBody->setGravity(btVector3(0, 0, 0));
 
 			btTransform cameratrans;
@@ -800,11 +797,10 @@ int main()
 			btVector3 endPosition = btVector3(cameraRawPosition.Position.x, cameraRawPosition.Position.y, cameraRawPosition.Position.z);
 			btScalar duration = 0.7; // time in seconds 
 
-			btVector3 velocity = (endPosition - startPosition) / duration;
+			btVector3 velocity = (endPosition - startPosition) / (duration / fixed_timestep);
 
-			sphereRigidBody->setLinearVelocity(velocity * fixed_timestep);
+			sphereRigidBody->setLinearVelocity(velocity);
 			sphereRigidBody->setAngularVelocity(btVector3(0, 0, 0));
-
 
 			cameraRawPosition.Orientation = camera.Orientation;
 
@@ -812,10 +808,11 @@ int main()
 
 			if (endPosition.distance(cameratrans.getOrigin()) > 0.1f)
 			{
-				//printf("yay");
 				cameraRawPosition.Position = glm::vec3(cameratrans.getOrigin().getX(), cameratrans.getOrigin().getY(), cameratrans.getOrigin().getZ());
 			}
 		}
+
+
 		
 		
 
