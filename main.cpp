@@ -772,15 +772,15 @@ int main()
 		ImGui::NewFrame();
 		if (timeDiff >= fixed_timestep) {
 			// Creates new title
-			std::string FPS = std::to_string((1.0 / fixed_timestep) * counter);
-			std::string ms = std::to_string((fixed_timestep / counter) * 1000);
+			std::string FPS = std::to_string((1.0 / timeDiff) * counter);
+			std::string ms = std::to_string((timeDiff / counter) * 1000);
 			std::string newTitle = "Caliber renderer window - " + FPS + "FPS / " + ms + "ms";
 			glfwSetWindowTitle(window, newTitle.c_str());
 
 			// Resets times and counter
 			prevTime = crntTime;
 			counter = 0;
-
+			
 			camera.Inputs(window, ctrlSpeed * fixed_timestep, normalSpeed * fixed_timestep);
 			cameraRawPosition.Inputs(window, ctrlSpeed * fixed_timestep, normalSpeed * fixed_timestep);
 			if (run) {
