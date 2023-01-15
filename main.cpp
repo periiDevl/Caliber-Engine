@@ -783,8 +783,8 @@ int main()
 			prevTime = crntTime;
 			counter = 0;
 
-			camera.Inputs(window, ctrlSpeed, normalSpeed);
-			cameraRawPosition.Inputs(window, ctrlSpeed, normalSpeed);
+			camera.Inputs(window, ctrlSpeed * fixed_timestep, normalSpeed * fixed_timestep);
+			cameraRawPosition.Inputs(window, ctrlSpeed * fixed_timestep, normalSpeed * fixed_timestep);
 			if (run) {
 				dynamicsWorld->stepSimulation(fixed_timestep, substep);
 			}
@@ -800,7 +800,7 @@ int main()
 			btVector3 endPosition = btVector3(cameraRawPosition.Position.x, cameraRawPosition.Position.y, cameraRawPosition.Position.z);
 			btScalar duration = 0.7; // time in seconds 
 
-			btVector3 velocity = ((endPosition - startPosition) / duration) * fixed_timestep;
+			btVector3 velocity = (endPosition - startPosition) / duration;
 
 			sphereRigidBody->setLinearVelocity(velocity);
 			sphereRigidBody->setAngularVelocity(btVector3(0, 0, 0));
