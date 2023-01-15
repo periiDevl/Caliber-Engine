@@ -46,5 +46,6 @@ public:
 	// Handles camera inputs
 
 	void Inputs(GLFWwindow* window, float ctrlSpeed, float norSpeed);
+	void Mouse(GLFWwindow* window);
 };
 #endif

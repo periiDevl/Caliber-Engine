@@ -819,7 +819,7 @@ int main()
 		
 		
 
-
+		camera.Mouse(window);
 
 
 		
