@@ -326,7 +326,9 @@ int main()
 
 	Component scene;
 	const int ObjectsAmt = 3;
-	Model sceneObjects[ObjectsAmt] = { Model("models/rocket/scene.gltf"), Model("models/cube/scene.gltf"), Model("models/cliberDeafult/scene.gltf") };
+	Model sceneObjects[ObjectsAmt] = { Model("models/rocket/scene.gltf"), Model("models/cube/scene.gltf"), Model("models/cliberDeafult/scene.gltf"),
+		};
+	Model GizmosBoundry = ("models/Gizmos/BoundSphere/scene.gltf");
 	scene.TRY_OBJ_RECOVERING_TEST(ObjectsAmt, sceneObjects);
 
 	scene.SuffleObjectsID(ObjectsAmt, sceneObjects);
@@ -486,7 +488,8 @@ int main()
 	// Matrices needed for the light's perspective
 	float farPlane = 200.0f;
 	glm::mat4 orthgonalProjection;
-	glm::mat4 orthgonalProjectionLow = glm::ortho(-40.0f, 40.0f, -40.0f, 40.0f, 1.0f, farPlane);
+	//glm::mat4 orthgonalProjectionLow = glm::ortho(-40.0f, 40.0f, -40.0f, 40.0f, 1.0f, farPlane);
+	glm::mat4 orthgonalProjectionLow = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, 1.0f, farPlane);
 	glm::mat4 orthgonalProjectionHigh = glm::ortho(-70.0f, 70.0f, -70.0f, 70.0f, 1.0f, farPlane);
 	//you can change how far shadows go!!! from 10 to 70 and more
 	glm::mat4 perspectiveProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, farPlane);
@@ -899,7 +902,8 @@ int main()
 		sceneObjects[0].translation = glm::vec3(origin.getX(), origin.getY(), origin.getZ());
 		sceneObjects[0].rotation = glm::quat(rotation.getW(), rotation.getX(), rotation.getY(), rotation.getZ());
 
-
+		GizmosBoundry.Draw(shaderProgram, camera);
+		GizmosBoundry.scale = glm::vec3(5);
 
 
 		
@@ -915,7 +919,7 @@ int main()
 		skyboxShader.Activate();
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection = glm::mat4(1.0f);
-		// We make the mat4 into a mat3 and then a mat4 again in order to get rid of the last row and column
+		// We make the mat4 into a mat3 and then a mat4 again in order to get rid of the last row and columns
 		// The last row and column affect the translation of the skybox (which we don't want to affect)
 		view = glm::mat4(glm::mat3(glm::lookAt(camera.Position, camera.Position + camera.Orientation, camera.Up)));
 		projection = glm::perspective(glm::radians(60.0f), (float)width / height, 0.1f, 500.0f);
