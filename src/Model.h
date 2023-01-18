@@ -26,7 +26,8 @@ public:
 	void Draw
 	(
 		Shader& shader,
-		Camera& camera
+		Camera& camera,
+		float worldSize
 	);
 
 	std::string To_string()

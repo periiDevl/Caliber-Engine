@@ -22,6 +22,10 @@ Setup setup;
 // Add an object to the component
 //component.AddObject("path/to/object.obj");
 
+
+const float WorldRadius = 150;
+const float objectWorldMult = 20;
+
 const int objectsAmount = 2;
 bool run = false;
 
@@ -34,7 +38,6 @@ bool renderShadows;
 int samples;
 int bloom;
 int highQualtiyShdows;
-int HighLightView;
 int wireframe;
 int width;
 int height;
@@ -123,7 +126,7 @@ float delta_time() {
 
 void createStaticBox(btDynamicsWorld* dynamicsWorld, btVector3 position, btVector3 scale, btQuaternion rotation)
 {
-	btCollisionShape* boxShape = new btBoxShape(scale);
+	btCollisionShape* boxShape = new btBoxShape(scale / objectWorldMult);
 	btDefaultMotionState* boxMotionState = new btDefaultMotionState(btTransform(rotation, position));
 	btScalar mass = 0;
 	btVector3 boxInertia(0, 0, 0);
@@ -164,17 +167,17 @@ int main()
 	bloom = save[4];
 	renderShadows = save[5];
 	highQualtiyShdows = save[6];
-	HighLightView = save[7];
-	enableskybox = save[8];
 
-	height = save[9];
-	width = save[10];
-	wireframe = save[11];
-	ctrlSpeed = save[12];
-	normalSpeed = save[13];
-	FullCockpit = save[14];
-	FogNear = save[15];
-	viewFarPlane = save[16];
+	enableskybox = save[7];
+
+	height = save[8];
+	width = save[9];
+	wireframe = save[10];
+	ctrlSpeed = save[11];
+	normalSpeed = save[12];
+	FullCockpit = save[13];
+	FogNear = save[14];
+	viewFarPlane = save[15];
 
 
 	exposure = exposure / saveFloatCurve;
@@ -267,6 +270,8 @@ int main()
 	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 	glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), FogNear);
 	glUniform1f(glGetUniformLocation(shaderProgram.ID, "far"), viewFarPlane);
+
+	glUniform1f(glGetUniformLocation(shaderProgram.ID, "worldRadius"), WorldRadius);
 	skyboxShader.Activate();
 	glUniform1i(glGetUniformLocation(skyboxShader.ID, "skybox"), 0);
 	/*
@@ -458,7 +463,8 @@ int main()
 	unsigned int shadowMapWidth, shadowMapHeight;
 	// Texture for Shadow Map FBO
 	if (highQualtiyShdows == 1) {
-		shadowMapWidth = 3000, shadowMapHeight = 3000;
+		//shadowMapWidth = 32750, shadowMapHeight = 32750;
+		shadowMapWidth = 32750, shadowMapHeight = 32750;
 	}
 	else
 	{
@@ -487,19 +493,11 @@ int main()
 
 	// Matrices needed for the light's perspective
 	float farPlane = 200.0f;
-	glm::mat4 orthgonalProjection;
+	glm::mat4 orthgonalProjection = glm::ortho(-WorldRadius, WorldRadius, -WorldRadius, WorldRadius, WorldRadius, farPlane);
 	//glm::mat4 orthgonalProjectionLow = glm::ortho(-40.0f, 40.0f, -40.0f, 40.0f, 1.0f, farPlane);
-	glm::mat4 orthgonalProjectionLow = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, 1.0f, farPlane);
-	glm::mat4 orthgonalProjectionHigh = glm::ortho(-70.0f, 70.0f, -70.0f, 70.0f, 1.0f, farPlane);
 	//you can change how far shadows go!!! from 10 to 70 and more
 	glm::mat4 perspectiveProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, farPlane);
-	if (HighLightView == 0) {
-		orthgonalProjection = orthgonalProjectionLow;
 
-	}
-	else if (HighLightView == 1) {
-		orthgonalProjection = orthgonalProjectionHigh;
-	}
 	//direc lights
 	glm::mat4 lightView = glm::lookAt(140.0f * lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 lightProjection = orthgonalProjection * lightView;
@@ -561,15 +559,8 @@ int main()
 		wireBool = true;
 	}
 
-	bool lightVLow = false;
-	if (HighLightView == 0) {
-		lightVLow = false;
-	}
+	
 
-	else
-	{
-		lightVLow = true;
-	}
 
 	bool hqs = false;
 	if (highQualtiyShdows == 0) {
@@ -665,11 +656,10 @@ int main()
 	dynamicsWorld->setGravity(btVector3(0, -9.81, 0));  // Apply gravity
 
 
-	
 
 	// Create a falling box
-	btCollisionShape* boxShape = new btBoxShape(btVector3(1, 1, 1));
-	btDefaultMotionState* boxMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 15, 0)));
+	btCollisionShape* boxShape = new btBoxShape(btVector3(1, 1, 1) / btVector3(objectWorldMult, objectWorldMult, objectWorldMult));
+	btDefaultMotionState* boxMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 10, 0)));
 	btScalar mass = 1;
 	btVector3 boxInertia(0, 0, 0);
 	boxShape->calculateLocalInertia(mass, boxInertia);
@@ -681,8 +671,8 @@ int main()
 	createStaticBox(dynamicsWorld, btVector3(0, 0, 0), btVector3(1000, 1, 1000), btQuaternion(0, 0, 0, 1));
 
 
-	btCollisionShape* sphereShape = new btSphereShape(1); // replace btBoxShape with btSphereShape and the size parameter with 1
-	btDefaultMotionState* sphereMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 40, 0))); // replace boxMotionState with sphereMotionState
+	btCollisionShape* sphereShape = new btSphereShape(1 / objectWorldMult); // replace btBoxShape with btSphereShape and the size parameter with 1
+	btDefaultMotionState* sphereMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 5, 0))); // replace boxMotionState with sphereMotionState
 	
 	btVector3 sphereInertia(0, 0, 0);
 	sphereShape->calculateLocalInertia(1, sphereInertia);
@@ -692,11 +682,9 @@ int main()
 	sphereRigidBody->setSleepingThresholds(0,0);
 	sphereRigidBody->setActivationState(DISABLE_DEACTIVATION);
 
-
 	// Perform simulation
 	const int substep = 10;
 
-	float spee = 0;
 	
 	
 	const float fixed_timestep = 1.0f / 60.0;
@@ -725,20 +713,7 @@ int main()
 		if (wireBool == true && !run) {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		}
-		if (run == true || FullCockpit) {
-
-			
-			
-			
-			if (lightVLow == false)
-			{
-				HighLightView = 1;
-			}
-			else {
-				HighLightView = 0;
-			}
-			
-		} 
+		
 		
 		if (v == true)
 		{
@@ -780,34 +755,43 @@ int main()
 			counter = 0;
 			
 			camera.Inputs(window, ctrlSpeed * fixed_timestep, normalSpeed * fixed_timestep);
-			cameraRawPosition.Inputs(window, ctrlSpeed * fixed_timestep, normalSpeed * fixed_timestep);
 			if (run) {
+				cameraRawPosition.Inputs(window, (ctrlSpeed * 1000) * fixed_timestep, (normalSpeed * 1000) * fixed_timestep);
 				dynamicsWorld->stepSimulation(fixed_timestep, substep);
+				sphereRigidBody->setGravity(btVector3(0, 0, 0));
+
+				btTransform cameratrans;
+				sphereRigidBody->getMotionState()->getWorldTransform(cameratrans);
+
+				btVector3 startPosition = sphereRigidBody->getWorldTransform().getOrigin();
+				btVector3 endPosition = btVector3(cameraRawPosition.Position.x, cameraRawPosition.Position.y, cameraRawPosition.Position.z);
+				btScalar duration = 0.7; // time in seconds 
+
+				btVector3 velocity = (endPosition - startPosition) / (duration / fixed_timestep);
+
+				sphereRigidBody->setLinearVelocity(velocity);
+				sphereRigidBody->setAngularVelocity(btVector3(0, 0, 0));
+
+				cameraRawPosition.Orientation = camera.Orientation;
+
+				camera.Position = glm::vec3(cameratrans.getOrigin().getX(), cameratrans.getOrigin().getY(), cameratrans.getOrigin().getZ());
+
+				if (endPosition.distance(cameratrans.getOrigin()) > 1.0f)
+				{
+					cameraRawPosition.Position = glm::vec3(cameratrans.getOrigin().getX(), cameratrans.getOrigin().getY(), cameratrans.getOrigin().getZ());
+				}
 			}
-			spee++;
 
-			sphereRigidBody->setGravity(btVector3(0, 0, 0));
 
-			btTransform cameratrans;
-			sphereRigidBody->getMotionState()->getWorldTransform(cameratrans);
 
-			btVector3 startPosition = sphereRigidBody->getWorldTransform().getOrigin();
-			btVector3 endPosition = btVector3(cameraRawPosition.Position.x, cameraRawPosition.Position.y, cameraRawPosition.Position.z);
-			btScalar duration = 0.7; // time in seconds 
+			float deadZone = WorldRadius / 100000000000000000; // The size of the dead zone around the edge of the radius
 
-			btVector3 velocity = (endPosition - startPosition) / (duration / fixed_timestep);
-
-			sphereRigidBody->setLinearVelocity(velocity);
-			sphereRigidBody->setAngularVelocity(btVector3(0, 0, 0));
-
-			cameraRawPosition.Orientation = camera.Orientation;
-
-			camera.Position = glm::vec3(cameratrans.getOrigin().getX(), cameratrans.getOrigin().getY(), cameratrans.getOrigin().getZ());
-
-			if (endPosition.distance(cameratrans.getOrigin()) > 1.0f)
-			{
-				cameraRawPosition.Position = glm::vec3(cameratrans.getOrigin().getX(), cameratrans.getOrigin().getY(), cameratrans.getOrigin().getZ());
+			if (glm::length(camera.Position - glm::vec3(0)) > WorldRadius  - deadZone) {
+				// Camera is outside of the boundary, set position back to the edge of the radius
+				glm::vec3 direction = glm::normalize(camera.Position - glm::vec3(0));
+				camera.Position = glm::vec3(0) + direction * (WorldRadius - deadZone);
 			}
+
 		}
 
 
@@ -831,7 +815,7 @@ int main()
 		
 		if (renderShadows == 1) {
 				
-			scene.TRY_DRAWING(ObjectsAmt, sceneObjects, shadowMapProgram, camera);
+			scene.TRY_DRAWING(ObjectsAmt, sceneObjects, shadowMapProgram, camera, objectWorldMult);
 		}
 			
 		
@@ -886,6 +870,8 @@ int main()
 
 		// Updates and exports the camera matrix to the Vertex Shader
 		camera.updateMatrix(60.0f, 0.1f, viewFarPlane);
+		
+		
 
 
 		//camera stacking
@@ -896,14 +882,14 @@ int main()
 		//{
 			//sceneObjects[i].Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 		//}
-		scene.TRY_DRAWING(ObjectsAmt, sceneObjects, shaderProgram, camera);
+		scene.TRY_DRAWING(ObjectsAmt, sceneObjects, shaderProgram, camera, objectWorldMult);
 
 		btVector3 origin = trans.getOrigin();
 		sceneObjects[0].translation = glm::vec3(origin.getX(), origin.getY(), origin.getZ());
 		sceneObjects[0].rotation = glm::quat(rotation.getW(), rotation.getX(), rotation.getY(), rotation.getZ());
 
-		GizmosBoundry.Draw(shaderProgram, camera);
-		GizmosBoundry.scale = glm::vec3(5);
+		GizmosBoundry.scale = glm::vec3(WorldRadius);
+		GizmosBoundry.Draw(shaderProgram, camera, 1);
 
 
 		
@@ -961,7 +947,6 @@ int main()
 		glUniform1f(glGetUniformLocation(outlineShader.ID, "outlining"), 0.05f);
 		//House.Draw(outlineShader, camera, glm::vec3(0), euler_to_quat(0, 0, 0), glm::vec3(10));
 		//sphere.Draw(outlineShader, camera, glm::vec3(0), euler_to_quat(0, 0, 0), glm::vec3(10));
-
 		// Enable modifying of the stencil buffer
 		glStencilMask(0xFF);
 		// Clear stencil buffer
@@ -1099,7 +1084,7 @@ int main()
 						style.Colors[ImGuiCol_Text] = ImVec4(1, 0, 0, 1);
 						ImGui::Text("This will make your shadows go longer with a cost of shadow resolution");
 						style.Colors[ImGuiCol_Text] = windowWhite;
-						ImGui::Checkbox("Enable high resulotion light view point (Needs restart to change)", &lightVLow);
+						
 						ImGui::InputInt("Bloom amount", &bloom, 1, 30);
 						
 						ImGui::Checkbox("Enable skybox", &enableskybox);
@@ -1256,7 +1241,7 @@ int main()
 	SaveFileWr << bloom << "\n";
 	SaveFileWr << renderShadows << "\n";
 	SaveFileWr << highQualtiyShdows << "\n";
-	SaveFileWr << lightVLow << "\n";
+	
 	SaveFileWr << enableskybox << "\n";
 	SaveFileWr << mockheight << "\n";
 	SaveFileWr << mockwidth << "\n";

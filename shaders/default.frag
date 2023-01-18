@@ -37,7 +37,9 @@ uniform vec3 camPos;
 float near = 0.0000000000001f;
 uniform float far;
 
-const float levelShade = 3000000000.0;
+uniform float worldRadius;
+
+const float levelShade = 300000000000000000000.0;
 
 vec4 pointLight()
 {	
@@ -144,8 +146,8 @@ vec4 direcLight()
 		float bias = max(0.025f * (1.0f - dot(normal, lightDirection)), 0.0005f);
 
 		// Smoothens out the shadows
-		int sampleRadius = 5;
-		vec2 pixelSize = 2.5 / textureSize(shadowMap, 0);
+		int sampleRadius = 0;
+		vec2 pixelSize = 1.0 / textureSize(shadowMap, 0);
 		for(int y = -sampleRadius; y <= sampleRadius; y++)
 		{
 		    for(int x = -sampleRadius; x <= sampleRadius; x++)
@@ -242,9 +244,8 @@ void main()
 	//FragColor = direcLight() + vec4(linearizeDepth(gl_FragCoord.z) * vec3(-1.0f, -1.0f, -1.0f), 1.0f);
 	//normal
 
-	float sphereRadius = 5.1f;
 	float distance = length(crntPos);
-	if (distance > sphereRadius) {
+	if (distance > worldRadius) {
 		discard;
 	}
 	FragColor = direcLight() + vec4(linearizeDepth(gl_FragCoord.z, near, far) * vec3(1.0f, 1.0f, 1.0f), 1.0f);

@@ -41,11 +41,11 @@ void::Component::TRY_OBJ_SORTER_TEST(int objects, Model OSWsave[])
     }
 }
 
-void::Component::TRY_DRAWING(int objects, Model OSWsave[], Shader shader, Camera camera)
+void::Component::TRY_DRAWING(int objects, Model OSWsave[], Shader shader, Camera camera, float worldSize)
 {
     for (int i = 0; i < objects + 1; i++)
     {
-        OSWsave[i].Draw(shader,camera);
+        OSWsave[i].Draw(shader,camera, worldSize);
     }
 }
 

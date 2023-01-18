@@ -28,7 +28,7 @@ public:
     void TRY_OBJ_RECOVERING_TEST(int objects, Model OSWsave[]);
     void TRY_OBJ_SORTER_TEST(int objects, Model OSWsave[]);
     void SuffleObjectsID(int objects, Model OSWsave[]);
-    void TRY_DRAWING(int objects, Model OSWsave[], Shader shader, Camera camera);
+    void TRY_DRAWING(int objects, Model OSWsave[], Shader shader, Camera camera, float worldSize);
     void CLEAR();
     
 private:
