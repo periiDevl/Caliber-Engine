@@ -241,9 +241,14 @@ void main()
 	//black fog
 	//FragColor = direcLight() + vec4(linearizeDepth(gl_FragCoord.z) * vec3(-1.0f, -1.0f, -1.0f), 1.0f);
 	//normal
+
+	float sphereRadius = 5.1f;
+	float distance = length(crntPos);
+	if (distance > sphereRadius) {
+		discard;
+	}
 	FragColor = direcLight() + vec4(linearizeDepth(gl_FragCoord.z, near, far) * vec3(1.0f, 1.0f, 1.0f), 1.0f);
-
-
+	
 
 	//FragColor = direcLight();
 	
