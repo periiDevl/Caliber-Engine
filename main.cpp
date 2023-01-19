@@ -23,8 +23,8 @@ Setup setup;
 //component.AddObject("path/to/object.obj");
 
 
-const float WorldRadius = 150;
-const float objectWorldMult = 20;
+const float WorldRadius = 100;
+const float objectWorldMult = 5;
 
 const int objectsAmount = 2;
 bool run = false;
@@ -464,7 +464,7 @@ int main()
 	// Texture for Shadow Map FBO
 	if (highQualtiyShdows == 1) {
 		//shadowMapWidth = 32750, shadowMapHeight = 32750;
-		shadowMapWidth = 32750, shadowMapHeight = 32750;
+		shadowMapWidth = 15000, shadowMapHeight = 15000;
 	}
 	else
 	{
@@ -493,8 +493,10 @@ int main()
 
 	// Matrices needed for the light's perspective
 	float farPlane = 200.0f;
-	glm::mat4 orthgonalProjection = glm::ortho(-WorldRadius, WorldRadius, -WorldRadius, WorldRadius, WorldRadius, farPlane);
-	//glm::mat4 orthgonalProjectionLow = glm::ortho(-40.0f, 40.0f, -40.0f, 40.0f, 1.0f, farPlane);
+	//glm::mat4 orthgonalProjection = glm::ortho(-WorldRadius, WorldRadius, -WorldRadius, WorldRadius, WorldRadius, farPlane);
+	//glm::mat4 orthgonalProjectionLow = glm::ortho(-40.0f, 40.0f, -40.0f, 40.0f, 1.0f, farPlane);,ks89oxb
+	glm::mat4 orthgonalProjection = glm::ortho(-WorldRadius, WorldRadius, -WorldRadius, WorldRadius, 1.0f, farPlane);
+	//glm::mat4 orthgonalProjectionLow = glm::ortho(-40.0f, 40.0f, -40.0f, 40.0f, 1.0f, farPlane);,ks89oxb
 	//you can change how far shadows go!!! from 10 to 70 and more
 	glm::mat4 perspectiveProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, farPlane);
 
