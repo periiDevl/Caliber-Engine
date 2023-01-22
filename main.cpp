@@ -23,8 +23,8 @@ Setup setup;
 //component.AddObject("path/to/object.obj");
 
 
-const float WorldRadius = 100;
-const float objectWorldMult = 5;
+const float WorldRadius = 500;
+const float objectWorldMult = 3;
 
 const int objectsAmount = 2;
 bool run = false;
@@ -783,7 +783,6 @@ int main()
 					cameraRawPosition.Position = glm::vec3(cameratrans.getOrigin().getX(), cameratrans.getOrigin().getY(), cameratrans.getOrigin().getZ());
 				}
 			}
-
 
 
 			float deadZone = WorldRadius / 100000000000000000; // The size of the dead zone around the edge of the radius
