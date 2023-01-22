@@ -794,6 +794,17 @@ int main()
 				camera.Position = glm::vec3(0) + direction * (WorldRadius - deadZone);
 			}
 
+
+			btVector3 rayFromWorld(camera.Position.x, camera.Position.y, camera.Position.x); // starting point of the ray
+			btVector3 rayToWorld(camera.Position.x, camera.Position.y - 1, camera.Position.x); // ending point of the ray
+
+			btCollisionWorld::ClosestRayResultCallback rayCallback(rayFromWorld, rayToWorld);
+			dynamicsWorld->rayTest(rayFromWorld, rayToWorld, rayCallback);
+
+			if (rayCallback.hasHit()) {
+				printf("Collision!!!!!");
+			}
+
 		}
 
 
