@@ -856,9 +856,9 @@ int main()
 		
 
 		// Updates and exports the camera matrix to the Vertex Shader
-		camera.updateMatrix(60.0f, 0.1f, viewFarPlane);
+		camera.updateMatrix3D(60.0f, 0.1f, viewFarPlane);
 		
-		
+		//camera.updateMatrix2D(0.005f,0.4f, viewFarPlane);
 
 
 		//camera stacking

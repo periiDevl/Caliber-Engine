@@ -9,7 +9,7 @@ Camera::Camera(int width, int height, glm::vec3 position)
 	Position = position;
 }
 
-void Camera::updateMatrix(float FOVdeg, float nearPlane, float farPlane)
+void Camera::updateMatrix3D(float FOVdeg, float nearPlane, float farPlane)
 {
 	// Initializes matrices since otherwise they will be the null matrix
 	glm::mat4 view = glm::mat4(1.0f);
@@ -23,6 +23,29 @@ void Camera::updateMatrix(float FOVdeg, float nearPlane, float farPlane)
 	// Sets new camera matrix
 	cameraMatrix = projection * view;
 }
+
+void Camera::updateMatrix2D(float scale,float nearPlane, float farPlane) {
+	// Initializes matrices since otherwise they will be the null matrix
+	glm::mat4 view = glm::mat4(1.0f);
+	glm::mat4 projection = glm::mat4(1.0f);
+
+	// Makes camera look in the right direction from the right position
+	view = glm::lookAt(Position, Position + Orientation, Up);
+	// Adds orthographic projection to the scene
+	float aspectRatio = (float)width / (float)height;
+	float left = -width / 2 * aspectRatio * scale;
+	float right = width / 2 * aspectRatio * scale;
+	float bottom = -height / 2 * scale;
+	float top = height / 2 * scale;
+	projection = glm::ortho(left, right, bottom, top, nearPlane, farPlane);
+
+	// Sets new camera matrix
+	cameraMatrix = projection * view;
+}
+
+
+
+
 
 void Camera::Matrix(Shader& shader, const char* uniform)
 {
