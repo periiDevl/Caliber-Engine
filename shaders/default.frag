@@ -34,7 +34,7 @@ uniform vec3 lPos;
 // Gets the position of the camera from the main function
 uniform vec3 camPos;
 
-float near = 0.0000000000001f;
+uniform float near = 0.0000000000001f;
 uniform float far;
 
 uniform float worldRadius;

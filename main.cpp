@@ -39,13 +39,12 @@ int samples;
 int bloom;
 int highQualtiyShdows;
 int wireframe;
-int width;
-int height;
+int width = 1920;
+int height = 1080;
 float gamma;
 float exposure;
 float normalSpeed;
 float ctrlSpeed;
-bool FullCockpit = true;
 bool enableskybox = true;
 float FogNear = 0.0f;
 int viewFarPlane;
@@ -56,14 +55,6 @@ int viewFarPlane;
 
 
 
-//collision
-//__________
-bool colidedX = false;
-float camPosX;
-
-float camPosZ;
-bool colidedZ = false;
-//__________
 
 
 float rectangleVertices[] =
@@ -112,7 +103,7 @@ unsigned int skyboxIndices[] =
 	3, 7, 6,
 	6, 2, 3
 };
-int saveFloatCurve = 100;
+int saveFloatCurve = 100000;
 
 float delta_time() {
 	static double previous_time = glfwGetTime();
@@ -166,18 +157,14 @@ int main()
 	exposure = save[3];
 	bloom = save[4];
 	renderShadows = save[5];
-	highQualtiyShdows = save[6];
 
-	enableskybox = save[7];
+	enableskybox = save[6];
 
-	height = save[8];
-	width = save[9];
-	wireframe = save[10];
-	ctrlSpeed = save[11];
-	normalSpeed = save[12];
-	FullCockpit = save[13];
-	FogNear = save[14];
-	viewFarPlane = save[15];
+	wireframe = save[7];
+	ctrlSpeed = save[8];
+	normalSpeed = save[9];
+	FogNear = save[10];
+	viewFarPlane = save[11];
 
 
 	exposure = exposure / saveFloatCurve;
@@ -187,8 +174,6 @@ int main()
 	ctrlSpeed = ctrlSpeed / saveFloatCurve;
 	normalSpeed = normalSpeed / saveFloatCurve;
 
-	int mockwidth = width;
-	int mockheight = height;
 	
 	
 	// Initialize GLFW
@@ -462,15 +447,13 @@ int main()
 	glGenFramebuffers(1, &shadowMapFBO);
 	unsigned int shadowMapWidth, shadowMapHeight;
 	// Texture for Shadow Map FBO
-	if (highQualtiyShdows == 1) {
-		//shadowMapWidth = 32750, shadowMapHeight = 32750;
-		shadowMapWidth = 30000, shadowMapHeight = 30000;
-	}
-	else
-	{
-		shadowMapWidth = 550, shadowMapHeight = 550;
+	
 
-	}
+	shadowMapWidth = 30000, shadowMapHeight = 30000;
+
+	
+	
+
 	
 	unsigned int shadowMap;
 	glGenTextures(1, &shadowMap);
@@ -564,14 +547,7 @@ int main()
 	
 
 
-	bool hqs = false;
-	if (highQualtiyShdows == 0) {
-		hqs = false;
-	}
-	else
-	{
-		hqs = true;
-	}
+	
 
 	// Create VAO, VBO, and EBO for the skybox
 	unsigned int skyboxVAO, skyboxVBO, skyboxEBO;
@@ -714,6 +690,7 @@ int main()
 		}
 		if (wireBool == true && !run) {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			
 		}
 		
 		
@@ -817,7 +794,7 @@ int main()
 		glEnable(GL_DEPTH_TEST);
 		
 		// Preparations for the Shadow Map
-		if (renderShadows == 1 || run || FullCockpit) {
+		if (renderShadows == 1) {
 			glViewport(0, 0, shadowMapWidth, shadowMapHeight);
 			glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFBO);
 		}
@@ -881,9 +858,9 @@ int main()
 		
 
 		// Updates and exports the camera matrix to the Vertex Shader
-		camera.updateMatrix(60.0f, 0.1f, viewFarPlane);
+		camera.updateMatrix3D(60.0f, 0.1f, viewFarPlane);
 		
-		
+		//camera.updateMatrix2D(0.005f,0.4f, viewFarPlane);
 
 
 		//camera stacking
@@ -912,30 +889,31 @@ int main()
 
 		//SKYBOX
 		//------------
-		glDepthFunc(GL_LEQUAL);
+		if (enableskybox) {
+			glDepthFunc(GL_LEQUAL);
 
-		skyboxShader.Activate();
-		glm::mat4 view = glm::mat4(1.0f);
-		glm::mat4 projection = glm::mat4(1.0f);
-		// We make the mat4 into a mat3 and then a mat4 again in order to get rid of the last row and columns
-		// The last row and column affect the translation of the skybox (which we don't want to affect)
-		view = glm::mat4(glm::mat3(glm::lookAt(camera.Position, camera.Position + camera.Orientation, camera.Up)));
-		projection = glm::perspective(glm::radians(60.0f), (float)width / height, 0.1f, 500.0f);
-		glUniformMatrix4fv(glGetUniformLocation(skyboxShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
-		glUniformMatrix4fv(glGetUniformLocation(skyboxShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+			skyboxShader.Activate();
+			glm::mat4 view = glm::mat4(1.0f);
+			glm::mat4 projection = glm::mat4(1.0f);
+			// We make the mat4 into a mat3 and then a mat4 again in order to get rid of the last row and columns
+			// The last row and column affect the translation of the skybox (which we don't want to affect)
+			view = glm::mat4(glm::mat3(glm::lookAt(camera.Position, camera.Position + camera.Orientation, camera.Up)));
+			projection = glm::perspective(glm::radians(60.0f), (float)width / height, 0.1f, 500.0f);
+			glUniformMatrix4fv(glGetUniformLocation(skyboxShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
+			glUniformMatrix4fv(glGetUniformLocation(skyboxShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
-		// Draws the cubemap as the last object so we can save a bit of performance by discarding all fragments
-		// where an object is present (a depth of 1.0f will always fail against any object's depth value)
-		glBindVertexArray(skyboxVAO);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
+			// Draws the cubemap as the last object so we can save a bit of performance by discarding all fragments
+			// where an object is present (a depth of 1.0f will always fail against any object's depth value)
+			glBindVertexArray(skyboxVAO);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
 
-		// Switch back to the normal depth function
-		glDepthFunc(GL_LESS);
-		//------------
-
+			// Switch back to the normal depth function
+			glDepthFunc(GL_LESS);
+			//------------
+		}
 		
 		//OUTLINE
 		//-----------
@@ -984,6 +962,7 @@ int main()
 		bool horizontal = true, first_iteration = true;
 		int Blur_amount = bloom;
 		blurProgram.Activate();
+
 		for (unsigned int i = 0; i < Blur_amount; i++)
 		{
 			glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
@@ -1021,7 +1000,7 @@ int main()
 		glActiveTexture(GL_TEXTURE1);
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		if (run || FullCockpit) {
+		if (run) {
 			glBindTexture(GL_TEXTURE_2D, pingpongBuffer[!horizontal]);
 		}
 		else
@@ -1067,13 +1046,7 @@ int main()
 				if (ImGui::BeginTabBar("project tabs"))
 				{
 
-					if (ImGui::BeginTabItem("General"))
-					{
-						ImGui::InputInt("Window width (restart to apply changes)", &mockwidth, 20, 1, 0);
-						ImGui::InputInt("Window height (restart to apply changes)", &mockheight, 20, 1, 0);
-
-						ImGui::EndTabItem();
-					}
+					
 					if (ImGui::BeginTabItem("Graphics"))
 					{
 						style.Colors[ImGuiCol_Text] = ImVec4(1, 0, 0, 1);
@@ -1089,13 +1062,11 @@ int main()
 						//gamma = realGamma;
 						glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
 
-						//ImGui::DragInt("bloom amount", &bloom, 0.012f, 0, 40);
-						ImGui::Checkbox("Enable shadows", &renderShadows);
-						ImGui::Checkbox("Enable high qualtiy shadows (Needs restart to change)", &hqs);
-
 						style.Colors[ImGuiCol_Text] = ImVec4(1, 0, 0, 1);
-						ImGui::Text("This will make your shadows go longer with a cost of shadow resolution");
+						ImGui::Text("Changing shadows will only work after restart");
 						style.Colors[ImGuiCol_Text] = windowWhite;
+						ImGui::Checkbox("Enable shadows", &renderShadows);
+
 						
 						ImGui::InputInt("Bloom amount", &bloom, 1, 30);
 						
@@ -1108,6 +1079,7 @@ int main()
 						{
 							ImGui::InputInt("Far plane view distance", &viewFarPlane, 1, 30);
 							ImGui::InputFloat("Fog near value", &FogNear, 0.3f, 1, "%.3f", 0);
+							shaderProgram.Activate();
 							glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), FogNear);
 							glUniform1f(glGetUniformLocation(shaderProgram.ID, "far"), viewFarPlane);
 
@@ -1125,7 +1097,6 @@ int main()
 
 					if (ImGui::BeginTabItem("Debug"))
 					{
-						ImGui::Checkbox("Enable full cockpit", &FullCockpit);
 						ImGui::Checkbox("Enable wireframe", &wireBool);
 						ImGui::EndTabItem();
 					}
@@ -1140,14 +1111,7 @@ int main()
 		
 		
 			
-		if (camera.cinamaticview)
-		{
-			ImGui::Begin("cinamatic mode tool");
-			style.Colors[ImGuiCol_Text] = ImVec4(1, 0, 0, 1);
-			ImGui::Text("press : ENTER + N : to leave cinamatic mode (you will be in run mode)");
-			style.Colors[ImGuiCol_Text] = windowWhite;
-			ImGui::End();
-		}
+		
 		
 		
 		
@@ -1197,13 +1161,7 @@ int main()
 	else {
 		wireframe = 0;
 	}
-	if (hqs == true)
-	{
-		highQualtiyShdows = 1;
-	}
-	else {
-		highQualtiyShdows = 0;
-	}
+	
 	
 	
 	// Clean up
@@ -1252,15 +1210,11 @@ int main()
 	SaveFileWr << exposure * saveFloatCurve << "\n";
 	SaveFileWr << bloom << "\n";
 	SaveFileWr << renderShadows << "\n";
-	SaveFileWr << highQualtiyShdows << "\n";
 	
 	SaveFileWr << enableskybox << "\n";
-	SaveFileWr << mockheight << "\n";
-	SaveFileWr << mockwidth << "\n";
 	SaveFileWr << wireframe << "\n";
 	SaveFileWr << ctrlSpeed * saveFloatCurve << "\n";
 	SaveFileWr << normalSpeed * saveFloatCurve << "\n";
-	SaveFileWr << FullCockpit << "\n";
 	SaveFileWr << FogNear * saveFloatCurve << "\n";
 	SaveFileWr << viewFarPlane << "\n";
 
