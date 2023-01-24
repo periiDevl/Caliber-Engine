@@ -24,7 +24,7 @@ Setup setup;
 
 
 const float WorldRadius = 1500;
-const float objectWorldMult = 3;
+const float objectWorldMult = 2.6f;
 
 const int objectsAmount = 2;
 bool run = false;
