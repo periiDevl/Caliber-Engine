@@ -23,7 +23,7 @@ Setup setup;
 //component.AddObject("path/to/object.obj");
 
 
-const float WorldRadius = 500;
+const float WorldRadius = 1500;
 const float objectWorldMult = 3;
 
 const int objectsAmount = 2;
@@ -464,7 +464,7 @@ int main()
 	// Texture for Shadow Map FBO
 	if (highQualtiyShdows == 1) {
 		//shadowMapWidth = 32750, shadowMapHeight = 32750;
-		shadowMapWidth = 15000, shadowMapHeight = 15000;
+		shadowMapWidth = 30000, shadowMapHeight = 30000;
 	}
 	else
 	{
