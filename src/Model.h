@@ -3,7 +3,7 @@
 
 #include<json/json.h>
 #include"Mesh.h"
-
+#include<bullet/btBulletDynamicsCommon.h>
 using json = nlohmann::json;
 
 
@@ -29,6 +29,30 @@ public:
 		Camera& camera,
 		float worldSize
 	);
+
+
+	btTriangleMesh* getVerticesFromFile(const char* filePath, float divideValue)
+	{
+		btTriangleMesh* triangleMesh = new btTriangleMesh();
+
+		std::ifstream file(filePath, std::ios::binary);
+		if (file.is_open())
+		{
+			while (!file.eof())
+			{
+				glm::vec3 vertex;
+				file.read(reinterpret_cast<char*>(&vertex), sizeof(glm::vec3));
+				btVector3 btVertex(vertex.x / divideValue, vertex.y / divideValue, vertex.z / divideValue);
+				triangleMesh->addTriangle(btVertex, btVertex, btVertex);
+			}
+
+			file.close();
+		}
+
+		return triangleMesh;
+	}
+
+
 
 	std::string To_string()
 	{
