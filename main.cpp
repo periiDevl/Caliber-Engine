@@ -11,11 +11,10 @@
 #include"src/Functions.h"
 #include"src/Component.h"
 #include"src/Setup.h"
-#include"src/MousePlayerRotation.h"
 #include <bullet/btBulletDynamicsCommon.h>
 Functions func;
 FlightController flightController;
-MouseRotation mouseRotation;
+
 Setup setup;
 //Component scene;
 // Create a new component object
@@ -275,6 +274,7 @@ int main()
 	glUniform1i(glGetUniformLocation(framebufferProgram.ID, "bloomTexture"), 1);
 	glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);
 	glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
+	glUniform2f(glGetUniformLocation(framebufferProgram.ID, "resolution"), width, height);
 
 	blurProgram.Activate();
 	glUniform1i(glGetUniformLocation(blurProgram.ID, "screenTexture"), 0);
@@ -765,7 +765,6 @@ int main()
 				}
 			}
 
-			mouseRotation.processMouseMovement(window, timeDiff);
 
 			float deadZone = WorldRadius / 100000000000000000; // The size of the dead zone around the edge of the radius
 
@@ -881,7 +880,6 @@ int main()
 		btVector3 origin = trans.getOrigin();
 		sceneObjects[0].translation = glm::vec3(origin.getX(), origin.getY(), origin.getZ());
 		sceneObjects[0].rotation = glm::quat(rotation.getW(), rotation.getX(), rotation.getY(), rotation.getZ());
-		sceneObjects[1].rotation = mouseRotation.getRotation();
 
 		GizmosBoundry.scale = glm::vec3(WorldRadius);
 		GizmosBoundry.Draw(shaderProgram, camera, 1);
