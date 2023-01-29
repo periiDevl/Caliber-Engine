@@ -196,6 +196,7 @@
     <ClInclude Include="src\Functions.h" />
     <ClInclude Include="src\Mesh.h" />
     <ClInclude Include="src\Model.h" />
+    <ClInclude Include="src\MousePlayerRotation.h" />
     <ClInclude Include="src\PhysicsManager.h" />
     <ClInclude Include="src\settings.h" />
     <ClInclude Include="src\Setup.h" />
