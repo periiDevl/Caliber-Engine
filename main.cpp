@@ -639,7 +639,7 @@ int main()
 
 
 	// Create a falling box
-	btTriangleMesh* triangleMesh = sceneObjects[0].getVerticesFromFile("models/rocket/scene.bin", objectWorldMult / 1.85);
+	btTriangleMesh* triangleMesh = sceneObjects[0].getVerticesFromFile("models/rocket/scene.bin", 1);
 	btCollisionShape* boxShape = new btConvexTriangleMeshShape(triangleMesh);
 	btDefaultMotionState* boxMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 10, 0)));
 	btScalar mass = 1;
