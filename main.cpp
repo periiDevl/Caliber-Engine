@@ -649,10 +649,10 @@ int main()
 	dynamicsWorld->addRigidBody(boxRigidBody);
 
 	
-	createStaticBox(dynamicsWorld, btVector3(0, 0, 0), btVector3(1000, 1, 1000), btQuaternion(0, 0, 0, 1));
+	createStaticBox(dynamicsWorld, btVector3(0, 0, 0), btVector3(1, 1, 0.1), btQuaternion(0, 0, 0, 1));
 
 
-	btCollisionShape* sphereShape = new btSphereShape(0.1 / objectWorldMult); // replace btBoxShape with btSphereShape and the size parameter with 1
+	btCollisionShape* sphereShape = new btSphereShape(0.5 / objectWorldMult); // replace btBoxShape with btSphereShape and the size parameter with 1
 	btDefaultMotionState* sphereMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 5, 0))); // replace boxMotionState with sphereMotionState
 	
 	btVector3 sphereInertia(0, 0, 0);
@@ -882,8 +882,10 @@ int main()
 
 		GizmosBoundry.scale = glm::vec3(WorldRadius);
 		GizmosBoundry.Draw(shaderProgram, camera, 1);
+		sceneObjects[2].translation = glm::vec3(100, 100, 100);
 
-
+		sceneObjects[1].scale = glm::vec3(1, 1, 0.1);
+		sceneObjects[1].translation = glm::vec3(0, -1, 0);
 		
 		
 		//sceneObjects[1].translation = glm::vec3(cameratrans.getOrigin().getX(), cameratrans.getOrigin().getY(), cameratrans.getOrigin().getZ());
