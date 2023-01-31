@@ -10,12 +10,13 @@ using json = nlohmann::json;
 class Model
 {
 public:
+	btRigidBody* boxRigidBody;
 	glm::vec3 translation = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 	glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
-	glm::vec3 ID = glm::vec3(0,0,0);
+	glm::vec3 ID = glm::vec3(0, 0, 0);
 	const char* file = "models/rocket/scene.gltf";
-	
+
 	// Loads in a model from a file and stores tha information in 'data', 'JSON', and 'file'
 	Model(const char* fl = "models/rocket/scene.gltf",
 		glm::vec3 trans = glm::vec3(0.0f, 0.0f, 0.0f),
@@ -29,7 +30,6 @@ public:
 		Camera& camera,
 		float worldSize
 	);
-
 
 	btTriangleMesh* getVerticesFromFile(const char* filePath, float divideValue)
 	{
@@ -51,6 +51,40 @@ public:
 
 		return triangleMesh;
 	}
+
+
+
+	void BindPhysics(btDynamicsWorld* dynaWorld, float objectWorldMult, bool Static)
+	{
+		btCollisionShape* boxShape = new btBoxShape(btVector3(scale.x, scale.y, scale.z) / objectWorldMult);
+		btScalar mass = 1;
+
+		if (Static) {
+			btTriangleMesh* triangleMesh = getVerticesFromFile(changeFileExtension(file), objectWorldMult);
+			btCollisionShape* boxShape = new btConvexTriangleMeshShape(triangleMesh, true);
+			btScalar mass = 0;
+		}
+		
+
+		btDefaultMotionState* boxMotionState = new btDefaultMotionState(btTransform(btQuaternion(rotation.x, rotation.y, rotation.z, rotation.w), btVector3(translation.x, translation.y, translation.z)));
+		btVector3 boxInertia(0, 0, 0);
+		boxShape->calculateLocalInertia(mass, boxInertia);
+		boxRigidBody = new btRigidBody(mass, boxMotionState, boxShape, boxInertia);
+		if (Static) {
+			boxRigidBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
+		}
+		dynaWorld->addRigidBody(boxRigidBody);
+	}
+
+	void UpdatePhysics()
+	{
+		btTransform trn;
+		boxRigidBody->getMotionState()->getWorldTransform(trn);
+		translation = glm::vec3(trn.getOrigin().getX(), trn.getOrigin().getY() - scale.y, trn.getOrigin().getZ());
+		rotation = glm::quat(trn.getRotation().getX(), trn.getRotation().getY(), trn.getRotation().getZ(), trn.getRotation().getW());
+
+	}
+
 
 
 
@@ -81,12 +115,21 @@ public:
 		model.ID = ID;
 		model.rotation = rotation;
 		model.scale = scale;
-		
+
 
 		return model;
 	}
 
 private:
+
+
+	const char* changeFileExtension(const char* file) {
+		static char newFile[100];
+		strcpy(newFile, file);
+		size_t len = strlen(newFile);
+		strcpy(&newFile[len - 5], ".bin");
+		return newFile;
+	}
 	// Variables for easy access
 	std::vector<unsigned char> data;
 	json JSON;
@@ -118,8 +161,8 @@ private:
 	// Assembles all the floats into vertices
 	std::vector<Vertex> assembleVertices
 	(
-		std::vector<glm::vec3> positions, 
-		std::vector<glm::vec3> normals, 
+		std::vector<glm::vec3> positions,
+		std::vector<glm::vec3> normals,
 		std::vector<glm::vec2> texUVs
 	);
 

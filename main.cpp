@@ -649,7 +649,7 @@ int main()
 	dynamicsWorld->addRigidBody(boxRigidBody);
 
 	
-	createStaticBox(dynamicsWorld, btVector3(0, 0, 0), btVector3(1, 1, 0.1), btQuaternion(0, 0, 0, 1));
+	createStaticBox(dynamicsWorld, btVector3(0, -1, 0), btVector3(100, 1, 100), btQuaternion(0, 0, 0, 1));
 
 
 	btCollisionShape* sphereShape = new btSphereShape(0.5 / objectWorldMult); // replace btBoxShape with btSphereShape and the size parameter with 1
@@ -666,7 +666,7 @@ int main()
 	// Perform simulation
 	const int substep = 10;
 
-	
+	sceneObjects[1].BindPhysics(dynamicsWorld, objectWorldMult, false);
 	
 	const float fixed_timestep = 1.0f / 60.0;
 	//camera.getInputAtRun = true;
@@ -675,7 +675,7 @@ int main()
 	{
 		
 		
-
+		sceneObjects[1].UpdatePhysics();
 		
 		
 		btTransform trans;
