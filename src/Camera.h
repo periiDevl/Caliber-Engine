@@ -48,5 +48,6 @@ public:
 
 	void Inputs(GLFWwindow* window, float ctrlSpeed, float norSpeed);
 	void Mouse(GLFWwindow* window);
+	void TrackBallMouse(GLFWwindow* window);
 };
 #endif
