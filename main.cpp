@@ -300,7 +300,6 @@ int main()
 
 	// Creates camera object
 	Camera camera(width, height, glm::vec3(0, 0, 0.0f));
-	Camera cameraRawPosition(width, height, glm::vec3(0, 0, 0));
 
 
 	//camera stacking
@@ -653,7 +652,7 @@ int main()
 
 
 	btCollisionShape* sphereShape = new btSphereShape(0.5 / objectWorldMult); // replace btBoxShape with btSphereShape and the size parameter with 1
-	btDefaultMotionState* sphereMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 5, 0))); // replace boxMotionState with sphereMotionState
+	btDefaultMotionState* sphereMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0))); // replace boxMotionState with sphereMotionState
 	
 	btVector3 sphereInertia(0, 0, 0);
 	sphereShape->calculateLocalInertia(1, sphereInertia);
@@ -668,6 +667,9 @@ int main()
 
 	sceneObjects[1].BindPhysics(dynamicsWorld, objectWorldMult, false);
 	
+
+	
+
 	const float fixed_timestep = 1.0f / 60.0;
 	//camera.getInputAtRun = true;
 	// Main while loop
@@ -736,37 +738,39 @@ int main()
 			prevTime = crntTime;
 			counter = 0;
 			
-			camera.Inputs(window, ctrlSpeed * fixed_timestep, normalSpeed * fixed_timestep);
 
-
+			
+			camera.Inputs(window, (ctrlSpeed) * fixed_timestep, (normalSpeed) * fixed_timestep);
+			
 
 			if (run) {
-				cameraRawPosition.Inputs(window, (ctrlSpeed * 1000) * fixed_timestep, (normalSpeed * 1000) * fixed_timestep);
-				
-				dynamicsWorld->stepSimulation(fixed_timestep, substep);
-				sphereRigidBody->setGravity(btVector3(0, 0, 0));
 
-				btTransform cameratrans;
-				sphereRigidBody->getMotionState()->getWorldTransform(cameratrans);
+				btTransform currentTransform;
+				sphereRigidBody->getMotionState()->getWorldTransform(currentTransform);
+				btVector3 currentPosition = currentTransform.getOrigin();
 
-				btVector3 startPosition = sphereRigidBody->getWorldTransform().getOrigin();
-				btVector3 endPosition = btVector3(cameraRawPosition.Position.x, cameraRawPosition.Position.y, cameraRawPosition.Position.z);
-				btScalar duration = 0.7; // time in seconds 
+				// Calculate the desired camera position, independent of the physics simulation
+				glm::vec3 desiredCameraPosition = camera.Position;
 
-				btVector3 velocity = ((endPosition - startPosition) / (duration / fixed_timestep));
+				// Calculate the required velocity to move the sphere rigid body to the desired camera position
+				btVector3 desiredPosition = btVector3(desiredCameraPosition.x, desiredCameraPosition.y, desiredCameraPosition.z);
+				btVector3 velocity = (desiredPosition - currentPosition) / (fixed_timestep);
 
+				// Apply the velocity to the sphere rigid body
 				sphereRigidBody->setLinearVelocity(velocity);
 				sphereRigidBody->setAngularVelocity(btVector3(0, 0, 0));
+				sphereRigidBody->setGravity(btVector3(0, 0, 0));
 
-				cameraRawPosition.Orientation = camera.Orientation;
+				// Step the simulation
+				dynamicsWorld->stepSimulation(fixed_timestep, substep);
 
-				camera.Position = glm::vec3(cameratrans.getOrigin().getX(), cameratrans.getOrigin().getY(), cameratrans.getOrigin().getZ());
-
-				if (endPosition.distance(cameratrans.getOrigin()) > 1.0f)
-				{
-					cameraRawPosition.Position = glm::vec3(cameratrans.getOrigin().getX(), cameratrans.getOrigin().getY(), cameratrans.getOrigin().getZ());
-				}
+				// Update the camera position based on the new position of the sphere
+				btTransform updatedTransform;
+				sphereRigidBody->getMotionState()->getWorldTransform(updatedTransform);
+				camera.Position = glm::vec3(updatedTransform.getOrigin().getX(), updatedTransform.getOrigin().getY(), updatedTransform.getOrigin().getZ());
 			}
+
+
 
 
 			float deadZone = WorldRadius / 100000000000000000; // The size of the dead zone around the edge of the radius
@@ -797,8 +801,10 @@ int main()
 			camera.TrackBallMouse(window);
 		}
 		else {
+
 			camera.Mouse(window);
 		}
+		
 
 
 		

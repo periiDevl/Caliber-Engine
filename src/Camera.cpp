@@ -149,7 +149,7 @@ void Camera::TrackBallMouse(GLFWwindow* window)
 		// Calculates new camera position
 		glm::vec3 newPos = glm::rotate(Position - centerPoint, glm::radians(-rotX), glm::normalize(glm::cross(Orientation, Up))) + centerPoint;
 		newPos = glm::rotate(newPos - centerPoint, glm::radians(-rotY), Up) + centerPoint;
-
+		trackballPos = newPos;
 		// Updates the camera position and orientation
 		Position = newPos;
 
