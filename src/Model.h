@@ -57,7 +57,7 @@ public:
 	void BindPhysics(btDynamicsWorld* dynaWorld, float objectWorldMult, bool Static)
 	{
 		btCollisionShape* boxShape = new btBoxShape(btVector3(scale.x, scale.y, scale.z) / objectWorldMult);
-		btScalar mass = 1;
+		btScalar mass = 0;
 
 		if (Static) {
 			btTriangleMesh* triangleMesh = getVerticesFromFile(changeFileExtension(file), objectWorldMult);
@@ -76,12 +76,15 @@ public:
 		dynaWorld->addRigidBody(boxRigidBody);
 	}
 
+	btTransform trn;
 	void UpdatePhysics()
 	{
-		btTransform trn;
+		boxRigidBody->setGravity(btVector3(0, 0, 0));
 		boxRigidBody->getMotionState()->getWorldTransform(trn);
 		translation = glm::vec3(trn.getOrigin().getX(), trn.getOrigin().getY() - scale.y, trn.getOrigin().getZ());
 		rotation = glm::quat(trn.getRotation().getX(), trn.getRotation().getY(), trn.getRotation().getZ(), trn.getRotation().getW());
+		boxRigidBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
+
 
 	}
 

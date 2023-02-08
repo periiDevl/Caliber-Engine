@@ -668,16 +668,19 @@ int main()
 	sceneObjects[1].BindPhysics(dynamicsWorld, objectWorldMult, false);
 	
 
-	
+	sceneObjects[1].UpdatePhysics();
+	sceneObjects[1].trn.setOrigin(btVector3(0, 5, 0));
+	sceneObjects[1].boxRigidBody->setWorldTransform(sceneObjects[1].trn);
 
 	const float fixed_timestep = 1.0f / 60.0;
 	//camera.getInputAtRun = true;
 	// Main while loop
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
+		sceneObjects[1].translation = glm::vec3(sceneObjects[1].trn.getOrigin().getX(), sceneObjects[1].trn.getOrigin().getY() - sceneObjects[1].scale.y, sceneObjects[1].trn.getOrigin().getZ());
 		
 		
-		sceneObjects[1].UpdatePhysics();
+		//sceneObjects[1].UpdatePhysics();
 		
 		
 		btTransform trans;
@@ -898,8 +901,9 @@ int main()
 		GizmosBoundry.Draw(shaderProgram, camera, 1);
 		sceneObjects[2].translation = glm::vec3(100, 100, 100);
 
+		//sceneObjects[1].translation = glm::vec3(0, 1, 0);
+		
 		sceneObjects[1].scale = glm::vec3(1, 1, 0.1);
-		sceneObjects[1].translation = glm::vec3(0, -1, 0);
 		
 		
 		//sceneObjects[1].translation = glm::vec3(cameratrans.getOrigin().getX(), cameratrans.getOrigin().getY(), cameratrans.getOrigin().getZ());

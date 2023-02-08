@@ -172,33 +172,31 @@ void Camera::TrackBallMouse(GLFWwindow* window)
 
 void Camera::Inputs(GLFWwindow* window, float ctrlSpeed, float norSpeed)
 {
-	// Handles key inputs
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		Position += speed * Orientation;
+		Position += speed * getDirection(Orientation, true);
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		Position += speed * -glm::normalize(glm::cross(Orientation, Up));
+		Position += speed * -getDirection(glm::cross(Orientation, Up), false);
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		Position += speed * -Orientation;
+		Position += speed * -getDirection(Orientation, true);
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-		Position += speed * glm::normalize(glm::cross(Orientation, Up));
+		Position += speed * getDirection(glm::cross(Orientation, Up), false);
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 	{
-		Position += speed * Up;
+		Position += speed * getDirection(Up, false);
 	}
-
 	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
 	{
-		Position += speed * -Up;
-
+		Position += speed * -getDirection(Up, false);
 	}
+
 	
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 	{

@@ -26,7 +26,18 @@ public:
 	//lock clicking
 	bool cinamaticview = false;
 
-	
+	glm::vec3 getDirection(glm::vec3 direction, bool vertical)
+	{
+		if (vertical)
+		{
+			direction = glm::vec3(direction.x, 0, direction.z);
+		}
+		if (glm::length(direction) > 0)
+		{
+			direction = glm::normalize(direction);
+		}
+		return direction;
+	}
 
 	// Stores the width and height of the window
 	int width = 1920;
