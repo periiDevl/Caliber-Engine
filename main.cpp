@@ -667,8 +667,8 @@ int main()
 
 	sceneObjects[1].BindPhysics(dynamicsWorld, objectWorldMult, false);
 	
-
-	sceneObjects[1].UpdatePhysics();
+	sceneObjects[1].UpdatePhysics(objectWorldMult);
+	sceneObjects[1].scale = glm::vec3(1, 5, 1);
 	sceneObjects[1].trn.setOrigin(btVector3(0, 5, 0));
 	sceneObjects[1].boxRigidBody->setWorldTransform(sceneObjects[1].trn);
 
@@ -677,7 +677,7 @@ int main()
 	// Main while loop
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
-		sceneObjects[1].translation = glm::vec3(sceneObjects[1].trn.getOrigin().getX(), sceneObjects[1].trn.getOrigin().getY() - sceneObjects[1].scale.y, sceneObjects[1].trn.getOrigin().getZ());
+		sceneObjects[1].translation = glm::vec3(sceneObjects[1].trn.getOrigin().getX(), sceneObjects[1].trn.getOrigin().getY() - (sceneObjects[1].scale.y / objectWorldMult), sceneObjects[1].trn.getOrigin().getZ());
 		
 		
 		//sceneObjects[1].UpdatePhysics();
@@ -903,7 +903,7 @@ int main()
 
 		//sceneObjects[1].translation = glm::vec3(0, 1, 0);
 		
-		sceneObjects[1].scale = glm::vec3(1, 1, 0.1);
+		
 		
 		
 		//sceneObjects[1].translation = glm::vec3(cameratrans.getOrigin().getX(), cameratrans.getOrigin().getY(), cameratrans.getOrigin().getZ());

@@ -56,7 +56,7 @@ public:
 
 	void BindPhysics(btDynamicsWorld* dynaWorld, float objectWorldMult, bool Static)
 	{
-		btCollisionShape* boxShape = new btBoxShape(btVector3(scale.x, scale.y, scale.z) / objectWorldMult);
+		btCollisionShape* boxShape = new btBoxShape(btVector3(scale.x, scale.y, scale.z));
 		btScalar mass = 0;
 
 		if (Static) {
@@ -77,7 +77,7 @@ public:
 	}
 
 	btTransform trn;
-	void UpdatePhysics()
+	void UpdatePhysics(float objectWorldMult)
 	{
 		boxRigidBody->setGravity(btVector3(0, 0, 0));
 		boxRigidBody->getMotionState()->getWorldTransform(trn);
