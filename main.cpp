@@ -651,7 +651,7 @@ int main()
 	createStaticBox(dynamicsWorld, btVector3(0, -1, 0), btVector3(100, 1, 100), btQuaternion(0, 0, 0, 1));
 
 
-	btCollisionShape* sphereShape = new btSphereShape(0.5 / objectWorldMult); // replace btBoxShape with btSphereShape and the size parameter with 1
+	btCollisionShape* sphereShape = new btSphereShape(0.05 / objectWorldMult); // replace btBoxShape with btSphereShape and the size parameter with 1
 	btDefaultMotionState* sphereMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0))); // replace boxMotionState with sphereMotionState
 	
 	btVector3 sphereInertia(0, 0, 0);
@@ -665,10 +665,11 @@ int main()
 	// Perform simulation
 	const int substep = 10;
 
+	sceneObjects[1].scale = glm::vec3(0.76, 4.4, 0.76);
 	sceneObjects[1].BindPhysics(dynamicsWorld, objectWorldMult, false);
 	
 	sceneObjects[1].UpdatePhysics(objectWorldMult);
-	sceneObjects[1].trn.setOrigin(btVector3(0, 5, 0));
+	sceneObjects[1].trn.setOrigin(btVector3(0, 10, 0));
 
 	const float fixed_timestep = 1.0f / 60.0;
 	//camera.getInputAtRun = true;
@@ -676,9 +677,7 @@ int main()
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
 		sceneObjects[1].UpdateMeshPhysics(objectWorldMult);
-		
-		sceneObjects[1].scale = glm::vec3(1, 5, 1);
-		
+		sceneObjects[1].scale = glm::vec3(1, 10, 1);
 		//sceneObjects[1].UpdatePhysics();
 		
 		
