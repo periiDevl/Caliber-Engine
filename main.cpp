@@ -25,10 +25,10 @@ Setup setup;
 
 
 const float WorldRadius = 1500;
-const float objectWorldMult = 2.6f;
+const float objectWorldMult = 1.0f;
 
 const int objectsAmount = 2;
-bool run = false;
+bool run = false; 
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -651,7 +651,7 @@ int main()
 	createStaticBox(dynamicsWorld, btVector3(0, -1, 0), btVector3(100, 1, 100), btQuaternion(0, 0, 0, 1));
 
 
-	btCollisionShape* sphereShape = new btSphereShape(0.05 / objectWorldMult); // replace btBoxShape with btSphereShape and the size parameter with 1
+	btCollisionShape* sphereShape = new btSphereShape(0.5); // replace btBoxShape with btSphereShape and the size parameter with 1
 	btDefaultMotionState* sphereMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0))); // replace boxMotionState with sphereMotionState
 	
 	btVector3 sphereInertia(0, 0, 0);
@@ -665,7 +665,7 @@ int main()
 	// Perform simulation
 	const int substep = 10;
 
-	sceneObjects[1].scale = glm::vec3(0.76, 4.4, 0.76);
+	sceneObjects[1].scale = glm::vec3(0.76, 6, 0.76) * glm::vec3(objectWorldMult);
 	sceneObjects[1].BindPhysics(dynamicsWorld, objectWorldMult, false);
 	
 	sceneObjects[1].UpdatePhysics(objectWorldMult);
@@ -677,7 +677,7 @@ int main()
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
 		sceneObjects[1].UpdateMeshPhysics(objectWorldMult);
-		sceneObjects[1].scale = glm::vec3(1, 10, 1);
+		sceneObjects[1].scale = glm::vec3(0.76, 6 - (objectWorldMult / 2), 0.76) * glm::vec3(objectWorldMult);
 		//sceneObjects[1].UpdatePhysics();
 		
 		
