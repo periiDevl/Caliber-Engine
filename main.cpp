@@ -10,11 +10,14 @@
 #include"src/FlightController.h"
 #include"src/Functions.h"
 #include"src/Component.h"
+#include"src/Console.h"
+
 #include"src/Setup.h"
 #include <bullet/btBulletDynamicsCommon.h>
+
+Console console;
 Functions func;
 FlightController flightController;
-
 Setup setup;
 //Component scene;
 // Create a new component object
@@ -671,12 +674,30 @@ int main()
 	
 	sceneObjects[1].phys.setOrigin(btVector3(0, 10, 0));
 	
-
+	
 	const float fixed_timestep = 1.0f / 60.0;
 	//camera.getInputAtRun = true;
 	// Main while loop
+	console.AddLog("Hello World!");
+
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
+		// Check if the user has entered a specific string
+		
+		if (strcmp(console.input_buf, "quit") == 0 && glfwGetKey(window, GLFW_KEY_ENTER))
+		{
+				// The user has written the "quit" string
+			glfwSetWindowShouldClose(window, GLFW_TRUE);
+		}
+		else
+		{
+				// The user has written a different string
+				// ...
+		}
+
+			
+
+
 		sceneObjects[1].PhysicsUpdate();
 		//sceneObjects[1].UpdatePhysics();
 		
@@ -1030,7 +1051,7 @@ int main()
 		}
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		
-		
+		console.Draw();
 		if (run == false) {
 			
 			ImGui::Begin("Cockpit");
