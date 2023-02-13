@@ -94,7 +94,7 @@ public:
 	void UpdateMeshPhysics(float objectWorldMult)
 	{
 		boxRigidBody->setWorldTransform(trn);
-		translation = glm::vec3(trn.getOrigin().getX(), trn.getOrigin().getY() - (objectWorldMult / 2), trn.getOrigin().getZ());
+		translation = glm::vec3(trn.getOrigin().getX(), trn.getOrigin().getY() - (scale.y - 5.0), trn.getOrigin().getZ());
 	}
 
 
