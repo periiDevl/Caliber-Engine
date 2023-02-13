@@ -665,7 +665,7 @@ int main()
 	// Perform simulation
 	const int substep = 10;
 
-	sceneObjects[1].scale = glm::vec3(0.76, 3, 0.76);
+	sceneObjects[1].scale = glm::vec3(0.76,1 / 2.4, 0.76);
 	sceneObjects[1].BindPhysics(dynamicsWorld, 1, false);
 	
 	sceneObjects[1].UpdatePhysics(1);
@@ -677,7 +677,7 @@ int main()
 	// Main while loop
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
-		sceneObjects[1].scale = glm::vec3(0.76, 6, 0.76);
+		sceneObjects[1].scale = glm::vec3(0.76, 1, 0.76);
 		sceneObjects[1].UpdateMeshPhysics(1);
 		//sceneObjects[1].UpdatePhysics();
 		
