@@ -41,7 +41,12 @@ public:
         // Command input
         if (ImGui::InputText("Input", input_buf, IM_ARRAYSIZE(input_buf), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory, NULL, NULL))
         {
-            AddLog("[input] %s", input_buf);
+            
+            std::string username = getenv("USERNAME");
+            std::transform(username.begin(), username.end(), username.begin(), ::toupper);
+            std::string MODIFIEDname = "{" + username + "}";
+            std::string input = "[" + MODIFIEDname + "(USER)" + "]: " + """\"" + "%s" + """\"";
+            AddLog(input.c_str(), input_buf);
 
             // Add the input to the logs buffer and reset the input buffer
             memset(input_buf, 0, sizeof(input_buf));
