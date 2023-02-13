@@ -56,7 +56,7 @@ public:
 
 	void BindPhysics(btDynamicsWorld* dynaWorld, float objectWorldMult, bool Static)
 	{
-		btCollisionShape* boxShape = new btBoxShape(btVector3(scale.x, scale.y, scale.z) / btVector3(objectWorldMult, objectWorldMult, objectWorldMult));
+		btCollisionShape* boxShape = new btBoxShape(btVector3(scale.x / objectWorldMult, scale.y / objectWorldMult, scale.z / objectWorldMult));
 		btScalar mass = 0;
 
 		if (Static) {
@@ -76,13 +76,13 @@ public:
 		dynaWorld->addRigidBody(boxRigidBody);
 	}
 
-	btTransform trn;
-	void UpdatePhysics(float objectWorldMult)
+	btTransform phys;
+	void PHYSICS_SETUP()
 	{
 		boxRigidBody->setGravity(btVector3(0, 0, 0));
-		boxRigidBody->getMotionState()->getWorldTransform(trn);
-		translation = glm::vec3(trn.getOrigin().getX(), trn.getOrigin().getY(), trn.getOrigin().getZ());
-		rotation = glm::quat(trn.getRotation().getX(), trn.getRotation().getY(), trn.getRotation().getZ(), trn.getRotation().getW());
+		boxRigidBody->getMotionState()->getWorldTransform(phys);
+		translation = glm::vec3(phys.getOrigin().getX(), phys.getOrigin().getY(), phys.getOrigin().getZ());
+		rotation = glm::quat(phys.getRotation().getX(), phys.getRotation().getY(), phys.getRotation().getZ(), phys.getRotation().getW());
 		boxRigidBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
 
 		
@@ -91,10 +91,10 @@ public:
 
 	}
 
-	void UpdateMeshPhysics(float objectWorldMult)
+	void PhysicsUpdate()
 	{
-		boxRigidBody->setWorldTransform(trn);
-		translation = glm::vec3(trn.getOrigin().getX(), trn.getOrigin().getY() - 1, trn.getOrigin().getZ());
+		boxRigidBody->setWorldTransform(phys);
+		translation = glm::vec3(phys.getOrigin().getX(), phys.getOrigin().getY() - 1, phys.getOrigin().getZ());
 	}
 
 
