@@ -28,7 +28,7 @@ Setup setup;
 
 
 const float WorldRadius = 100;
-const float objectWorldMult = 2.6f;
+const float objectWorldMult = 2;
 
 const int objectsAmount = 2;
 bool run = false; 
@@ -51,7 +51,7 @@ float normalSpeed;
 float ctrlSpeed;
 bool enableskybox = true;
 float FogNear = 0.0f;
-int viewFarPlane;
+float viewFarPlane;
 
 
 
@@ -453,7 +453,7 @@ int main()
 	// Texture for Shadow Map FBO
 	
 
-	shadowMapWidth = 10000, shadowMapHeight = 10000;
+	shadowMapWidth = 30000, shadowMapHeight = 30000;
 
 	
 	
@@ -478,17 +478,14 @@ int main()
 	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	// Matrices needed for the light's perspective
-	float farPlane = 200.0f;
+	
 	//glm::mat4 orthgonalProjection = glm::ortho(-WorldRadius, WorldRadius, -WorldRadius, WorldRadius, WorldRadius, farPlane);
 	//glm::mat4 orthgonalProjectionLow = glm::ortho(-40.0f, 40.0f, -40.0f, 40.0f, 1.0f, farPlane);,ks89oxb
-	glm::mat4 orthgonalProjection = glm::ortho(-WorldRadius, WorldRadius, -WorldRadius, WorldRadius, 1.0f, farPlane);
-	//glm::mat4 orthgonalProjectionLow = glm::ortho(-40.0f, 40.0f, -40.0f, 40.0f, 1.0f, farPlane);,ks89oxb
-	//you can change how far shadows go!!! from 10 to 70 and more
-	glm::mat4 perspectiveProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, farPlane);
+	//glm::mat4 perspectiveProjection = glm::perspective(glm::radians(30.0f), 1.0f, 0.1f, farPlane);
 
+	glm::mat4 orthgonalProjection = glm::ortho(-WorldRadius, WorldRadius, -WorldRadius, WorldRadius, 0.1f, viewFarPlane);
 	//direc lights
-	glm::mat4 lightView = glm::lookAt(140.0f * lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 lightView = glm::lookAt(20.0f * lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 lightProjection = orthgonalProjection * lightView;
 
 	//-------spot lights
@@ -814,6 +811,12 @@ int main()
 				printf("Collision!!!!!");
 			}
 
+
+			btVector3 origin = trans.getOrigin();
+			sceneObjects[0].translation = glm::vec3(origin.getX(), origin.getY(), origin.getZ());
+			sceneObjects[0].rotation = glm::quat(rotation.getW(), rotation.getX(), rotation.getY(), rotation.getZ());
+
+			GizmosBoundry.scale = glm::vec3(WorldRadius);
 		}
 
 
@@ -912,11 +915,7 @@ int main()
 		//}
 		scene.TRY_DRAWING(ObjectsAmt, sceneObjects, shaderProgram, camera, objectWorldMult);
 
-		btVector3 origin = trans.getOrigin();
-		sceneObjects[0].translation = glm::vec3(origin.getX(), origin.getY(), origin.getZ());
-		sceneObjects[0].rotation = glm::quat(rotation.getW(), rotation.getX(), rotation.getY(), rotation.getZ());
-
-		GizmosBoundry.scale = glm::vec3(WorldRadius);
+		
 		GizmosBoundry.Draw(shaderProgram, camera, 1);
 
 		//sceneObjects[1].translation = glm::vec3(0, 1, 0);
@@ -1118,7 +1117,7 @@ int main()
 
 						if (ImGui::BeginTabBar("fog"))
 						{
-							ImGui::InputInt("Far plane view distance", &viewFarPlane, 1, 30);
+							ImGui::InputFloat("Far plane view distance", &viewFarPlane, 1, 30);
 							ImGui::InputFloat("Fog near value", &FogNear, 0.3f, 1, "%.3f", 0);
 							shaderProgram.Activate();
 							glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), FogNear);
