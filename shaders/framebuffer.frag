@@ -52,7 +52,7 @@ void main()
     //---------------------
     vec3 vignettecolor = vec3(0, 0, 0);
     vec2 center = vec2(0.5, 0.5); // center of vignette effect
-    float radius = 0.3; // radius of vignette effect
+    float radius = 1.0; // radius of vignette effect
     float vignettestrength = 0.5; // strength of vignette effect
 
     vec2 uv = texCoords - center;

@@ -241,6 +241,7 @@ int main()
 
 	// Generates shaders
 	Shader shaderProgram("shaders/default.vert", "shaders/default.frag");
+	Shader unlitProgram("shaders/default.vert", "shaders/unlit.frag");
 	Shader framebufferProgram("shaders/framebuffer.vert", "shaders/framebuffer.frag");
 	Shader shadowMapProgram("shaders/shadowMap.vert", "shaders/shadowMap.frag");
 	Shader blurProgram("shaders/framebuffer.vert", "shaders/blur.frag");
@@ -254,6 +255,9 @@ int main()
 	// Take care of all the light related things
 	glm::vec4 lightColor = glm::vec4(1, 1, 1, 1.0f);
 	glm::vec3 lightPos = glm::vec3(0.5f, 1, 0.5f);
+	unlitProgram.Activate();
+	glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 1, 0, 1);
+
 	shaderProgram.Activate();
 	glUniform4f(glGetUniformLocation(shaderProgram.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
@@ -664,12 +668,12 @@ int main()
 
 	// Perform simulation
 	const int substep = 10;
-
-	sceneObjects[1].scale = glm::vec3(0.76, 3, 0.76);
-	sceneObjects[1].BindPhysics(dynamicsWorld, 2.6, false);
-	sceneObjects[1].PHYSICS_SETUP();
+	Model PhysicsCube("models/cube/scene.gltf");
+	PhysicsCube.scale = glm::vec3(0.76, 3, 0.76);
+	PhysicsCube.BindPhysics(dynamicsWorld, objectWorldMult, false);
+	PhysicsCube.PHYSICS_SETUP();
 	
-	sceneObjects[1].phys.setOrigin(btVector3(0, 10, 0));
+	PhysicsCube.phys.setOrigin(btVector3(0, 10, 0));
 	
 	
 	const float fixed_timestep = 1.0f / 60.0;
@@ -695,7 +699,7 @@ int main()
 			
 
 
-		sceneObjects[1].PhysicsUpdate();
+		
 		//sceneObjects[1].UpdatePhysics();
 		
 		
@@ -914,9 +918,30 @@ int main()
 			//sceneObjects[i].Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 		//}
 		scene.TRY_DRAWING(ObjectsAmt, sceneObjects, shaderProgram, camera, objectWorldMult);
-
-		
 		GizmosBoundry.Draw(shaderProgram, camera, 1);
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glLineWidth(5.0f);
+		if (timeDiff >= fixed_timestep) {
+
+
+			PhysicsCube.scale = glm::vec3(0.76, 3, 0.76);
+			PhysicsCube.BindPhysics(dynamicsWorld, objectWorldMult, false);
+			PhysicsCube.PHYSICS_SETUP();
+			PhysicsCube.phys.setOrigin(btVector3(0, 0, 0));
+			PhysicsCube.Draw(unlitProgram, camera, objectWorldMult);
+			PhysicsCube.PhysicsUpdate();
+
+
+
+			PhysicsCube.scale = glm::vec3(0.76, 3, 0.76);
+			PhysicsCube.BindPhysics(dynamicsWorld, objectWorldMult, false);
+			PhysicsCube.PHYSICS_SETUP();
+			PhysicsCube.phys.setOrigin(btVector3(0, 20, 0));
+			PhysicsCube.Draw(unlitProgram, camera, objectWorldMult);
+			PhysicsCube.PhysicsUpdate();
+		}
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		//sceneObjects[1].translation = glm::vec3(0, 1, 0);
 		
