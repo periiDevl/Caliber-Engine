@@ -6,6 +6,9 @@
 #include<glm/gtc/type_ptr.hpp>
 #include<glm/gtx/rotate_vector.hpp>
 #include<glm/gtx/vector_angle.hpp>
+#include <cstdlib>
+#include <ctime>
+#include <random>
 class Functions {
 public:
 	glm::quat Euler_to_quat(double roll, double pitch, double yaw)
@@ -71,5 +74,15 @@ public:
 
 	float Lerp(float from, float to, float time) {
 		return from + time * (to - from);
+	}
+
+	glm::vec3 randomizeVec3InRadius(float radius) {
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::normal_distribution<float> dist(0.0f, radius);
+		float x = dist(gen);
+		float y = dist(gen);
+		float z = dist(gen);
+		return glm::vec3(x, y, z);
 	}
 };

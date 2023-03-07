@@ -329,7 +329,6 @@ int main()
 	Model GizmosBoundry = ("models/Gizmos/BoundSphere/scene.gltf");
 	scene.TRY_OBJ_RECOVERING_TEST(ObjectsAmt, sceneObjects);
 
-	scene.SuffleObjectsID(ObjectsAmt, sceneObjects);
 
 
 	sceneObjects[2].scale = glm::vec3(2.0f);
