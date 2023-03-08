@@ -654,7 +654,7 @@ int main()
 	createStaticBox(dynamicsWorld, btVector3(0, -1, 0), btVector3(100, 1, 100), btQuaternion(0, 0, 0, 1));
 
 
-	btCollisionShape* sphereShape = new btSphereShape(0.3); // replace btBoxShape with btSphereShape and the size parameter with 1
+	btCollisionShape* sphereShape = new btBoxShape(btVector3(0.3, 1.5, 0.3)); // replace btBoxShape with btSphereShape and the size parameter with 1
 	btDefaultMotionState* sphereMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0))); // replace boxMotionState with sphereMotionState
 	
 	btVector3 sphereInertia(0, 0, 0);
@@ -664,6 +664,7 @@ int main()
 	dynamicsWorld->addRigidBody(sphereRigidBody); // replace boxRigidBody with sphereRigidBody
 	sphereRigidBody->setSleepingThresholds(0,0);
 	sphereRigidBody->setActivationState(DISABLE_DEACTIVATION);
+
 
 	// Perform simulation
 	const int substep = 10;
@@ -781,6 +782,8 @@ int main()
 				// Apply the velocity to the sphere rigid body
 				sphereRigidBody->setLinearVelocity(velocity);
 				sphereRigidBody->setAngularVelocity(btVector3(0, 0, 0));
+				sphereRigidBody->setAngularFactor(btVector3(0, 0, 0));
+
 				sphereRigidBody->setGravity(btVector3(0, 0, 0));
 
 				// Step the simulation
@@ -790,6 +793,8 @@ int main()
 				btTransform updatedTransform;
 				sphereRigidBody->getMotionState()->getWorldTransform(updatedTransform);
 				camera.Position = glm::vec3(updatedTransform.getOrigin().getX(), updatedTransform.getOrigin().getY(), updatedTransform.getOrigin().getZ());
+
+				camera.Position.y = camera.Position.y - 0.0981;
 			}
 
 
@@ -924,7 +929,7 @@ int main()
 		if (timeDiff >= fixed_timestep) {
 
 
-			PhysicsCube.scale = glm::vec3(0.76, 3, 0.76);
+			PhysicsCube.scale = glm::vec3(10.76, 3, 10.76);
 			PhysicsCube.BindPhysics(dynamicsWorld, objectWorldMult, false);
 			PhysicsCube.PHYSICS_SETUP();
 			PhysicsCube.phys.setOrigin(btVector3(0, 0, 0));
@@ -933,7 +938,7 @@ int main()
 
 
 
-			PhysicsCube.scale = glm::vec3(0.76, 3, 0.76);
+			PhysicsCube.scale = glm::vec3(10.76, 3, 10.7);
 			PhysicsCube.BindPhysics(dynamicsWorld, objectWorldMult, false);
 			PhysicsCube.PHYSICS_SETUP();
 			PhysicsCube.phys.setOrigin(btVector3(0, 20, 0));
