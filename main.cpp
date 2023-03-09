@@ -929,21 +929,21 @@ int main()
 		if (timeDiff >= fixed_timestep) {
 
 
-			PhysicsCube.scale = glm::vec3(10.76, 3, 10.76);
 			PhysicsCube.BindPhysics(dynamicsWorld, objectWorldMult, false);
 			PhysicsCube.PHYSICS_SETUP();
 			PhysicsCube.phys.setOrigin(btVector3(0, 0, 0));
 			PhysicsCube.Draw(unlitProgram, camera, objectWorldMult);
 			PhysicsCube.PhysicsUpdate();
+			PhysicsCube.scale = glm::vec3(10.76, 20, 10.76);
 
 
 
-			PhysicsCube.scale = glm::vec3(10.76, 3, 10.7);
 			PhysicsCube.BindPhysics(dynamicsWorld, objectWorldMult, false);
 			PhysicsCube.PHYSICS_SETUP();
 			PhysicsCube.phys.setOrigin(btVector3(0, 20, 0));
 			PhysicsCube.Draw(unlitProgram, camera, objectWorldMult);
 			PhysicsCube.PhysicsUpdate();
+			PhysicsCube.scale = glm::vec3(10.76, 3, 10.7);
 		}
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
