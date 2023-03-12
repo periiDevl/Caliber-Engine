@@ -946,7 +946,7 @@ int main()
 			PhysicsCube.scale = glm::vec3(10.76, 3, 10.7);
 		}
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
+		glLineWidth(1.0f);
 		//sceneObjects[1].translation = glm::vec3(0, 1, 0);
 		
 		
