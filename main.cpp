@@ -27,7 +27,7 @@ Setup setup;
 //component.AddObject("path/to/object.obj");
 
 
-const float WorldRadius = 100;
+const float WorldRadius = 300;
 const float objectWorldMult = 2;
 
 const int objectsAmount = 2;
@@ -254,7 +254,7 @@ int main()
 
 	// Take care of all the light related things
 	glm::vec4 lightColor = glm::vec4(1, 1, 1, 1.0f);
-	glm::vec3 lightPos = glm::vec3(0.5f, 1, 0.5f);
+	glm::vec3 lightPos = glm::vec3(0.5f, 5, 0.5f);
 	unlitProgram.Activate();
 	glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 1, 0, 1);
 
@@ -486,17 +486,6 @@ int main()
 	//glm::mat4 orthgonalProjectionLow = glm::ortho(-40.0f, 40.0f, -40.0f, 40.0f, 1.0f, farPlane);,ks89oxb
 	//glm::mat4 perspectiveProjection = glm::perspective(glm::radians(30.0f), 1.0f, 0.1f, farPlane);
 
-	glm::mat4 orthgonalProjection = glm::ortho(-WorldRadius, WorldRadius, -WorldRadius, WorldRadius, 0.1f, viewFarPlane);
-	//direc lights
-	glm::mat4 lightView = glm::lookAt(20.0f * lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::mat4 lightProjection = orthgonalProjection * lightView;
-
-	//-------spot lights
-	//glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-	//glm::mat4 lightProjection = perspectiveProjection * lightView;
-
-	shadowMapProgram.Activate();
-	glUniformMatrix4fv(glGetUniformLocation(shadowMapProgram.ID, "lightProjection"), 1, GL_FALSE, glm::value_ptr(lightProjection));
 	//0.29, 1.00, 0.62,
 	
 	ImVec4 backroundColor = ImVec4(0.22, 0.23, 0.25, 1);
@@ -683,6 +672,19 @@ int main()
 
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
+		glm::mat4 orthgonalProjection = glm::ortho(-WorldRadius, WorldRadius, -WorldRadius, WorldRadius, 0.1f, viewFarPlane);
+		//direc lights
+
+		glm::mat4 lightView = glm::lookAt(20.0f * lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 lightProjection = orthgonalProjection * lightView;
+
+		//-------spot lights
+		//glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+		//glm::mat4 lightProjection = perspectiveProjection * lightView;
+
+		sceneObjects[2].translation = glm::vec3(70);
+		shadowMapProgram.Activate();
+		glUniformMatrix4fv(glGetUniformLocation(shadowMapProgram.ID, "lightProjection"), 1, GL_FALSE, glm::value_ptr(lightProjection));
 		// Check if the user has entered a specific string
 		
 		if (strcmp(console.input_buf, "quit") == 0 && glfwGetKey(window, GLFW_KEY_ENTER))
