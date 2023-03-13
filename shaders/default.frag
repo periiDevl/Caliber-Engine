@@ -143,11 +143,11 @@ vec4 direcLight()
 		lightCoords = (lightCoords + 1.0f) / 2.0f;
 		float currentDepth = lightCoords.z;
 		// Prevents shadow acne
-		float bias = max(0.005f * (1.0f - dot(normal, lightDirection)), 0.0005f);
+		float bias = max(0.02f * (1.0f - dot(normal, lightDirection)), 0.0005f);
 
 		// Smoothens out the shadows
-		int sampleRadius = 4;
-		vec2 pixelSize = 1.0 / textureSize(shadowMap, 0);
+		int sampleRadius = 1;
+		vec2 pixelSize = 1.0 / textureSize(shadowMap, 0); 
 		for(int y = -sampleRadius; y <= sampleRadius; y++)
 		{
 		    for(int x = -sampleRadius; x <= sampleRadius; x++)

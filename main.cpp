@@ -752,6 +752,16 @@ int main()
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
+
+
+		if (!run) {
+			camera.TrackBallMouse(window);
+		}
+		else {
+
+			camera.Mouse(window);
+		}
+
 		if (timeDiff >= fixed_timestep) {
 			// Creates new title
 			std::string FPS = std::to_string((1.0 / timeDiff) * counter);
@@ -796,7 +806,6 @@ int main()
 				sphereRigidBody->getMotionState()->getWorldTransform(updatedTransform);
 				camera.Position = glm::vec3(updatedTransform.getOrigin().getX(), updatedTransform.getOrigin().getY(), updatedTransform.getOrigin().getZ());
 
-				camera.Position.y = camera.Position.y - 0.0981;
 			}
 
 
@@ -832,13 +841,6 @@ int main()
 
 		
 		
-		if (!run) {
-			camera.TrackBallMouse(window);
-		}
-		else {
-
-			camera.Mouse(window);
-		}
 		
 
 
