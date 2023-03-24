@@ -14,6 +14,7 @@
 #include"src/CSF.h"
 #include"src/CSV.h"
 #include"src/Setup.h"
+#include"src/Save.h"
 #include <bullet/btBulletDynamicsCommon.h>
 CSV vert;
 CSF frag;
@@ -21,6 +22,7 @@ Console console;
 Functions func;
 FlightController flightController;
 Setup setup;
+Save sve;
 //Component scene;
 // Create a new component object
 //Component component;
@@ -142,7 +144,6 @@ int main()
 	//PlaySound(TEXT("balls.wav"), NULL, SND_ASYNC);
 
 	
-
 
 	std::string line;
 	std::ifstream saveFile("projectname.caliber");
@@ -330,7 +331,26 @@ int main()
 	Model GizmosBoundry = ("models/Gizmos/BoundSphere/scene.gltf");
 	scene.TRY_OBJ_RECOVERING_TEST(ObjectsAmt, sceneObjects);
 
+	//glm::vec3 hello = sve.loadVec3("work.txt", 0);
 
+	std::string ModelLine;
+	std::ifstream File("work.txt");
+	int k = 0;
+	while (!File.eof())
+	{
+		std::getline(File, ModelLine);
+		if (File.good())
+		{
+			//save[i] = std::stof(ModelLine);
+			sceneObjects[k].translation = sve.loadVec3("Metric/world.metric", k);
+			sceneObjects[k].translation = sve.loadVec3("Metric/scale.metric", k);
+			sceneObjects[k].rotation = sve.loadVec4("Metric/orian.metric", k);
+			k++;
+		}
+
+		
+
+	}
 
 	sceneObjects[2].scale = glm::vec3(2.0f);
 	
@@ -1271,9 +1291,22 @@ int main()
 	// Terminate GLFW before ending the program
 	glfwTerminate();
 
-	
+	sve.clearFile("Metric/world.metric");
+	sve.clearFile("Metric/orian.metric");
+	sve.clearFile("Metric/scale.metric");
+	size_t numObjects = sizeof(sceneObjects) / sizeof(sceneObjects[0]);
+	for (size_t i = 0; i < numObjects; i++)
+	{
 
-	
+		sve.saveVec3(sceneObjects[i].translation, "Metric/world.metric");
+		sve.saveVec4(sceneObjects[i].rotation, "Metric/orian.metric");
+	}
+
+	for (size_t i = 0; i < numObjects; i++)
+	{
+
+		sve.saveVec3(sceneObjects[i].scale, "Metric/scale.metric");
+	}
 	
 	std::ofstream SaveFileWr("projectname.caliber");
 	

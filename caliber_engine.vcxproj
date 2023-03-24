@@ -198,6 +198,7 @@
     <ClInclude Include="src\Mesh.h" />
     <ClInclude Include="src\Model.h" />
     <ClInclude Include="src\PhysicsManager.h" />
+    <ClInclude Include="src\Save.h" />
     <ClInclude Include="src\settings.h" />
     <ClInclude Include="src\Setup.h" />
     <ClInclude Include="src\shaderClass.h" />
