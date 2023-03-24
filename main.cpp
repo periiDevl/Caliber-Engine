@@ -11,10 +11,12 @@
 #include"src/Functions.h"
 #include"src/Component.h"
 #include"src/Console.h"
-
+#include"src/CSF.h"
+#include"src/CSV.h"
 #include"src/Setup.h"
 #include <bullet/btBulletDynamicsCommon.h>
-
+CSV vert;
+CSF frag;
 Console console;
 Functions func;
 FlightController flightController;
@@ -238,16 +240,15 @@ int main()
 
 
 	setup.SETUP_IMGUI(window);
-
 	// Generates shaders
-	Shader shaderProgram("shaders/default.vert", "shaders/default.frag");
-	Shader unlitProgram("shaders/default.vert", "shaders/unlit.frag");
-	Shader framebufferProgram("shaders/framebuffer.vert", "shaders/framebuffer.frag");
-	Shader shadowMapProgram("shaders/shadowMap.vert", "shaders/shadowMap.frag");
-	Shader blurProgram("shaders/framebuffer.vert", "shaders/blur.frag");
-	Shader skyboxShader("shaders/skybox.vert", "shaders/skybox.frag");
+	Shader shaderProgram(vert.Default, frag.Default);
+	Shader unlitProgram(vert.Default, frag.Unlit);
+	Shader framebufferProgram(vert.Frame, frag.Frame);
+	Shader shadowMapProgram(vert.ShadowMap, frag.ShadowMap);
+	Shader blurProgram(vert.Frame, frag.Blur);
+	Shader skyboxShader(vert.Skybox, frag.Skybox);
 
-	Shader outlineShader("shaders/outlining.vert", "shaders/outlining.frag");
+	Shader outlineShader(vert.Outline, frag.Ouline);
 
 
 	

@@ -28,9 +28,6 @@
     <Filter Include="Source Files\src">
       <UniqueIdentifier>{8b1fb8fd-899d-4f10-a123-c6e82d7201fb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\shaders">
-      <UniqueIdentifier>{fffb8adb-5ed4-44ae-9505-c144c213eaec}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -214,43 +211,5 @@
     <Image Include="..\..\..\source\repos\caliber_engine\caliberLogo.jpeg">
       <Filter>Resource Files\Textures</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="shaders\blur.frag">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="shaders\default.frag">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="shaders\default.vert">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="shaders\framebuffer.frag">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="shaders\framebuffer.vert">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="shaders\shadowMap.frag">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="shaders\shadowMap.vert">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="shaders\skybox.frag">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="shaders\skybox.vert">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="shaders\outlining.frag">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="shaders\outlining.vert">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="shaders\unlit.frag">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
   </ItemGroup>
 </Project>
