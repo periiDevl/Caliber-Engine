@@ -15,6 +15,12 @@ public:
         ofs.close();
     }
 
+    void saveVec4(const glm::quat& q, const std::string& filename)
+    {
+        std::ofstream file(filename, std::ios::app);
+        file << q.w << " " << q.x << " " << q.y << " " << q.z << "\n";
+        file.close();
+    }
     glm::vec3 loadVec3(const std::string& filename, int lineNum)
     {
         std::ifstream file(filename);
@@ -33,12 +39,6 @@ public:
         return v;
     }
 
-    void saveVec4(const glm::quat& q, const std::string& filename)
-    {
-        std::ofstream file(filename, std::ios::app);
-        file << q.w << " " << q.x << " " << q.y << " " << q.z << "\n";
-        file.close();
-    }
 
     glm::quat loadVec4(const std::string& filename, int lineNum)
     {

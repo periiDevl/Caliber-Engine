@@ -336,14 +336,13 @@ int main()
 	std::string ModelLine;
 	std::ifstream File("work.txt");
 	int k = 0;
-	while (!File.eof())
+	while (std::getline(File, ModelLine))
 	{
-		std::getline(File, ModelLine);
 		if (File.good())
 		{
 			//save[i] = std::stof(ModelLine);
 			sceneObjects[k].translation = sve.loadVec3("Metric/world.metric", k);
-			sceneObjects[k].translation = sve.loadVec3("Metric/scale.metric", k);
+			sceneObjects[k].scale = sve.loadVec3("Metric/scale.metric", k);
 			sceneObjects[k].rotation = sve.loadVec4("Metric/orian.metric", k);
 			k++;
 		}
@@ -1216,7 +1215,22 @@ int main()
 
 
 
+		//sve.clearFile("Metric/world.metric");
+		//sve.clearFile("Metric/orian.metric");
+		//sve.clearFile("Metric/scale.metric");
+		size_t numObjects = sizeof(sceneObjects) / sizeof(sceneObjects[0]);
+		for (size_t i = 0; i < numObjects; i++)
+		{
 
+			sve.saveVec3(sceneObjects[i].translation, "Metric/world.metric");
+			sve.saveVec4(sceneObjects[i].rotation, "Metric/orian.metric");
+		}
+
+		for (size_t i = 0; i < numObjects; i++)
+		{
+
+			sve.saveVec3(sceneObjects[i].scale, "Metric/scale.metric");
+		}
 
 		
 		// Swap the back buffer with the front buffer
@@ -1291,22 +1305,7 @@ int main()
 	// Terminate GLFW before ending the program
 	glfwTerminate();
 
-	sve.clearFile("Metric/world.metric");
-	sve.clearFile("Metric/orian.metric");
-	sve.clearFile("Metric/scale.metric");
-	size_t numObjects = sizeof(sceneObjects) / sizeof(sceneObjects[0]);
-	for (size_t i = 0; i < numObjects; i++)
-	{
-
-		sve.saveVec3(sceneObjects[i].translation, "Metric/world.metric");
-		sve.saveVec4(sceneObjects[i].rotation, "Metric/orian.metric");
-	}
-
-	for (size_t i = 0; i < numObjects; i++)
-	{
-
-		sve.saveVec3(sceneObjects[i].scale, "Metric/scale.metric");
-	}
+	
 	
 	std::ofstream SaveFileWr("projectname.caliber");
 	
