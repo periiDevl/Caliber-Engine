@@ -34,7 +34,6 @@ Save sve;
 const float WorldRadius = 70;
 const float objectWorldMult = 2;
 
-const int objectsAmount = 2;
 bool run = false; 
 
 
@@ -326,26 +325,26 @@ int main()
 	
 
 	Component scene;
-	const int ObjectsAmt = 3;
-	Model sceneObjects[ObjectsAmt] = { Model("models/rocket/scene.gltf"), Model("models/ExampleModel/scene.gltf"), Model("models/cliberDeafult/scene.gltf"),
+	Model sceneObjects[] = { Model("models/rocket/scene.gltf"), Model("models/ExampleModel/scene.gltf"), Model("models/cliberDeafult/scene.gltf"),
 		};
 	Model GizmosBoundry = ("models/Gizmos/BoundSphere/scene.gltf");
-	scene.TRY_OBJ_RECOVERING_TEST(ObjectsAmt, sceneObjects);
 
 	//glm::vec3 hello = sve.loadVec3("work.txt", 0);
 
 	std::string ModelLine;
 	std::ifstream File("Metric/world.metric");
-	int k = 0;
-	while (std::getline(File, ModelLine))
+	for (size_t i = 0; i < sizeof(sceneObjects) / sizeof(sceneObjects[0]); i++)
 	{
+
+	
+	
 		if (File.good())
 		{
 			//save[i] = std::stof(ModelLine);
-			sceneObjects[k].translation = sve.loadVec3("Metric/world.metric", k + 1);
-			sceneObjects[k].rotation = sve.loadVec4("Metric/orian.metric", k + 1);
-			sceneObjects[k].scale = sve.loadVec3("Metric/scale.metric", k + 1);
-			k++;
+			sceneObjects[i].translation = sve.loadVec3("Metric/world.metric", i + 1);
+			sceneObjects[i].rotation = sve.loadVec4("Metric/orian.metric", i + 1);
+			sceneObjects[i].scale = sve.loadVec3("Metric/scale.metric", i + 1);
+			i++;
 		}
 
 		
@@ -880,7 +879,7 @@ int main()
 		
 		if (renderShadows == 1) {
 				
-			scene.TRY_DRAWING(ObjectsAmt, sceneObjects, shadowMapProgram, camera, objectWorldMult);
+			scene.TRY_DRAWING(sizeof(sceneObjects) / sizeof(sceneObjects[0]), sceneObjects, shadowMapProgram, camera, objectWorldMult);
 		}
 			
 		
@@ -947,7 +946,7 @@ int main()
 		//{
 			//sceneObjects[i].Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 		//}
-		scene.TRY_DRAWING(ObjectsAmt, sceneObjects, shaderProgram, camera, objectWorldMult);
+		scene.TRY_DRAWING(sizeof(sceneObjects) / sizeof(sceneObjects[0]), sceneObjects, shaderProgram, camera, objectWorldMult);
 		GizmosBoundry.Draw(shaderProgram, camera, 1);
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -1242,7 +1241,6 @@ int main()
 		
 
 	}
-	scene.TRY_OBJ_SORTER_TEST(objectsAmount, sceneObjects);
 	// Wait for 10 seconds after the window is closed
 	//double desiredTime = glfwGetTime() + 1.0;  // Wait for 1 seconds
 	//while (glfwGetTime() < desiredTime) {
