@@ -341,29 +341,18 @@ int main()
 		if (File.good())
 		{
 			//save[i] = std::stof(ModelLine);
-			sceneObjects[k].translation = sve.loadVec3("Metric/world.metric", k);
-			sceneObjects[k].rotation = sve.loadVec4("Metric/orian.metric", k);
+			sceneObjects[k].translation = sve.loadVec3("Metric/world.metric", k + 1);
+			sceneObjects[k].rotation = sve.loadVec4("Metric/orian.metric", k + 1);
+			sceneObjects[k].scale = sve.loadVec3("Metric/scale.metric", k + 1);
 			k++;
 		}
 
 		
 
 	}
-	int j = 0;
-	while (std::getline(File, ModelLine))
-	{
-		if (File.good())
-		{
-			//save[i] = std::stof(ModelLine);
-			sceneObjects[j].scale = sve.loadVec3("Metric/scale.metric", j);
-			j++;
-		}
 
 
-
-	}
-
-	sceneObjects[2].scale = glm::vec3(2.0f);
+	//sceneObjects[2].scale = glm::vec3(2.0f);
 	
 	//Model rocket("models/rocket/scene.gltf");
 

@@ -192,6 +192,8 @@
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Component.h" />
     <ClInclude Include="src\Console.h" />
+    <ClInclude Include="src\CSF.h" />
+    <ClInclude Include="src\CSV.h" />
     <ClInclude Include="src\EBO.h" />
     <ClInclude Include="src\FlightController.h" />
     <ClInclude Include="src\Functions.h" />
