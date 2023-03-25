@@ -256,7 +256,7 @@ int main()
 	// Take care of all the light related things
 	glm::vec4 lightColor = glm::vec4(2.0f, 1.8f, 1.6f, 1.0f);
 
-	glm::vec3 lightPos = glm::vec3(0.5f, 5, 0.5f);
+	glm::vec3 lightPos = glm::vec3(0.5f, 1, 0.5f);
 	unlitProgram.Activate();
 	glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 1, 0, 1);
 
@@ -956,19 +956,19 @@ int main()
 
 			PhysicsCube.BindPhysics(dynamicsWorld, objectWorldMult, false);
 			PhysicsCube.PHYSICS_SETUP();
-			PhysicsCube.phys.setOrigin(btVector3(0, 0, 0));
+			PhysicsCube.phys.setOrigin(btVector3(0, 2, 0));
 			PhysicsCube.Draw(unlitProgram, camera, objectWorldMult);
 			PhysicsCube.PhysicsUpdate();
-			PhysicsCube.scale = glm::vec3(10.76, 20, 10.76);
+			PhysicsCube.scale = glm::vec3(4, 4, 4);
 
 
 
-			PhysicsCube.BindPhysics(dynamicsWorld, objectWorldMult, false);
-			PhysicsCube.PHYSICS_SETUP();
-			PhysicsCube.phys.setOrigin(btVector3(0, 20, 0));
-			PhysicsCube.Draw(unlitProgram, camera, objectWorldMult);
-			PhysicsCube.PhysicsUpdate();
-			PhysicsCube.scale = glm::vec3(10.76, 3, 10.7);
+			//PhysicsCube.BindPhysics(dynamicsWorld, objectWorldMult, false);
+			//PhysicsCube.PHYSICS_SETUP();
+			//PhysicsCube.phys.setOrigin(btVector3(0, 20, 0));
+			//PhysicsCube.Draw(unlitProgram, camera, objectWorldMult);
+			//PhysicsCube.PhysicsUpdate();
+			//PhysicsCube.scale = glm::vec3(10.76, 3, 10.7);
 		}
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glLineWidth(1.0f);
