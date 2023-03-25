@@ -342,12 +342,24 @@ int main()
 		{
 			//save[i] = std::stof(ModelLine);
 			sceneObjects[k].translation = sve.loadVec3("Metric/world.metric", k);
-			sceneObjects[k].scale = sve.loadVec3("Metric/scale.metric", k);
 			sceneObjects[k].rotation = sve.loadVec4("Metric/orian.metric", k);
 			k++;
 		}
 
 		
+
+	}
+	int j = 0;
+	while (std::getline(File, ModelLine))
+	{
+		if (File.good())
+		{
+			//save[i] = std::stof(ModelLine);
+			sceneObjects[j].scale = sve.loadVec3("Metric/scale.metric", j);
+			j++;
+		}
+
+
 
 	}
 
@@ -1216,20 +1228,18 @@ int main()
 
 
 		//sve.clearFile("Metric/world.metric");
+		remove("Metric/world.metric");
 		//sve.clearFile("Metric/orian.metric");
+		remove("Metric/orian.metric");
 		//sve.clearFile("Metric/scale.metric");
+		remove("Metric/scale.metric");
 		size_t numObjects = sizeof(sceneObjects) / sizeof(sceneObjects[0]);
 		for (size_t i = 0; i < numObjects; i++)
 		{
 
+			sve.saveVec3(sceneObjects[i].scale, "Metric/scale.metric");
 			sve.saveVec3(sceneObjects[i].translation, "Metric/world.metric");
 			sve.saveVec4(sceneObjects[i].rotation, "Metric/orian.metric");
-		}
-
-		for (size_t i = 0; i < numObjects; i++)
-		{
-
-			sve.saveVec3(sceneObjects[i].scale, "Metric/scale.metric");
 		}
 
 		

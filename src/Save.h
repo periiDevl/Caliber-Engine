@@ -10,10 +10,6 @@ public:
         file.close();
     }
 
-    void clearFile(const std::string& filename) {
-        std::ofstream ofs(filename, std::ofstream::out | std::ofstream::trunc);
-        ofs.close();
-    }
 
     void saveVec4(const glm::quat& q, const std::string& filename)
     {
