@@ -31,7 +31,7 @@ Save sve;
 //component.AddObject("path/to/object.obj");
 
 
-const float WorldRadius = 300;
+const float WorldRadius = 70;
 const float objectWorldMult = 2;
 
 const int objectsAmount = 2;
@@ -255,7 +255,8 @@ int main()
 	
 
 	// Take care of all the light related things
-	glm::vec4 lightColor = glm::vec4(1, 1, 1, 1.0f);
+	glm::vec4 lightColor = glm::vec4(2.0f, 1.8f, 1.6f, 1.0f);
+
 	glm::vec3 lightPos = glm::vec3(0.5f, 5, 0.5f);
 	unlitProgram.Activate();
 	glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 1, 0, 1);
@@ -326,7 +327,7 @@ int main()
 
 	Component scene;
 	const int ObjectsAmt = 3;
-	Model sceneObjects[ObjectsAmt] = { Model("models/rocket/scene.gltf"), Model("models/cube/scene.gltf"), Model("models/cliberDeafult/scene.gltf"),
+	Model sceneObjects[ObjectsAmt] = { Model("models/rocket/scene.gltf"), Model("models/ExampleModel/scene.gltf"), Model("models/cliberDeafult/scene.gltf"),
 		};
 	Model GizmosBoundry = ("models/Gizmos/BoundSphere/scene.gltf");
 	scene.TRY_OBJ_RECOVERING_TEST(ObjectsAmt, sceneObjects);
@@ -334,7 +335,7 @@ int main()
 	//glm::vec3 hello = sve.loadVec3("work.txt", 0);
 
 	std::string ModelLine;
-	std::ifstream File("work.txt");
+	std::ifstream File("Metric/world.metric");
 	int k = 0;
 	while (std::getline(File, ModelLine))
 	{
