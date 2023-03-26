@@ -254,7 +254,10 @@ int main()
 	
 
 	// Take care of all the light related things
-	glm::vec4 lightColor = glm::vec4(2.0f, 1.8f, 1.6f, 1.0f);
+	glm::vec4 lightColor = glm::vec4(1.0f, 0.8f, 0.6f, 1.0f) * 3.0f;
+
+
+
 
 	glm::vec3 lightPos = glm::vec3(0.5f, 1, 0.5f);
 	unlitProgram.Activate();
@@ -583,12 +586,12 @@ int main()
 	// All the faces of the cubemap (make sure they are in this exact order)
 	std::string facesCubemap[6] =
 	{
-		"skybox/deafult/right.jpg",
-		"skybox/deafult/left.jpg",
-		"skybox/deafult/top.jpg",
-		"skybox/deafult/bottom.jpg",
-		"skybox/deafult/front.jpg",
-		"skybox/deafult/back.jpg"
+		"skybox/sky/right.jpg",
+		"skybox/sky/left.jpg",
+		"skybox/sky/top.jpg",
+		"skybox/sky/bottom.jpg",
+		"skybox/sky/front.jpg",
+		"skybox/sky/back.jpg"
 	};
 
 	// Creates the cubemap texture object
@@ -661,7 +664,6 @@ int main()
 	dynamicsWorld->addRigidBody(boxRigidBody);
 
 	
-	createStaticBox(dynamicsWorld, btVector3(0, -1, 0), btVector3(100, 1, 100), btQuaternion(0, 0, 0, 1));
 
 
 	btCollisionShape* sphereShape = new btBoxShape(btVector3(0.3, 1.5, 0.3)); // replace btBoxShape with btSphereShape and the size parameter with 1

@@ -153,7 +153,7 @@ public:
 			float bias = max(0.02f * (1.0f - dot(normal, lightDirection)), 0.0005f);
 
 			// Smoothens out the shadows
-			int sampleRadius = 3; // increase the sample radius
+			int sampleRadius = 4; // increase the sample radius
 			vec2 pixelSize = 1.0 / textureSize(shadowMap, 0);
 
 			for (int y = -sampleRadius; y <= sampleRadius; y++)
