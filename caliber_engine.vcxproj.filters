@@ -167,6 +167,9 @@
     <ClInclude Include="src\CSV.h">
       <Filter>Header Files\src</Filter>
     </ClInclude>
+    <ClInclude Include="src\Presave.h">
+      <Filter>Header Files\src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="pop_cat.png">

@@ -16,6 +16,8 @@
 #include"src/Setup.h"
 #include"src/Save.h"
 #include <bullet/btBulletDynamicsCommon.h>
+#include "src/Presave.h"
+
 CSV vert;
 CSF frag;
 Console console;
@@ -40,21 +42,6 @@ bool run = false;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 std::array save = {1};
 //finished
-int vsync;
-bool renderShadows;
-int samples;
-int bloom;
-int highQualtiyShdows;
-int wireframe;
-int width = 1920;
-int height = 1080;
-float gamma;
-float exposure;
-float normalSpeed;
-float ctrlSpeed;
-bool enableskybox = true;
-float FogNear = 0.0f;
-float viewFarPlane;
 
 
 
@@ -135,6 +122,7 @@ void createStaticBox(btDynamicsWorld* dynamicsWorld, btVector3 position, btVecto
 }
 
 
+
 int main()
 {
 
@@ -142,43 +130,45 @@ int main()
 	//scene.TRY_OBJ_RECOVERING_TEST(objectAmt, sceneObjects);
 	//PlaySound(TEXT("balls.wav"), NULL, SND_ASYNC);
 
+	Presave<float> myData;
+
+	// Load the data from file
+	myData = Presave < float > ();
+	//myData.SafeOperation();
+
+	// Set the values
+	bool vsync = myData.data[0];
+	bool renderShadows = myData.data[1];
+	int samples = myData.data[2];
+	int bloom = myData.data[3];
+	bool wireframe = myData.data[4];
+	int width = myData.data[5];
+	int height = myData.data[6];
+	float gamma = myData.data[7];
+	float exposure = myData.data[8];
+	float normalSpeed = myData.data[9];
+	float ctrlSpeed = myData.data[10];
+	bool enableskybox = myData.data[11];
+	float FogNear = myData.data[12];
+	float viewFarPlane = myData.data[13];
+
 	
 
-	std::string line;
-	std::ifstream saveFile("projectname.caliber");
-	int i = 0;
-	while (!saveFile.eof())
-	{
-		std::getline(saveFile, line);
-		if (saveFile.good())
-		{
-			save[i] = std::stof(line);
-			i++;
-		}
-
-	}
-	samples = save[0];
-	vsync = save[1];
-	gamma = save[2];
-	exposure = save[3];
-	bloom = save[4];
-	renderShadows = save[5];
-
-	enableskybox = save[6];
-
-	wireframe = save[7];
-	ctrlSpeed = save[8];
-	normalSpeed = save[9];
-	FogNear = save[10];
-	viewFarPlane = save[11];
-
-
-	exposure = exposure / saveFloatCurve;
-	gamma = gamma / saveFloatCurve;
-	FogNear = FogNear / saveFloatCurve;
-
-	ctrlSpeed = ctrlSpeed / saveFloatCurve;
-	normalSpeed = normalSpeed / saveFloatCurve;
+	// Print the values to check that they were loaded correctly
+	std::cout << "vsync: " << vsync << std::endl;
+	std::cout << "renderShadows: " << renderShadows << std::endl;
+	std::cout << "samples: " << samples << std::endl;
+	std::cout << "bloom: " << bloom << std::endl;
+	std::cout << "wireframe: " << wireframe << std::endl;
+	std::cout << "width: " << width << std::endl;
+	std::cout << "height: " << height << std::endl;
+	std::cout << "gamma: " << gamma << std::endl;
+	std::cout << "exposure: " << exposure << std::endl;
+	std::cout << "normalSpeed: " << normalSpeed << std::endl;
+	std::cout << "ctrlSpeed: " << ctrlSpeed << std::endl;
+	std::cout << "enableskybox: " << enableskybox << std::endl;
+	std::cout << "FogNear: " << FogNear << std::endl;
+	std::cout << "viewFarPlane: " << viewFarPlane << std::endl;
 
 	
 	
@@ -542,24 +532,7 @@ int main()
 	style.WindowRounding = 0;
 	
 
-	bool v = true;
-	if (vsync == 1)
-	{
-		v = true;
-	}
-	else {
-		v = false;
-	}
-	
-	
-	bool wireBool = false;
-	if (wireframe == 0) {
-		wireBool = false;
-	}
-	else
-	{
-		wireBool = true;
-	}
+
 
 	
 
@@ -741,19 +714,11 @@ int main()
 		{
 			run = false;
 		}
-		if (wireBool == true && !run) {
+		if (wireframe == true && !run) {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			
 		}
-		
-		
-		if (v == true)
-		{
-			vsync = 1;
-		}
-		else {
-			vsync = 0;
-		}
+
 
 
 		if (vsync == 0)
@@ -1150,7 +1115,7 @@ int main()
 						style.Colors[ImGuiCol_Text] = windowWhite;
 
 						ImGui::DragInt("MSSA samples (Needs restart to change)", &samples, 0.03f, 1, 40);
-						ImGui::Checkbox("Enable vsync", &v);
+						ImGui::Checkbox("Enable vsync", &vsync);
 						ImGui::InputFloat("Gamma correction value", &gamma, 0.3f, 1, "%.3f", 0);
 
 						ImGui::InputFloat("Exposure value", &exposure, 0.3f, 1, "%.3f", 0);
@@ -1193,7 +1158,7 @@ int main()
 
 					if (ImGui::BeginTabItem("Debug"))
 					{
-						ImGui::Checkbox("Enable wireframe", &wireBool);
+						ImGui::Checkbox("Enable wireframe", &wireframe);
 						ImGui::EndTabItem();
 					}
 					ImGui::EndTabBar();
@@ -1248,27 +1213,11 @@ int main()
 	//while (glfwGetTime() < desiredTime) {
 
 	//}
-
+	myData.data = { float(vsync), float(renderShadows), float(samples), float(bloom), float(wireframe),
+					float(width), float(height), gamma, exposure, normalSpeed, ctrlSpeed, float(enableskybox),
+					FogNear, viewFarPlane };
 	
-	
-
-
-
-	if (v == true)
-	{
-		vsync = 1;
-	}
-	else {
-		vsync = 0;
-	}
-
-	if (wireBool == true)
-	{
-		wireframe = 1;
-	}
-	else {
-		wireframe = 0;
-	}
+	myData.saveData();
 	
 	
 	
@@ -1306,23 +1255,6 @@ int main()
 	glfwTerminate();
 
 	
-	
-	std::ofstream SaveFileWr("projectname.caliber");
-	
-
-	SaveFileWr << samples << "\n";
-	SaveFileWr << vsync << "\n";
-	SaveFileWr << gamma * saveFloatCurve << "\n";
-	SaveFileWr << exposure * saveFloatCurve << "\n";
-	SaveFileWr << bloom << "\n";
-	SaveFileWr << renderShadows << "\n";
-	
-	SaveFileWr << enableskybox << "\n";
-	SaveFileWr << wireframe << "\n";
-	SaveFileWr << ctrlSpeed * saveFloatCurve << "\n";
-	SaveFileWr << normalSpeed * saveFloatCurve << "\n";
-	SaveFileWr << FogNear * saveFloatCurve << "\n";
-	SaveFileWr << viewFarPlane << "\n";
 
 
 
