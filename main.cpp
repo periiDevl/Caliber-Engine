@@ -362,6 +362,9 @@ int main()
 	glGenFramebuffers(1, &FBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 
+
+
+
 	// Create Framebuffer Texture
 	unsigned int framebufferTexture;
 	glGenTextures(1, &framebufferTexture);
@@ -898,8 +901,12 @@ int main()
 		//{
 			//sceneObjects[i].Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 		//}
+
+
 		scene.TRY_DRAWING(sizeof(sceneObjects) / sizeof(sceneObjects[0]), sceneObjects, shaderProgram, camera, objectWorldMult);
 		GizmosBoundry.Draw(shaderProgram, camera, 1);
+
+
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glLineWidth(5.0f);
@@ -1053,7 +1060,7 @@ int main()
 		console.Draw();
 		if (run == false) {
 			
-			ImGui::Begin("Cockpit");
+			ImGui::Begin("Viewport");
 			{
 				
 				if (ImGui::Button("play"))
@@ -1066,11 +1073,22 @@ int main()
 						run = false;
 					}
 				}
-				ImGui::BeginChild("VieportRender");
-				ImVec2 wsize = ImGui::GetWindowSize();
+				ImGui::BeginTabBar("Viewport");
+				if (ImGui::BeginTabItem("Render")) {
+					ImGui::BeginChild("ViewportRender");
+					ImVec2 wsize = ImGui::GetWindowSize();
+					ImGui::Image((ImTextureID)postProcessingTexture, wsize, ImVec2(0, 1), ImVec2(1, 0));
+					ImGui::EndChild();
+					ImGui::EndTabItem();
+				}
 
-				ImGui::Image((ImTextureID)postProcessingTexture, wsize, ImVec2(0, 1), ImVec2(1, 0));
-				ImGui::EndChild();
+				if (ImGui::BeginTabItem("Shadow framebuffer")) {
+					ImGui::BeginChild("ViewportRender");
+					ImVec2 wsize = ImGui::GetWindowSize();
+					ImGui::Image((ImTextureID)shadowMap, wsize, ImVec2(0, 1), ImVec2(1, 0));
+					ImGui::EndChild();
+					ImGui::EndTabItem();
+				}
 			}
 			ImGui::End();
 			style.Colors[ImGuiCol_WindowBg] = ImVec4(0.6, 0.6, 0.6, 1);
