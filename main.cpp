@@ -147,28 +147,11 @@ int main()
 	float normalSpeed = myData.data[9];
 	float ctrlSpeed = myData.data[10];
 	bool enableskybox = myData.data[11];
-	float FogNear = myData.data[12];
+	float fogNear = myData.data[12];
 	float viewFarPlane = myData.data[13];
+	bool bakeShadows = myData.data[14];
 
-	
 
-	// Print the values to check that they were loaded correctly
-	std::cout << "vsync: " << vsync << std::endl;
-	std::cout << "renderShadows: " << renderShadows << std::endl;
-	std::cout << "samples: " << samples << std::endl;
-	std::cout << "bloom: " << bloom << std::endl;
-	std::cout << "wireframe: " << wireframe << std::endl;
-	std::cout << "width: " << width << std::endl;
-	std::cout << "height: " << height << std::endl;
-	std::cout << "gamma: " << gamma << std::endl;
-	std::cout << "exposure: " << exposure << std::endl;
-	std::cout << "normalSpeed: " << normalSpeed << std::endl;
-	std::cout << "ctrlSpeed: " << ctrlSpeed << std::endl;
-	std::cout << "enableskybox: " << enableskybox << std::endl;
-	std::cout << "FogNear: " << FogNear << std::endl;
-	std::cout << "viewFarPlane: " << viewFarPlane << std::endl;
-
-	
 	
 	// Initialize GLFW
 	setup.SETUP_GLFW();
@@ -254,7 +237,7 @@ int main()
 	shaderProgram.Activate();
 	glUniform4f(glGetUniformLocation(shaderProgram.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
-	glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), FogNear);
+	glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), fogNear);
 	glUniform1f(glGetUniformLocation(shaderProgram.ID, "far"), viewFarPlane);
 
 	glUniform1f(glGetUniformLocation(shaderProgram.ID, "worldRadius"), WorldRadius);
@@ -468,7 +451,7 @@ int main()
 	// Texture for Shadow Map FBO
 	
 
-	shadowMapWidth = 30000, shadowMapHeight = 30000;
+	shadowMapWidth = 10000, shadowMapHeight = 10000;
 
 	
 	
@@ -509,7 +492,6 @@ int main()
 	ImVec4 windowWhite = ImVec4(1, 1, 1, 1);
 
 	ImGuiStyle& style = ImGui::GetStyle();
-	style.WindowRounding = 0;
 	style.Colors[ImGuiCol_WindowBg] = backroundColor;
 	style.Colors[ImGuiCol_Border] = windowWhite;
 	style.Colors[ImGuiCol_CheckMark] = windowWhite;
@@ -527,7 +509,7 @@ int main()
 	style.Colors[ImGuiCol_TabActive] = wigitsInsideActive;
 	style.Colors[ImGuiCol_TabHovered] = wigitsInsideHover;
 	style.Colors[ImGuiCol_Tab] = wigitsInside;
-	style.WindowRounding = 0;
+	style.WindowRounding = 5;
 	
 
 
@@ -658,27 +640,26 @@ int main()
 	
 	PhysicsCube.phys.setOrigin(btVector3(0, 10, 0));
 	
+
 	
 	const float fixed_timestep = 1.0f / 60.0;
 	//camera.getInputAtRun = true;
 	// Main while loop
 	
+	bool bake = true;
 
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
-		glm::mat4 orthgonalProjection = glm::ortho(-WorldRadius, WorldRadius, -WorldRadius, WorldRadius, 0.1f, viewFarPlane);
-		//direc lights
-
-		glm::mat4 lightView = glm::lookAt(20.0f * lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		glm::mat4 lightProjection = orthgonalProjection * lightView;
-
-		//-------spot lights
-		//glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-		//glm::mat4 lightProjection = perspectiveProjection * lightView;
+		if (bakeShadows && bake)
+		{
+			renderShadows = true;
+			bake = false;
+		}
+		else if ((bakeShadows && !bake)) {
+			renderShadows = false;
+		}
 
 		sceneObjects[2].translation = glm::vec3(70);
-		shadowMapProgram.Activate();
-		glUniformMatrix4fv(glGetUniformLocation(shadowMapProgram.ID, "lightProjection"), 1, GL_FALSE, glm::value_ptr(lightProjection));
 		// Check if the user has entered a specific string
 		
 		if (strcmp(console.input_buf, "quit") == 0 && glfwGetKey(window, GLFW_KEY_ENTER))
@@ -706,7 +687,6 @@ int main()
 		//float randomFloat = static_cast<float>(rand()) / RAND_MAX;
 		//std::cout << randomFloat << std::endl;
 		// Update the flight controller with user input
-		flightController.update(0.1f, window);
 
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE))
 		{
@@ -828,30 +808,37 @@ int main()
 		
 		
 		
+		glm::mat4 orthgonalProjection = glm::ortho(-WorldRadius, WorldRadius, -WorldRadius, WorldRadius, 0.1f, viewFarPlane);
+		//direc lights
 
+		glm::mat4 lightView = glm::lookAt(20.0f * lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 lightProjection = orthgonalProjection * lightView;
 
 		
 		glEnable(GL_DEPTH_TEST);
 		
 		// Preparations for the Shadow Map
-		if (renderShadows == 1) {
+		if (renderShadows) {
+
+
+
+			shadowMapProgram.Activate();
+			glUniformMatrix4fv(glGetUniformLocation(shadowMapProgram.ID, "lightProjection"), 1, GL_FALSE, glm::value_ptr(lightProjection));
+
+			//-------spot lights
+			//glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+			//glm::mat4 lightProjection = perspectiveProjection * lightView;
+
 			glViewport(0, 0, shadowMapWidth, shadowMapHeight);
 			glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFBO);
-		}
-		glClear(GL_DEPTH_BUFFER_BIT);
-
-		// Draw scene for shadow map
 		
-		if (renderShadows == 1) {
+			glClear(GL_DEPTH_BUFFER_BIT);
+
+		
+		
 				
 			scene.TRY_DRAWING(sizeof(sceneObjects) / sizeof(sceneObjects[0]), sceneObjects, shadowMapProgram, camera, objectWorldMult);
 		}
-			
-		
-	
-		
-		
-
 
 		// Switch back to the default framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -876,14 +863,14 @@ int main()
 		
 		shaderProgram.Activate();
 		glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "lightProjection"), 1, GL_FALSE, glm::value_ptr(lightProjection));
+		if (renderShadows) {
+			// Bind the Shadow Map
+			glActiveTexture(GL_TEXTURE0 + 2);
 
-		// Bind the Shadow Map
-		glActiveTexture(GL_TEXTURE0 + 2);
+			glBindTexture(GL_TEXTURE_2D, shadowMap);
 
-		glBindTexture(GL_TEXTURE_2D, shadowMap);
-
-		glUniform1i(glGetUniformLocation(shaderProgram.ID, "shadowMap"), 2);
-		
+			glUniform1i(glGetUniformLocation(shaderProgram.ID, "shadowMap"), 2);
+		}
 		// Enable depth testing since it's disabled when the framebuffer rectangle
 		glEnable(GL_DEPTH_TEST);
 		
@@ -1059,14 +1046,8 @@ int main()
 		glActiveTexture(GL_TEXTURE1);
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		if (run) {
-			glBindTexture(GL_TEXTURE_2D, pingpongBuffer[!horizontal]);
-		}
-		else
-		{
+		glBindTexture(GL_TEXTURE_2D, pingpongBuffer[!horizontal]);
 
-			glBindTexture(GL_TEXTURE_2D, postProcessingTexture);
-		}
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		
 		console.Draw();
@@ -1121,10 +1102,17 @@ int main()
 						//gamma = realGamma;
 						glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
 
+						if (!bakeShadows) {
+							style.Colors[ImGuiCol_Text] = ImVec4(1, 0, 0, 1);
+							ImGui::Text("Changing shadows will only work after restart");
+							style.Colors[ImGuiCol_Text] = windowWhite;
+							ImGui::Checkbox("Enable shadows", &renderShadows);
+						}
+
 						style.Colors[ImGuiCol_Text] = ImVec4(1, 0, 0, 1);
-						ImGui::Text("Changing shadows will only work after restart");
+						ImGui::Text("Notice, this setting will not improve the quality of the shadows, it will only freeze the shadows framebuffer.");
 						style.Colors[ImGuiCol_Text] = windowWhite;
-						ImGui::Checkbox("Enable shadows", &renderShadows);
+						ImGui::Checkbox("Bake shadows", &bakeShadows);
 
 						
 						ImGui::InputInt("Bloom amount", &bloom, 1, 30);
@@ -1137,9 +1125,9 @@ int main()
 						if (ImGui::BeginTabBar("fog"))
 						{
 							ImGui::InputFloat("Far plane view distance", &viewFarPlane, 1, 30);
-							ImGui::InputFloat("Fog near value", &FogNear, 0.3f, 1, "%.3f", 0);
+							ImGui::InputFloat("Fog near value", &fogNear, 0.3f, 1, "%.3f", 0);
 							shaderProgram.Activate();
-							glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), FogNear);
+							glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), fogNear);
 							glUniform1f(glGetUniformLocation(shaderProgram.ID, "far"), viewFarPlane);
 
 						}
@@ -1181,20 +1169,6 @@ int main()
 
 
 
-		//sve.clearFile("Metric/world.metric");
-		remove("Metric/world.metric");
-		//sve.clearFile("Metric/orian.metric");
-		remove("Metric/orian.metric");
-		//sve.clearFile("Metric/scale.metric");
-		remove("Metric/scale.metric");
-		size_t numObjects = sizeof(sceneObjects) / sizeof(sceneObjects[0]);
-		for (size_t i = 0; i < numObjects; i++)
-		{
-
-			sve.saveVec3(sceneObjects[i].scale, "Metric/scale.metric");
-			sve.saveVec3(sceneObjects[i].translation, "Metric/world.metric");
-			sve.saveVec4(sceneObjects[i].rotation, "Metric/orian.metric");
-		}
 
 		
 		// Swap the back buffer with the front buffer
@@ -1206,14 +1180,26 @@ int main()
 		
 
 	}
-	// Wait for 10 seconds after the window is closed
-	//double desiredTime = glfwGetTime() + 1.0;  // Wait for 1 seconds
-	//while (glfwGetTime() < desiredTime) {
 
-	//}
+
+	//sve.clearFile("Metric/world.metric");
+	remove("Metric/world.metric");
+	//sve.clearFile("Metric/orian.metric");
+	remove("Metric/orian.metric");
+	//sve.clearFile("Metric/scale.metric");
+	remove("Metric/scale.metric");
+	size_t numObjects = sizeof(sceneObjects) / sizeof(sceneObjects[0]);
+	for (size_t i = 0; i < numObjects; i++)
+	{
+
+		sve.saveVec3(sceneObjects[i].scale, "Metric/scale.metric");
+		sve.saveVec3(sceneObjects[i].translation, "Metric/world.metric");
+		sve.saveVec4(sceneObjects[i].rotation, "Metric/orian.metric");
+	}
+
 	myData.data = { float(vsync), float(renderShadows), float(samples), float(bloom), float(wireframe),
 					float(width), float(height), gamma, exposure, normalSpeed, ctrlSpeed, float(enableskybox),
-					FogNear, viewFarPlane };
+					fogNear, viewFarPlane, float(bakeShadows)};
 	
 	myData.saveData();
 	
