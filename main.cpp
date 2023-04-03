@@ -451,7 +451,7 @@ int main()
 	// Texture for Shadow Map FBO
 	
 
-	shadowMapWidth = 10000, shadowMapHeight = 10000;
+	shadowMapWidth = 15000, shadowMapHeight = 15000;
 
 	
 	
