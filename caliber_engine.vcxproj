@@ -202,7 +202,6 @@
     <ClInclude Include="src\PhysicsManager.h" />
     <ClInclude Include="src\Presave.h" />
     <ClInclude Include="src\Save.h" />
-    <ClInclude Include="src\settings.h" />
     <ClInclude Include="src\Setup.h" />
     <ClInclude Include="src\shaderClass.h" />
     <ClInclude Include="src\Texture.h" />

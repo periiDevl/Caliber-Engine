@@ -10,17 +10,17 @@
 #include"src/FlightController.h"
 #include"src/Functions.h"
 #include"src/Component.h"
-#include"src/Console.h"
 #include"src/CSF.h"
 #include"src/CSV.h"
 #include"src/Setup.h"
 #include"src/Save.h"
 #include <bullet/btBulletDynamicsCommon.h>
 #include "src/Presave.h"
+#include"src/Console.h"
+Console console;
 
 CSV vert;
 CSF frag;
-Console console;
 Functions func;
 FlightController flightController;
 Setup setup;
@@ -129,14 +129,12 @@ int main()
 	
 	//scene.TRY_OBJ_RECOVERING_TEST(objectAmt, sceneObjects);
 	//PlaySound(TEXT("balls.wav"), NULL, SND_ASYNC);
-
+	
 	Presave<float> myData;
 
-	// Load the data from file
 	myData = Presave < float > ();
-	//myData.SafeOperation();
+	myData.SafeOperation();
 
-	// Set the values
 	bool vsync = myData.data[0];
 	bool renderShadows = myData.data[1];
 	int samples = myData.data[2];
@@ -664,7 +662,7 @@ int main()
 	const float fixed_timestep = 1.0f / 60.0;
 	//camera.getInputAtRun = true;
 	// Main while loop
-	console.AddLog("Hello World!");
+	
 
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
@@ -959,7 +957,7 @@ int main()
 			// We make the mat4 into a mat3 and then a mat4 again in order to get rid of the last row and columns
 			// The last row and column affect the translation of the skybox (which we don't want to affect)
 			view = glm::mat4(glm::mat3(glm::lookAt(camera.Position, camera.Position + camera.Orientation, camera.Up)));
-			projection = glm::perspective(glm::radians(60.0f), (float)width / height, 0.1f, 500.0f);
+			projection = glm::perspective(glm::radians(60.0f), (float)width / height, 0.1f, viewFarPlane);
 			glUniformMatrix4fv(glGetUniformLocation(skyboxShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
 			glUniformMatrix4fv(glGetUniformLocation(skyboxShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 

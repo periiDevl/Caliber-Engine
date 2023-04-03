@@ -125,9 +125,6 @@
     <ClInclude Include="src\Model.h">
       <Filter>Header Files\src</Filter>
     </ClInclude>
-    <ClInclude Include="src\settings.h">
-      <Filter>Header Files\src</Filter>
-    </ClInclude>
     <ClInclude Include="src\shaderClass.h">
       <Filter>Header Files\src</Filter>
     </ClInclude>
