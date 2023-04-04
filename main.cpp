@@ -215,7 +215,8 @@ int main()
 	Shader shaderProgram(vert.Default, frag.Default);
 	Shader unlitProgram(vert.Default, frag.Unlit);
 	Shader framebufferProgram(vert.Frame, frag.Frame);
-	Shader shadowMapProgram(vert.ShadowMap, frag.ShadowMap);
+	Shader shadowMapProgram(vert.ShadowMap, frag.NONE);
+	Shader UniversalDepthProgram(vert.Default, frag.NONE);
 	Shader blurProgram(vert.Frame, frag.Blur);
 	Shader skyboxShader(vert.Skybox, frag.Skybox);
 
@@ -542,12 +543,12 @@ int main()
 	// All the faces of the cubemap (make sure they are in this exact order)
 	std::string facesCubemap[6] =
 	{
-		"skybox/sky/right.jpg",
-		"skybox/sky/left.jpg",
-		"skybox/sky/top.jpg",
-		"skybox/sky/bottom.jpg",
-		"skybox/sky/front.jpg",
-		"skybox/sky/back.jpg"
+		"skybox/deafult/right.jpg",
+		"skybox/deafult/left.jpg",
+		"skybox/deafult/top.jpg",
+		"skybox/deafult/bottom.jpg",
+		"skybox/deafult/front.jpg",
+		"skybox/deafult/back.jpg"
 	};
 
 	// Creates the cubemap texture object
@@ -650,6 +651,30 @@ int main()
 	// Main while loop
 	
 	bool bake = true;
+
+
+	GLuint UniversalDepthframebuffer;
+	glGenFramebuffers(1, &UniversalDepthframebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, UniversalDepthframebuffer);
+
+	// Create a depth texture
+	GLuint depthTexture;
+	glGenTextures(1, &depthTexture);
+	glBindTexture(GL_TEXTURE_2D, depthTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	// Attach the depth texture to the framebuffer
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
+
+	// Check if the framebuffer is complete
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
+		// handle error
+	}
 
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
@@ -837,7 +862,7 @@ int main()
 		
 			glClear(GL_DEPTH_BUFFER_BIT);
 
-		
+			
 		
 				
 			scene.TRY_DRAWING(sizeof(sceneObjects) / sizeof(sceneObjects[0]), sceneObjects, shadowMapProgram, camera, objectWorldMult);
@@ -886,7 +911,6 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		
-
 		// Updates and exports the camera matrix to the Vertex Shader
 		camera.updateMatrix3D(60.0f, 0.1f, viewFarPlane);
 		
@@ -902,7 +926,19 @@ int main()
 			//sceneObjects[i].Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
 		//}
 
+		//glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+		glBindFramebuffer(GL_FRAMEBUFFER, UniversalDepthframebuffer);
+		glViewport(0, 0, width, height);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		//Drawing depth
+		scene.TRY_DRAWING(sizeof(sceneObjects) / sizeof(sceneObjects[0]), sceneObjects, UniversalDepthProgram, camera, objectWorldMult);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, width, height);
+		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+
+		//Normal scene drawing
 		scene.TRY_DRAWING(sizeof(sceneObjects) / sizeof(sceneObjects[0]), sceneObjects, shaderProgram, camera, objectWorldMult);
 		GizmosBoundry.Draw(shaderProgram, camera, 1);
 
@@ -1084,6 +1120,13 @@ int main()
 				if (ImGui::BeginTabItem("Shadow framebuffer")) {
 					ImGui::BeginChild("ViewportRender");
 					ImGui::Image((ImTextureID)shadowMap, ImGui::GetWindowSize(), ImVec2(0, 1), ImVec2(1, 0));
+					ImGui::EndChild();
+					ImGui::EndTabItem();
+				}
+
+				if (ImGui::BeginTabItem("Depth framebuffer")) {
+					ImGui::BeginChild("ViewportRender");
+					ImGui::Image((ImTextureID)depthTexture, ImGui::GetWindowSize(), ImVec2(0, 1), ImVec2(1, 0));
 					ImGui::EndChild();
 					ImGui::EndTabItem();
 				}
