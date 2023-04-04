@@ -1076,19 +1076,18 @@ int main()
 				ImGui::BeginTabBar("Viewport");
 				if (ImGui::BeginTabItem("Render")) {
 					ImGui::BeginChild("ViewportRender");
-					ImVec2 wsize = ImGui::GetWindowSize();
-					ImGui::Image((ImTextureID)postProcessingTexture, wsize, ImVec2(0, 1), ImVec2(1, 0));
+					ImGui::Image((ImTextureID)postProcessingTexture, ImGui::GetWindowSize(), ImVec2(0, 1), ImVec2(1, 0));
 					ImGui::EndChild();
 					ImGui::EndTabItem();
 				}
 
 				if (ImGui::BeginTabItem("Shadow framebuffer")) {
 					ImGui::BeginChild("ViewportRender");
-					ImVec2 wsize = ImGui::GetWindowSize();
-					ImGui::Image((ImTextureID)shadowMap, wsize, ImVec2(0, 1), ImVec2(1, 0));
+					ImGui::Image((ImTextureID)shadowMap, ImGui::GetWindowSize(), ImVec2(0, 1), ImVec2(1, 0));
 					ImGui::EndChild();
 					ImGui::EndTabItem();
 				}
+
 			}
 			ImGui::End();
 			style.Colors[ImGuiCol_WindowBg] = ImVec4(0.6, 0.6, 0.6, 1);
