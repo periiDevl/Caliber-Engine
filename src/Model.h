@@ -54,15 +54,13 @@ public:
 
 
 
-	void BindPhysics(btDynamicsWorld* dynaWorld, float objectWorldMult, bool Static)
+	void BindPhysics(btDynamicsWorld* dynaWorld, float objectWorldMult, bool staticBody)
 	{
 		btCollisionShape* boxShape = new btBoxShape(btVector3(scale.x / objectWorldMult, scale.y / objectWorldMult, scale.z / objectWorldMult));
-		btScalar mass = 0;
+		btScalar mass = 1;
 
-		if (Static) {
-			btTriangleMesh* triangleMesh = getVerticesFromFile(changeFileExtension(file), objectWorldMult);
-			btCollisionShape* boxShape = new btConvexTriangleMeshShape(triangleMesh, true);
-			btScalar mass = 0;
+		if (staticBody) {
+			mass = 0;
 		}
 		
 
@@ -70,20 +68,17 @@ public:
 		btVector3 boxInertia(0, 0, 0);
 		boxShape->calculateLocalInertia(mass, boxInertia);
 		boxRigidBody = new btRigidBody(mass, boxMotionState, boxShape, boxInertia);
-		if (Static) {
-			boxRigidBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
-		}
 		dynaWorld->addRigidBody(boxRigidBody);
+		boxRigidBody->setWorldTransform(phys);
 	}
 
 	btTransform phys;
 	void PHYSICS_SETUP()
 	{
-		boxRigidBody->setGravity(btVector3(0, 0, 0));
+		boxRigidBody->setGravity(btVector3(0, -9.81, 0));
 		boxRigidBody->getMotionState()->getWorldTransform(phys);
 		translation = glm::vec3(phys.getOrigin().getX(), phys.getOrigin().getY(), phys.getOrigin().getZ());
 		rotation = glm::quat(phys.getRotation().getX(), phys.getRotation().getY(), phys.getRotation().getZ(), phys.getRotation().getW());
-		boxRigidBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
 
 		
 		
@@ -91,9 +86,13 @@ public:
 
 	}
 
-	void PhysicsUpdate()
+	void PhysicsUpdate(bool staticBody)
 	{
-		boxRigidBody->setWorldTransform(phys);
+		if (staticBody)
+		{
+			boxRigidBody->setWorldTransform(phys);
+			boxRigidBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
+		}
 		translation = glm::vec3(phys.getOrigin().getX(), phys.getOrigin().getY() - 1, phys.getOrigin().getZ());
 	}
 

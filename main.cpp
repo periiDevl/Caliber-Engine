@@ -607,19 +607,6 @@ int main()
 	btDiscreteDynamicsWorld* dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
 	dynamicsWorld->setGravity(btVector3(0, -9.81, 0));  // Apply gravity
 
-
-
-
-	
-	btCollisionShape* boxShape = new btBoxShape(btVector3(1,1,1) / objectWorldMult);
-	btDefaultMotionState* boxMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 10, 0)));
-	btScalar mass = 1;
-	btVector3 boxInertia(0, 0, 0);
-	boxShape->calculateLocalInertia(mass, boxInertia);
-	btRigidBody::btRigidBodyConstructionInfo boxRigidBodyCI(mass, boxMotionState, boxShape, boxInertia);
-	btRigidBody* boxRigidBody = new btRigidBody(boxRigidBodyCI);
-	dynamicsWorld->addRigidBody(boxRigidBody);
-
 	
 
 
@@ -638,12 +625,13 @@ int main()
 	// Perform simulation
 	const int substep = 10;
 	Model PhysicsCube("models/cube/scene.gltf");
-	PhysicsCube.scale = glm::vec3(0.76, 3, 0.76);
-	PhysicsCube.BindPhysics(dynamicsWorld, objectWorldMult, false);
+
+	PhysicsCube.phys.setOrigin(btVector3(0, 20, 0));
+	PhysicsCube.scale = glm::vec3(4, 4, 4);
+	PhysicsCube.BindPhysics(dynamicsWorld, objectWorldMult, true);
 	PhysicsCube.PHYSICS_SETUP();
 	
-	PhysicsCube.phys.setOrigin(btVector3(0, 10, 0));
-	
+
 
 	
 	const float fixed_timestep = 1.0f / 60.0;
@@ -676,6 +664,7 @@ int main()
 		// handle error
 	}
 
+	
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
 		if (bakeShadows && bake)
@@ -708,10 +697,6 @@ int main()
 		//sceneObjects[1].UpdatePhysics();
 		
 		
-		btTransform trans;
-		boxRigidBody->getMotionState()->getWorldTransform(trans);
-		//printf("Box position: %f, %f, %f\n", trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ());
-		btQuaternion rotation = trans.getRotation();
 		//float randomFloat = static_cast<float>(rand()) / RAND_MAX;
 		//std::cout << randomFloat << std::endl;
 		// Update the flight controller with user input
@@ -825,9 +810,6 @@ int main()
 			}
 
 
-			btVector3 origin = trans.getOrigin();
-			sceneObjects[0].translation = glm::vec3(origin.getX(), origin.getY(), origin.getZ());
-			sceneObjects[0].rotation = glm::quat(rotation.getW(), rotation.getX(), rotation.getY(), rotation.getZ());
 
 			GizmosBoundry.scale = glm::vec3(WorldRadius);
 		}
@@ -949,21 +931,14 @@ int main()
 		if (timeDiff >= fixed_timestep) {
 
 
-			PhysicsCube.BindPhysics(dynamicsWorld, objectWorldMult, false);
-			PhysicsCube.PHYSICS_SETUP();
-			PhysicsCube.phys.setOrigin(btVector3(0, 2, 0));
+			
+
 			PhysicsCube.Draw(unlitProgram, camera, objectWorldMult);
-			PhysicsCube.PhysicsUpdate();
+			PhysicsCube.PhysicsUpdate(true);
+			PhysicsCube.PHYSICS_SETUP();
 			PhysicsCube.scale = glm::vec3(4, 4, 4);
 
 
-
-			//PhysicsCube.BindPhysics(dynamicsWorld, objectWorldMult, false);
-			//PhysicsCube.PHYSICS_SETUP();
-			//PhysicsCube.phys.setOrigin(btVector3(0, 20, 0));
-			//PhysicsCube.Draw(unlitProgram, camera, objectWorldMult);
-			//PhysicsCube.PhysicsUpdate();
-			//PhysicsCube.scale = glm::vec3(10.76, 3, 10.7);
 		}
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glLineWidth(1.0f);
@@ -1266,10 +1241,6 @@ int main()
 	
 	
 	// Clean up
-	dynamicsWorld->removeRigidBody(boxRigidBody);
-	delete boxRigidBody->getMotionState();
-	delete boxRigidBody;
-	delete boxShape;
 	delete dynamicsWorld;
 	delete solver;
 	delete dispatcher;
