@@ -44,6 +44,11 @@ public:
 
 	uniform float worldRadius;
 
+	uniform float bias1;
+	uniform float bias2;
+
+	uniform int sampleRadius; // increase the sample radius
+
 	const float levelShade = 300000000000000000000.0;
 
 	vec4 pointLight()
@@ -118,10 +123,11 @@ public:
 			float currentDepth = lightCoords.z;
 
 			// Prevents shadow acne
-			float bias = max(0.02f * (1.0f - dot(normal, lightDirection)), 0.0005f);
+			//float bias = max(0.005f * (1.0f - dot(normal, lightDirection)), 0.000001f);
+			float bias = max((bias1 / 1000) * (1.0f - dot(normal, lightDirection)), (bias2 / 1000000));
 
-			// Smoothens out the shadows
-			int sampleRadius = 4; // increase the sample radius
+
+			
 			vec2 pixelSize = 1.0 / textureSize(shadowMap, 0);
 
 			for (int y = -sampleRadius; y <= sampleRadius; y++)
@@ -165,7 +171,7 @@ public:
 		if (distance > worldRadius) {
 			discard;
 		}
-		FragColor = direcLight() + vec4(linearizeDepth(gl_FragCoord.z, near, far) * vec3(1.0f, 1.0f, 1.0f), 1.0f);
+		FragColor = direcLight() + vec4(linearizeDepth(gl_FragCoord.z, near / 100, far) * vec3(1.0f, 1.0f, 1.0f), 1.0f);
 	
 
 		//FragColor = direcLight();
@@ -250,9 +256,13 @@ uniform sampler2D bloomTexture;
 uniform float gamma;
 uniform float exposure;
 
-float FXAA_SPAN_MAX = 8.0;
-float FXAA_REDUCE_MIN = 1.0/128.0;
-float FXAA_REDUCE_MUL = 1.0/8.0;
+uniform float minEdgeContrast;
+uniform float subPixelAliasing;
+uniform float maximumEdgeDetection;
+
+float FXAA_SPAN_MAX = maximumEdgeDetection;
+float FXAA_REDUCE_MIN = 1.0/ minEdgeContrast;
+float FXAA_REDUCE_MUL = 1.0/subPixelAliasing;
 uniform vec2 resolution;
 vec3 ApplyFXAA() {
     vec2 inverse_resolution = vec2(1.0 / resolution.x, 1.0 / resolution.y);
@@ -335,7 +345,8 @@ uniform bool horizontal;
 // How far from the center to take samples from the fragment you are currently on
 const int radius = 5;
 // Keep it between 1.0f and 2.0f (the higher this is the further the blur reaches)
-float spreadBlur = 1.7f;
+uniform float spreadBlur = 1.7f;
+
 float weights[radius];
 void main()
 {             

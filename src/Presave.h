@@ -19,7 +19,7 @@ public:
 
     Presave()
     {
-        std::ifstream input("data.txt");
+        std::ifstream input("project.caliber");
         if (input) {
             T value;
             while (input >> value) {
@@ -34,7 +34,7 @@ public:
 
     void saveData()
     {
-        std::ofstream output("data.txt");
+        std::ofstream output("project.caliber");
         printf("save info");
         if (output) {
             // Clear the file first

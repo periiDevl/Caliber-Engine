@@ -138,7 +138,7 @@ int main()
 
 	bool vsync = myData.data[0];
 	bool renderShadows = myData.data[1];
-	int samples = myData.data[2];
+	int msaaSamples = myData.data[2];
 	int bloom = myData.data[3];
 	bool wireframe = myData.data[4];
 	int width = myData.data[5];
@@ -153,6 +153,17 @@ int main()
 	bool bakeShadows = myData.data[14];
 	static int colorChoice = myData.data[15];
 
+	float FXAA_SPAN_MAX = myData.data[16];
+	float FXAA_REDUCE_MIN = myData.data[17];
+	float FXAA_REDUCE_MUL = myData.data[18];
+
+	float BloomSpreadBlur = myData.data[19];
+
+	int shadowMapWidth = myData.data[20];
+	int	shadowMapHeight = myData.data[21];
+	int	shadowSampleRadius = myData.data[22];
+	float DepthBias1 = myData.data[23];
+	float DepthBias2 = myData.data[24];
 	
 	// Initialize GLFW
 	setup.SETUP_GLFW();
@@ -160,12 +171,12 @@ int main()
 
 	
 	
-	
 	//GLFWwindow* window = glfwCreateWindow(width, height, "Caliber window", glfwGetPrimaryMonitor(), NULL);
 	
 	
 	
 	GLFWwindow* window = glfwCreateWindow(width, height, "Loading Caliber Engine...", NULL, NULL);
+
 	
 	// Error check if the window fails to create
 	if (window == NULL)
@@ -189,12 +200,13 @@ int main()
 		return -1;
 	}
 
-	/*
+
+	
 	//load Icon
 	int wid, hei;
 	int channels;
 	//!rememer! make sure to install the icon
-	unsigned char* pixels = stbi_load("C:/Users/�����/source/repos/caliber_engine/engine_assets/caliberLogo.jpeg", &wid, &hei, &channels, 4);
+	unsigned char* pixels = stbi_load("Icon.png", &wid, &hei, &channels, 4);
 
 	//change icon
 	GLFWimage images[1];
@@ -202,7 +214,7 @@ int main()
 	images[0].height = hei;
 	images[0].pixels = pixels;
 	glfwSetWindowIcon(window, 1, images);
-	*/
+	
 
 	//Load GLAD so it configures OpenGL
 	gladLoadGL();
@@ -229,8 +241,8 @@ int main()
 	// Take care of all the light related things
 	glm::vec4 lightColor = glm::vec4(1.0f, 0.8f, 0.6f, 1.0f) * 3.0f;
 
-
-
+	blurProgram.Activate();
+	glUniform1f(glGetUniformLocation(blurProgram.ID, "spreadBlur"), BloomSpreadBlur);
 
 	glm::vec3 lightPos = glm::vec3(0.5f, 1, 0.5f);
 	unlitProgram.Activate();
@@ -242,7 +254,13 @@ int main()
 	glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), fogNear);
 	glUniform1f(glGetUniformLocation(shaderProgram.ID, "far"), viewFarPlane);
 
+
 	glUniform1f(glGetUniformLocation(shaderProgram.ID, "worldRadius"), WorldRadius);
+
+	glUniform1f(glGetUniformLocation(shaderProgram.ID, "bias1"), DepthBias1);
+	glUniform1f(glGetUniformLocation(shaderProgram.ID, "bias2"), DepthBias2);
+
+	glUniform1i(glGetUniformLocation(shaderProgram.ID, "sampleRadius"), shadowSampleRadius);
 	skyboxShader.Activate();
 	glUniform1i(glGetUniformLocation(skyboxShader.ID, "skybox"), 0);
 	/*
@@ -254,11 +272,18 @@ int main()
 	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lPos"), lPos.x, lPos.y, lPos.z);
 	*/
 
+	
+
 	framebufferProgram.Activate();
 	glUniform1i(glGetUniformLocation(framebufferProgram.ID, "screenTexture"), 0);
 	glUniform1i(glGetUniformLocation(framebufferProgram.ID, "bloomTexture"), 1);
 	glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);
 	glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
+	//AA
+	glUniform1f(glGetUniformLocation(framebufferProgram.ID, "minEdgeContrast"), FXAA_REDUCE_MIN);
+	glUniform1f(glGetUniformLocation(framebufferProgram.ID, "subPixelAliasing"), FXAA_REDUCE_MUL);
+	glUniform1f(glGetUniformLocation(framebufferProgram.ID, "maximumEdgeDetection"), FXAA_SPAN_MAX);
+
 	glUniform2f(glGetUniformLocation(framebufferProgram.ID, "resolution"), width, height);
 
 	blurProgram.Activate();
@@ -371,7 +396,7 @@ int main()
 	unsigned int framebufferTexture;
 	glGenTextures(1, &framebufferTexture);
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, framebufferTexture);
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGB16F, width, height, GL_TRUE);
+	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, msaaSamples, GL_RGB16F, width, height, GL_TRUE);
 	glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // Prevents edge bleeding
@@ -382,7 +407,7 @@ int main()
 	unsigned int RBO;
 	glGenRenderbuffers(1, &RBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-	glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH24_STENCIL8, width, height);
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, msaaSamples, GL_DEPTH24_STENCIL8, width, height);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
 
 
@@ -452,11 +477,10 @@ int main()
 	// Framebuffer for Shadow Map
 	unsigned int shadowMapFBO;
 	glGenFramebuffers(1, &shadowMapFBO);
-	unsigned int shadowMapWidth, shadowMapHeight;
 	// Texture for Shadow Map FBO
 	
 
-	shadowMapWidth = 15000, shadowMapHeight = 15000;
+	//shadowMapWidth = 15000, shadowMapHeight = 15000;
 
 	
 	
@@ -1124,58 +1148,106 @@ int main()
 				if (ImGui::BeginTabBar("project tabs"))
 				{
 
-					
 					if (ImGui::BeginTabItem("Graphics"))
 					{
 						ImGui::Text("This will change how your game looks, make sure you have the proper graphics card.");
+						//if (ImGui::CollapsingHeader("My Header", ImGuiTreeNodeFlags_DefaultOpen)) {
+						if (ImGui::CollapsingHeader("Anti-Aliasing")) {
+							ImGui::Columns(2, nullptr, true);
 
-						ImGui::DragInt("MSSA samples (Needs restart to change)", &samples, 0.03f, 1, 40);
-						ImGui::Checkbox("Enable vsync", &vsync);
-						ImGui::InputFloat("Gamma correction value", &gamma, 0.3f, 1, "%.3f", 0);
+							ImGui::Text("Multisample Anti-Aliasing (Needs restart to change)");
+							ImGui::InputInt("MSSA Samples", &msaaSamples);
 
-						ImGui::InputFloat("Exposure value", &exposure, 0.3f, 1, "%.3f", 0);
-						glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);
-						//gamma = realGamma;
-						glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
-
-						if (!bakeShadows) {
-							ImGui::Checkbox("Enable shadows", &renderShadows);
+							ImGui::NextColumn();
+							ImGui::Text("Fast Approximate Anti-Aliasing");
+							ImGui::InputFloat("FXAA_SPAN_MAX", &FXAA_SPAN_MAX);
+							ImGui::InputFloat("FXAA_REDUCE_MIN", &FXAA_REDUCE_MIN);
+							ImGui::InputFloat("FXAA_REDUCE_MUL", &FXAA_REDUCE_MUL);
+							glUniform1f(glGetUniformLocation(framebufferProgram.ID, "minEdgeContrast"), FXAA_REDUCE_MIN);
+							glUniform1f(glGetUniformLocation(framebufferProgram.ID, "subPixelAliasing"), FXAA_REDUCE_MUL);
+							glUniform1f(glGetUniformLocation(framebufferProgram.ID, "maximumEdgeDetection"), FXAA_SPAN_MAX);
+							ImGui::Columns(1, nullptr, false);
 						}
-
-						ImGui::Text("Notice, this setting will not improve the quality of the shadows, it will only freeze the shadows framebuffer.");
-						ImGui::Checkbox("Bake shadows", &bakeShadows);
-
 						
-						ImGui::InputInt("Bloom amount", &bloom, 1, 30);
-						
-						ImGui::Checkbox("Enable skybox", &enableskybox);
+						ImGui::Separator();
+
+						if (ImGui::CollapsingHeader("Post-Processing")) {
+							ImGui::InputFloat("Gamma correction value", &gamma, 0.3f, 1, "%.3f", 0);
+							ImGui::InputFloat("Exposure value", &exposure, 0.3f, 1, "%.3f", 0);
+							glUniform1f(glGetUniformLocation(framebufferProgram.ID, "Gamma"), gamma);
+							glUniform1f(glGetUniformLocation(framebufferProgram.ID, "Exposure"), exposure);
+							if (ImGui::CollapsingHeader("Bloom settings")) {
+								ImGui::InputInt("Bloom Amount", &bloom, 1, 100);
+								ImGui::InputFloat("Bloom Spread", &BloomSpreadBlur);
+								glUniform1f(glGetUniformLocation(blurProgram.ID, "spreadBlur"), BloomSpreadBlur);
+							}
 
 
-						ImGui::EndTabItem();
+						}
+						ImGui::Separator();
 
-						if (ImGui::BeginTabBar("fog"))
-						{
-							ImGui::InputFloat("Far plane view distance", &viewFarPlane, 1, 30);
-							ImGui::InputFloat("Fog near value", &fogNear, 0.3f, 1, "%.3f", 0);
+
+						if (ImGui::CollapsingHeader("Shadow's")) {
+
+							ImGui::InputInt("Shadow Map Width", &shadowMapWidth, 1, 100);
+							ImGui::InputInt("Shadow Map Height", &shadowMapHeight, 1, 100);
+							ImGui::Checkbox("Bake/Static Shadows", &bakeShadows);
+							if (!bakeShadows) {
+								ImGui::Checkbox("Enable shadows", &renderShadows);
+							}
+							ImGui::InputInt("Sample Radius", &shadowSampleRadius, 0, 100);
+
+							ImGui::InputFloat("Depth Bias 1", &DepthBias1);
+							ImGui::InputFloat("Depth Bias 2", &DepthBias2);
+
+							
+						}
+						ImGui::Separator();
+
+						if (ImGui::CollapsingHeader("Atmospheric")) {
+
+
+
+				
+							ImGui::SliderFloat("Fog Near Value", &fogNear, 0, 3, "%.3f", 0);
+							ImGui::InputFloat("Far Plane View distance", &viewFarPlane, 1, 30);
 							shaderProgram.Activate();
 							glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), fogNear);
 							glUniform1f(glGetUniformLocation(shaderProgram.ID, "far"), viewFarPlane);
 
+
+							ImGui::Checkbox("Enable Skybox", &enableskybox);
 						}
-						ImGui::EndTabBar();
+						ImGui::Separator();
+
+						if (ImGui::CollapsingHeader("Screen")) {
+							ImGui::Checkbox("Enable Vsync", &vsync);
+						}
+
+						
+
+						
+
+						
+
+						
+
+
+						ImGui::EndTabItem();
+
 					}
 
 					if (ImGui::BeginTabItem("Viewport settings"))
 					{
-						ImGui::InputFloat("Shift speed speed", &normalSpeed, 0.3f, 1, "%.3f", 0);
-						ImGui::InputFloat("Normal speed", &ctrlSpeed, 0.3f, 1, "%.3f", 0);
+						ImGui::InputFloat("Shift Speed", &normalSpeed, 0.3f, 1, "%.3f", 0);
+						ImGui::InputFloat("Normal Speed", &ctrlSpeed, 0.3f, 1, "%.3f", 0);
 
 						ImGui::EndTabItem();
 					}
 
 					if (ImGui::BeginTabItem("Debug"))
 					{
-						ImGui::Checkbox("Enable wireframe", &wireframe);
+						ImGui::Checkbox("Enable Wireframe", &wireframe);
 						ImGui::EndTabItem();
 					}
 					ImGui::EndTabBar();
@@ -1228,10 +1300,10 @@ int main()
 		sve.saveVec3(sceneObjects[i].translation, "Metric/world.metric");
 		sve.saveVec4(sceneObjects[i].rotation, "Metric/orian.metric");
 	}
-
-	myData.data = { float(vsync), float(renderShadows), float(samples), float(bloom), float(wireframe),
+	myData.data = { float(vsync), float(renderShadows), float(msaaSamples), float(bloom), float(wireframe),
 					float(width), float(height), gamma, exposure, normalSpeed, ctrlSpeed, float(enableskybox),
-					fogNear, viewFarPlane, float(bakeShadows), float(colorChoice)};
+					fogNear, viewFarPlane, float(bakeShadows), float(colorChoice), FXAA_SPAN_MAX, FXAA_REDUCE_MIN, FXAA_REDUCE_MUL, BloomSpreadBlur, 
+	float(shadowMapWidth), float(shadowMapHeight), float(shadowSampleRadius), DepthBias1, DepthBias2};
 	
 	myData.saveData();
 	
