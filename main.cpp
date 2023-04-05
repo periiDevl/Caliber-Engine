@@ -691,18 +691,18 @@ int main()
 		{
 			glfwSwapInterval(1);
 		}
-		if (run) {
-			camera.Inputs(window, (ctrlSpeed)*fixed_timestep, (normalSpeed)*fixed_timestep);
-
-		}
-		else {
-			camera.Trackaballmovement(window, (ctrlSpeed)*fixed_timestep, (normalSpeed)*fixed_timestep);
-		}
+		
 		// Updates counter and times
 		crntTime = glfwGetTime();
 		timeDiff = crntTime - prevTime;
 		counter++;
-		
+		if (!run) {
+			camera.TrackBallMouse(window);
+		}
+		else {
+
+			camera.Mouse(window);
+		}
 
 		if (timeDiff >= fixed_timestep) {
 			// Creates new title
@@ -715,15 +715,15 @@ int main()
 			prevTime = crntTime;
 			counter = 0;
 			
+			if (run) {
+				camera.Inputs(window, (ctrlSpeed)*fixed_timestep, (normalSpeed)*fixed_timestep);
 
-			
-			if (!run) {
-				camera.TrackBallMouse(window);
 			}
 			else {
-
-				camera.Mouse(window);
+				camera.Trackaballmovement(window, (ctrlSpeed)*fixed_timestep, (normalSpeed)*fixed_timestep);
 			}
+			
+			
 
 			if (run) {
 
