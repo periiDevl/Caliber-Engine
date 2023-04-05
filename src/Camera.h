@@ -23,8 +23,6 @@ public:
 	// Prevents the camera from jumping around when first clicking left click
 	bool firstClick = true;
 
-	//lock clicking
-	bool cinamaticview = false;
 
 	glm::vec3 getDirection(glm::vec3 direction, bool vertical)
 	{
@@ -49,14 +47,14 @@ public:
 	
 	// Camera constructor to set up initial values
 	Camera(int width, int height, glm::vec3 position);
-
+	// Define a scroll wheel callback function that updates the camera position
 	// Updates the camera matrix to the Vertex Shader
 	void updateMatrix3D(float FOVdeg, float nearPlane, float frPlane);
 	void updateMatrix2D(float scale, float nearPlane, float farPlane);
 	// Exports the camera matrix to a shader
 	void Matrix(Shader& shader, const char* uniform);
 	// Handles camera inputs
-
+	void Trackaballmovement(GLFWwindow* window, float ctrlSpeed, float norSpeed);
 	void Inputs(GLFWwindow* window, float ctrlSpeed, float norSpeed);
 	void Mouse(GLFWwindow* window);
 	void TrackBallMouse(GLFWwindow* window);

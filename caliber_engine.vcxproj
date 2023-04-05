@@ -197,6 +197,7 @@
     <ClInclude Include="src\EBO.h" />
     <ClInclude Include="src\FlightController.h" />
     <ClInclude Include="src\Functions.h" />
+    <ClInclude Include="src\IMGUI_Themes.h" />
     <ClInclude Include="src\Mesh.h" />
     <ClInclude Include="src\Model.h" />
     <ClInclude Include="src\PhysicsManager.h" />

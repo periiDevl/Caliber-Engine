@@ -17,6 +17,7 @@
 #include <bullet/btBulletDynamicsCommon.h>
 #include "src/Presave.h"
 #include"src/Console.h"
+#include"src/IMGUI_Themes.h"
 Console console;
 
 CSV vert;
@@ -125,7 +126,7 @@ void createStaticBox(btDynamicsWorld* dynamicsWorld, btVector3 position, btVecto
 
 int main()
 {
-
+	
 	
 	//scene.TRY_OBJ_RECOVERING_TEST(objectAmt, sceneObjects);
 	//PlaySound(TEXT("balls.wav"), NULL, SND_ASYNC);
@@ -150,7 +151,7 @@ int main()
 	float fogNear = myData.data[12];
 	float viewFarPlane = myData.data[13];
 	bool bakeShadows = myData.data[14];
-
+	static int colorChoice = myData.data[15];
 
 	
 	// Initialize GLFW
@@ -164,7 +165,7 @@ int main()
 	
 	
 	
-	GLFWwindow* window = glfwCreateWindow(width, height, "Caliber window", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(width, height, "Loading Caliber Engine...", NULL, NULL);
 	
 	// Error check if the window fails to create
 	if (window == NULL)
@@ -300,7 +301,7 @@ int main()
 	
 
 	Component scene;
-	Model sceneObjects[] = { Model("models/rocket/scene.gltf"), Model("models/ExampleModel/scene.gltf"), Model("models/cliberDeafult/scene.gltf"),
+	Model sceneObjects[] = { Model("models/ExampleModel/scene.gltf"),
 		};
 	Model GizmosBoundry = ("models/Gizmos/BoundSphere/scene.gltf");
 
@@ -487,37 +488,7 @@ int main()
 
 	//0.29, 1.00, 0.62,
 	
-	ImVec4 backroundColor = ImVec4(0.22, 0.23, 0.25, 1);
-	ImVec4 TitleColor = ImVec4(0.43, 0.54, 0.05, 0.95);
-	ImVec4 BorderColor = ImVec4(0, 0, 0, 0.2);
-	ImVec4 wigitsInsideHover = ImVec4(0.2, 0.2, 0.2, 1);
-	ImVec4 wigitsInside = ImVec4(0.3, 0.30, 0.30, 1);
-	ImVec4 wigitsInsideActive = ImVec4(0.1, 0.1, 0.10, 1);
-	ImVec4 windowWhite = ImVec4(1, 1, 1, 1);
-
-	ImGuiStyle& style = ImGui::GetStyle();
-	style.Colors[ImGuiCol_WindowBg] = backroundColor;
-	style.Colors[ImGuiCol_Border] = windowWhite;
-	style.Colors[ImGuiCol_CheckMark] = windowWhite;
-	style.Colors[ImGuiCol_Text] = windowWhite;
-	
-	
-	
-	style.Colors[ImGuiCol_Border] = BorderColor;
-
-	style.Colors[ImGuiCol_FrameBg] = wigitsInside;
-	style.Colors[ImGuiCol_FrameBgHovered] = wigitsInsideHover;
-	style.Colors[ImGuiCol_FrameBgActive] = wigitsInsideActive;
-	style.Colors[ImGuiCol_TitleBg] = TitleColor;
-	style.Colors[ImGuiCol_TitleBgActive] = TitleColor;
-	style.Colors[ImGuiCol_TabActive] = wigitsInsideActive;
-	style.Colors[ImGuiCol_TabHovered] = wigitsInsideHover;
-	style.Colors[ImGuiCol_Tab] = wigitsInside;
-	style.WindowRounding = 5;
-	
-
-
-
+	DefaultTheme();
 	
 
 
@@ -634,7 +605,6 @@ int main()
 
 
 	
-	const float fixed_timestep = 1.0f / 60.0;
 	//camera.getInputAtRun = true;
 	// Main while loop
 	
@@ -664,6 +634,7 @@ int main()
 		// handle error
 	}
 
+	const float fixed_timestep = 1.0f / 120.0;
 	
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
@@ -720,26 +691,18 @@ int main()
 		{
 			glfwSwapInterval(1);
 		}
-//		camera.Orientation = glm::vec3(-90, -60, 0);
-//		camera.Position = glm::vec3(22.0f, 15.0, 0.0f);
+		if (run) {
+			camera.Inputs(window, (ctrlSpeed)*fixed_timestep, (normalSpeed)*fixed_timestep);
 
+		}
+		else {
+			camera.Trackaballmovement(window, (ctrlSpeed)*fixed_timestep, (normalSpeed)*fixed_timestep);
+		}
 		// Updates counter and times
 		crntTime = glfwGetTime();
 		timeDiff = crntTime - prevTime;
 		counter++;
-
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-
-
-		if (!run) {
-			camera.TrackBallMouse(window);
-		}
-		else {
-
-			camera.Mouse(window);
-		}
+		
 
 		if (timeDiff >= fixed_timestep) {
 			// Creates new title
@@ -754,8 +717,13 @@ int main()
 			
 
 			
-			camera.Inputs(window, (ctrlSpeed) * fixed_timestep, (normalSpeed) * fixed_timestep);
-			
+			if (!run) {
+				camera.TrackBallMouse(window);
+			}
+			else {
+
+				camera.Mouse(window);
+			}
 
 			if (run) {
 
@@ -895,7 +863,7 @@ int main()
 		
 		// Updates and exports the camera matrix to the Vertex Shader
 		camera.updateMatrix3D(60.0f, 0.1f, viewFarPlane);
-		
+		\
 		//camera.updateMatrix2D(0.005f,0.4f, viewFarPlane);
 
 
@@ -924,22 +892,19 @@ int main()
 		scene.TRY_DRAWING(sizeof(sceneObjects) / sizeof(sceneObjects[0]), sceneObjects, shaderProgram, camera, objectWorldMult);
 		GizmosBoundry.Draw(shaderProgram, camera, 1);
 
-
+		
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glLineWidth(5.0f);
-		if (timeDiff >= fixed_timestep) {
+		
+
+		PhysicsCube.Draw(unlitProgram, camera, objectWorldMult);
+		PhysicsCube.PhysicsUpdate(true);
+		PhysicsCube.PHYSICS_SETUP();
+		PhysicsCube.scale = glm::vec3(4, 4, 4);
 
 
-			
-
-			PhysicsCube.Draw(unlitProgram, camera, objectWorldMult);
-			PhysicsCube.PhysicsUpdate(true);
-			PhysicsCube.PHYSICS_SETUP();
-			PhysicsCube.scale = glm::vec3(4, 4, 4);
-
-
-		}
+		
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glLineWidth(1.0f);
 		//sceneObjects[1].translation = glm::vec3(0, 1, 0);
@@ -1065,9 +1030,10 @@ int main()
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glBindTexture(GL_TEXTURE_2D, pingpongBuffer[!horizontal]);
-
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-		
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
 		console.Draw();
 		if (run == false) {
 			
@@ -1108,12 +1074,49 @@ int main()
 
 			}
 			ImGui::End();
-			style.Colors[ImGuiCol_WindowBg] = ImVec4(0.6, 0.6, 0.6, 1);
-			//ImGui::Begin("backround", 0, ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
-			style.Colors[ImGuiCol_WindowBg] = backroundColor;
+
+
+			ImGui::Begin("Preferences");
+			{
+
+				ImGui::BeginTabBar("Preferences Bar");
+				if (ImGui::BeginTabItem("Styles")) {
+					
+
+					if (ImGui::RadioButton("Default", &colorChoice, 0) || colorChoice == 0)
+					{
+						DefaultTheme();
+					}
+					if (ImGui::RadioButton("Light", &colorChoice, 1) || colorChoice == 1)
+					{
+						LightTheme();
+					}
+					if (ImGui::RadioButton("Future", &colorChoice, 2) || colorChoice == 2)
+					{
+						FutureTheme();
+					}
+					if (ImGui::RadioButton("Hacker", &colorChoice, 3) || colorChoice == 3)
+					{
+						HackerTheme();
+					}
+					if (ImGui::RadioButton("Cyan_Blue", &colorChoice, 4) || colorChoice == 4)
+					{
+						Cyan_Blue_Theme();
+					}
+					if (ImGui::RadioButton("EyeSore (For all of you weirdoz)", &colorChoice, 5) || colorChoice == 5)
+					{
+						EyESoRETheme();
+					}
+
+				}
+
+			}
+			ImGui::End();
+
+			ImGui::Begin("background", 0, ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+
 			
 
-			ImGui::End();
 
 			
 
@@ -1124,9 +1127,7 @@ int main()
 					
 					if (ImGui::BeginTabItem("Graphics"))
 					{
-						style.Colors[ImGuiCol_Text] = ImVec4(1, 0, 0, 1);
 						ImGui::Text("This will change how your game looks, make sure you have the proper graphics card.");
-						style.Colors[ImGuiCol_Text] = windowWhite;
 
 						ImGui::DragInt("MSSA samples (Needs restart to change)", &samples, 0.03f, 1, 40);
 						ImGui::Checkbox("Enable vsync", &vsync);
@@ -1138,15 +1139,10 @@ int main()
 						glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
 
 						if (!bakeShadows) {
-							style.Colors[ImGuiCol_Text] = ImVec4(1, 0, 0, 1);
-							ImGui::Text("Changing shadows will only work after restart");
-							style.Colors[ImGuiCol_Text] = windowWhite;
 							ImGui::Checkbox("Enable shadows", &renderShadows);
 						}
 
-						style.Colors[ImGuiCol_Text] = ImVec4(1, 0, 0, 1);
 						ImGui::Text("Notice, this setting will not improve the quality of the shadows, it will only freeze the shadows framebuffer.");
-						style.Colors[ImGuiCol_Text] = windowWhite;
 						ImGui::Checkbox("Bake shadows", &bakeShadows);
 
 						
@@ -1169,7 +1165,7 @@ int main()
 						ImGui::EndTabBar();
 					}
 
-					if (ImGui::BeginTabItem("Cockpit settings"))
+					if (ImGui::BeginTabItem("Viewport settings"))
 					{
 						ImGui::InputFloat("Shift speed speed", &normalSpeed, 0.3f, 1, "%.3f", 0);
 						ImGui::InputFloat("Normal speed", &ctrlSpeed, 0.3f, 1, "%.3f", 0);
@@ -1216,7 +1212,8 @@ int main()
 
 	}
 
-
+	//ISSUE! THE MODEL IS BEING SAVED TWICE
+	// ___________________________________
 	//sve.clearFile("Metric/world.metric");
 	remove("Metric/world.metric");
 	//sve.clearFile("Metric/orian.metric");
@@ -1234,7 +1231,7 @@ int main()
 
 	myData.data = { float(vsync), float(renderShadows), float(samples), float(bloom), float(wireframe),
 					float(width), float(height), gamma, exposure, normalSpeed, ctrlSpeed, float(enableskybox),
-					fogNear, viewFarPlane, float(bakeShadows)};
+					fogNear, viewFarPlane, float(bakeShadows), float(colorChoice)};
 	
 	myData.saveData();
 	

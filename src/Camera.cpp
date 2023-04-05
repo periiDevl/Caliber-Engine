@@ -56,7 +56,7 @@ void Camera::Matrix(Shader& shader, const char* uniform)
 void Camera::Mouse(GLFWwindow* window)
 {
 	// Handles mouse inputs
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS || cinamaticview)
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS || 1 > 0)
 	{
 		// Hides mouse cursor
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
@@ -110,7 +110,7 @@ void Camera::Mouse(GLFWwindow* window)
 void Camera::TrackBallMouse(GLFWwindow* window)
 {
 	// Handles mouse inputs
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS || cinamaticview)
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
 	{
 		// Hides mouse cursor
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
@@ -141,7 +141,7 @@ void Camera::TrackBallMouse(GLFWwindow* window)
 		newOrientation = glm::rotate(newOrientation, glm::radians(-rotY), Up);
 
 		// Decides whether or not the next Orientation is legal or not
-		if (abs(glm::angle(newOrientation, Up) - glm::radians(90.0f)) <= glm::radians(85.0f))
+		if (abs(glm::angle(newOrientation, Up) - glm::radians(180.0f)) <= glm::radians(180.0f))
 		{
 			Orientation = newOrientation;
 		}
@@ -170,11 +170,13 @@ void Camera::TrackBallMouse(GLFWwindow* window)
 	}
 }
 
+
 void Camera::Inputs(GLFWwindow* window, float ctrlSpeed, float norSpeed)
 {
+
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		Position += speed * getDirection(Orientation, true);
+		Position += speed * getDirection(Orientation, false);
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
@@ -182,7 +184,7 @@ void Camera::Inputs(GLFWwindow* window, float ctrlSpeed, float norSpeed)
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		Position += speed * -getDirection(Orientation, true);
+		Position += speed * -getDirection(Orientation, false);
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
@@ -197,7 +199,7 @@ void Camera::Inputs(GLFWwindow* window, float ctrlSpeed, float norSpeed)
 		Position += speed * -getDirection(Up, false);
 	}
 
-	
+
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 	{
 		speed = norSpeed;
@@ -207,16 +209,26 @@ void Camera::Inputs(GLFWwindow* window, float ctrlSpeed, float norSpeed)
 		speed = ctrlSpeed;
 	}
 
-	
+}
+void Camera::Trackaballmovement(GLFWwindow* window, float ctrlSpeed, float norSpeed)
+{
 
-	//switch free view from normal view
-	if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		cinamaticview = true;
+		Position += speed * getDirection(Orientation, false);
 	}
-	else if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		cinamaticview = false;
+		Position += speed * -getDirection(Orientation, false);
 	}
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+	{
+		Position += speed * getDirection(Up, false);
+	}
+	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+	{
+		Position += speed * -getDirection(Up, false);
+	}
+	
 
 }
