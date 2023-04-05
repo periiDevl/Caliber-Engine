@@ -1150,12 +1150,17 @@ int main()
 
 					if (ImGui::BeginTabItem("Graphics"))
 					{
+						ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
 						ImGui::Text("This will change how your game looks, make sure you have the proper graphics card.");
-						//if (ImGui::CollapsingHeader("My Header", ImGuiTreeNodeFlags_DefaultOpen)) {
-						if (ImGui::CollapsingHeader("Anti-Aliasing")) {
+						ImGui::PopStyleColor();
+
+						if (ImGui::CollapsingHeader("Anti-Aliasing", ImGuiTreeNodeFlags_DefaultOpen)) {
 							ImGui::Columns(2, nullptr, true);
 
 							ImGui::Text("Multisample Anti-Aliasing (Needs restart to change)");
+							ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+							ImGui::Text("MSAA Needs restart to apply it.");
+							ImGui::PopStyleColor();
 							ImGui::InputInt("MSSA Samples", &msaaSamples);
 
 							ImGui::NextColumn();
@@ -1187,10 +1192,13 @@ int main()
 						ImGui::Separator();
 
 
-						if (ImGui::CollapsingHeader("Shadow's")) {
+						if (ImGui::CollapsingHeader("Shadow's", ImGuiTreeNodeFlags_DefaultOpen)) {
 
 							ImGui::InputInt("Shadow Map Width", &shadowMapWidth, 1, 100);
 							ImGui::InputInt("Shadow Map Height", &shadowMapHeight, 1, 100);
+							ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+							ImGui::Text("Baking the shadow's will not improve the quality it will only freeze the texture");
+							ImGui::PopStyleColor();
 							ImGui::Checkbox("Bake/Static Shadows", &bakeShadows);
 							if (!bakeShadows) {
 								ImGui::Checkbox("Enable shadows", &renderShadows);
@@ -1220,7 +1228,7 @@ int main()
 						}
 						ImGui::Separator();
 
-						if (ImGui::CollapsingHeader("Screen")) {
+						if (ImGui::CollapsingHeader("Screen", ImGuiTreeNodeFlags_DefaultOpen)) {
 							ImGui::Checkbox("Enable Vsync", &vsync);
 						}
 
