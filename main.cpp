@@ -1117,7 +1117,11 @@ int main()
 					{
 						Cyan_Blue_Theme();
 					}
-					if (ImGui::RadioButton("EyeSore (For all of you weirdoz)", &colorChoice, 5) || colorChoice == 5)
+					if (ImGui::RadioButton("Jonayes Theme", &colorChoice, 5) || colorChoice == 5)
+					{
+						JonayesTheme();
+					}
+					if (ImGui::RadioButton("EyeSore (For all of you weirdoz)", &colorChoice, 6) || colorChoice == 6)
 					{
 						EyESoRETheme();
 					}

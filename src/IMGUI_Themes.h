@@ -31,6 +31,42 @@ void GUIDefaultCongoration()
 	style.TabRounding = 4;
 }
 
+void JonayesTheme()
+{
+	ImGuiStyle& style = ImGui::GetStyle();
+	ImVec4* colors = ImGui::GetStyle().Colors;
+	style.WindowPadding = ImVec2(5, 5);
+	style.WindowRounding = 4.0f;
+	style.FramePadding = ImVec2(5, 5);
+	style.FrameRounding = 2000.0f;
+	style.ItemSpacing = ImVec2(12, 8);
+	style.ItemInnerSpacing = ImVec2(8, 6);
+	style.IndentSpacing = 25.0f;
+	style.ScrollbarSize = 12.0f;
+	style.ScrollbarRounding = 100.0f;
+	style.GrabMinSize = 5.0f;
+	style.GrabRounding = 3.0f;
+	colors[ImGuiCol_Text] = ImVec4(0.72 + 0.2, 0.35 + 0.2, 0.76 + 0.2, 1.00f);
+	colors[ImGuiCol_WindowBg] = ImVec4(0.01, 0.01, 0.07, 1);
+	colors[ImGuiCol_FrameBg] = ImVec4(0.07, 0.00, 0.06, 1.00f);
+	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.07 + 0.2, 0.00 + 0.2, 0.06 + 0.2, 1.00f);
+	colors[ImGuiCol_FrameBgActive] = ImVec4(0.07 + 0.1, 0.00 + 0.1, 0.06 + 0.1, 1.00f);
+	colors[ImGuiCol_TitleBg] = ImVec4(0.44, 0.08, 0.71, 1.00f);
+	colors[ImGuiCol_TitleBgActive] = ImVec4(0.44 + 0.1, 0.08 + 0.1, 0.71 + 0.1, 1.00f);
+	colors[ImGuiCol_MenuBarBg] = ImVec4(0.07, 0.00, 0.06, 1.00f);
+	colors[ImGuiCol_Button] = ImVec4(0.44, 0.08, 0.71, 1.00f);
+	colors[ImGuiCol_ButtonHovered] = ImVec4(0.44 + 0.1, 0.08 + 0.1, 0.71 + 0.1, 1.00f);
+	colors[ImGuiCol_ButtonActive] = ImVec4(0.44 - 0.1, 0.08 - 0.1, 0.71 - 0.1, 1.00f);
+	colors[ImGuiCol_Header] = ImVec4(0.07, 0.00, 0.06, 1.00f);
+	colors[ImGuiCol_HeaderHovered] = ImVec4(0.07 + 0.2f, 0.00 + 0.2f, 0.06 + 0.2f, 1.00f);
+	colors[ImGuiCol_HeaderActive] = ImVec4(0.07, 0.00, 0.06, 1.00f);
+	colors[ImGuiCol_Border] = ImVec4(1, 1, 1, 0.29f);
+	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.07, 0.00, 0.06, 1.00f);
+	colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.34f, 0.34f, 0.34f, 0.54f);
+	colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.40f, 0.40f, 0.40f, 0.54f);
+	colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.56f, 0.56f, 0.56f, 0.54f);
+}
+
 void Cyan_Blue_Theme()
 {
 	ImGuiStyle& style = ImGui::GetStyle();
