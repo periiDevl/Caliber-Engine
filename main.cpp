@@ -333,16 +333,16 @@ int main()
 	//glm::vec3 hello = sve.loadVec3("work.txt", 0);
 
 	std::string ModelLine;
-	for (size_t i = 1; i < sizeof(sceneObjects) / sizeof(sceneObjects[0]) + 1; i++)
+	for (size_t i = 0; i < sizeof(sceneObjects) / sizeof(sceneObjects[0]); i++)
 	{
 
 	
 	
 
 		//save[i] = std::stof(ModelLine);
-		sceneObjects[i].translation = sve.loadVec3("Metric/world.metric", i);
-		sceneObjects[i].rotation = sve.loadVec4("Metric/orian.metric", i);
-		sceneObjects[i].scale = sve.loadVec3("Metric/scale.metric", i);
+		sceneObjects[i].translation = sve.loadVec3("Metric/world.metric", i + 1);
+		sceneObjects[i].rotation = sve.loadVec4("Metric/orian.metric", i + 1);
+		sceneObjects[i].scale = sve.loadVec3("Metric/scale.metric", i + 1);
 		i++;
 	}
 
