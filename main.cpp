@@ -735,7 +735,7 @@ int main()
 
 			}
 			else {
-				camera.Trackaballmovement(window, normalSpeed * crntTime);
+				camera.Trackaballmovement(window);
 			}
 			
 

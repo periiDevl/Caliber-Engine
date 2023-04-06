@@ -210,24 +210,24 @@ void Camera::Inputs(GLFWwindow* window, float ctrlSpeed, float norSpeed)
 	}
 
 }
-void Camera::Trackaballmovement(GLFWwindow* window, float speed)
+void Camera::Trackaballmovement(GLFWwindow* window)
 {
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		Position += speed * getDirection(Orientation, false);
+		Position += speed * 3 * getDirection(Orientation, false);
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		Position += speed * -getDirection(Orientation, false);
+		Position += speed * 3 * -getDirection(Orientation, false);
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 	{
-		Position += speed * getDirection(Up, false);
+		Position += speed * 3 * getDirection(Up, false);
 	}
 	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
 	{
-		Position += speed * -getDirection(Up, false);
+		Position += speed * 3 * -getDirection(Up, false);
 	}
 	
 
