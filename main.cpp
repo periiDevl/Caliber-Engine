@@ -1137,12 +1137,12 @@ int main()
 					ImGui::Separator();
 					ImGui::Columns(1, nullptr, true);
 					ImGui::Columns(3, nullptr, true);
-					ImGui::InputFloat(("Position X " + std::to_string(i)).c_str(), &sceneObjects[i].translation.x);
+					ImGui::InputFloat(("Position X##" + std::to_string(i)).c_str(), &sceneObjects[i].translation.x);
 
 					ImGui::NextColumn();
-					ImGui::InputFloat(("Position Y" + std::to_string(i)).c_str(), &sceneObjects[i].translation.y);
+					ImGui::InputFloat(("Position Y##" + std::to_string(i)).c_str(), &sceneObjects[i].translation.y);
 					ImGui::NextColumn();
-					ImGui::InputFloat(("Position Z" + std::to_string(i)).c_str(), &sceneObjects[i].translation.z);
+					ImGui::InputFloat(("Position Z##" + std::to_string(i)).c_str(), &sceneObjects[i].translation.z);
 
 					ImGui::Columns(1, nullptr, true);
 					ImGui::Columns(3, nullptr, true);
@@ -1152,6 +1152,8 @@ int main()
 					ImGui::InputFloat(("Scale Y" + std::to_string(i)).c_str(), &sceneObjects[i].scale.y);
 					ImGui::NextColumn();
 					ImGui::InputFloat(("Scale Z" + std::to_string(i)).c_str(), &sceneObjects[i].scale.z);
+
+
 
 
 					ImGui::Columns(1, nullptr, true);

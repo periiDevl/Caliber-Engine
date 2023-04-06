@@ -12,7 +12,7 @@ class Model
 public:
 	btRigidBody* boxRigidBody;
 	glm::vec3 translation;
-	glm::quat rotation;
+	glm::quat rotation = glm::quat(1, 0, 0, 0);
 	glm::vec3 scale;
 	glm::vec3 ID = glm::vec3(0, 0, 0);
 	const char* file = "models/rocket/scene.gltf";
