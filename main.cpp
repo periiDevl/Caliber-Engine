@@ -215,13 +215,13 @@ int main()
 	images[0].pixels = pixels;
 	glfwSetWindowIcon(window, 1, images);
 	
-
 	//Load GLAD so it configures OpenGL
 	gladLoadGL();
 	// Specify the viewport of OpenGL in the Window
 	// In this case the viewport goes from x = 0, y = 0, to x = 800, y = 800
 	glViewport(0, 0, width, height);
 
+	console.AddLog("(Using OpenGL 3.3) Hello World!");
 
 	setup.SETUP_IMGUI(window);
 	// Generates shaders
@@ -326,27 +326,20 @@ int main()
 	
 
 	Component scene;
-	Model sceneObjects[] = { Model("models/ExampleModel/scene.gltf"),
+	Model sceneObjects[] = { Model("models/ExampleModel/scene.gltf"),Model("models/ExampleModel/scene.gltf"),
 		};
 	Model GizmosBoundry = ("models/Gizmos/BoundSphere/scene.gltf");
 
 	//glm::vec3 hello = sve.loadVec3("work.txt", 0);
 
-	std::string ModelLine;
 	for (size_t i = 0; i < sizeof(sceneObjects) / sizeof(sceneObjects[0]); i++)
 	{
-
-	
-	
-
-		//save[i] = std::stof(ModelLine);
 		sceneObjects[i].translation = sve.loadVec3("Metric/world.metric", i + 1);
 		sceneObjects[i].rotation = sve.loadVec4("Metric/orian.metric", i + 1);
 		sceneObjects[i].scale = sve.loadVec3("Metric/scale.metric", i + 1);
-		i++;
 	}
 
-		
+
 
 	
 
@@ -355,7 +348,6 @@ int main()
 	
 	//Model rocket("models/rocket/scene.gltf");
 
-	
 
 	// Prepare framebuffer rectangle VBO and VAO
 	unsigned int rectVAO, rectVBO;
@@ -515,7 +507,7 @@ int main()
 
 
 	
-
+	
 	// Create VAO, VBO, and EBO for the skybox
 	unsigned int skyboxVAO, skyboxVBO, skyboxEBO;
 	glGenVertexArrays(1, &skyboxVAO);
@@ -656,8 +648,7 @@ int main()
 		// handle error
 	}
 
-	const float fixed_timestep = 1.0f / 120.0;
-	
+	const float fixed_timestep = 1.0f / 60.0;
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
 		if (bakeShadows && bake)
@@ -726,6 +717,7 @@ int main()
 			camera.Mouse(window);
 		}
 
+
 		if (timeDiff >= fixed_timestep) {
 			// Creates new title
 			std::string FPS = std::to_string((1.0 / timeDiff) * counter);
@@ -737,14 +729,14 @@ int main()
 			prevTime = crntTime;
 			counter = 0;
 			
+			
 			if (run) {
-				camera.Inputs(window, (ctrlSpeed)*fixed_timestep, (normalSpeed)*fixed_timestep);
+				camera.Inputs(window, ctrlSpeed * crntTime, normalSpeed * crntTime);
 
 			}
 			else {
-				camera.Trackaballmovement(window, (ctrlSpeed)*fixed_timestep, (normalSpeed)*fixed_timestep);
+				camera.Trackaballmovement(window, ctrlSpeed * crntTime, normalSpeed * crntTime);
 			}
-			
 			
 
 			if (run) {
@@ -885,7 +877,7 @@ int main()
 		
 		// Updates and exports the camera matrix to the Vertex Shader
 		camera.updateMatrix3D(60.0f, 0.1f, viewFarPlane);
-		\
+		
 		//camera.updateMatrix2D(0.005f,0.4f, viewFarPlane);
 
 
@@ -1138,7 +1130,39 @@ int main()
 			ImGui::Begin("background", 0, ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
 			
+			ImGui::Begin("Scene Hierarchy");
+			{
+				for (size_t i = 0; i < sizeof(sceneObjects) / sizeof(sceneObjects[0]); i++)
+				{
+					ImGui::Separator();
+					ImGui::Columns(1, nullptr, true);
+					ImGui::Columns(3, nullptr, true);
+					ImGui::InputFloat(("Position X " + std::to_string(i)).c_str(), &sceneObjects[i].translation.x);
 
+					ImGui::NextColumn();
+					ImGui::InputFloat(("Position Y" + std::to_string(i)).c_str(), &sceneObjects[i].translation.y);
+					ImGui::NextColumn();
+					ImGui::InputFloat(("Position Z" + std::to_string(i)).c_str(), &sceneObjects[i].translation.z);
+
+					ImGui::Columns(1, nullptr, true);
+					ImGui::Columns(3, nullptr, true);
+					ImGui::InputFloat(("Scale X " + std::to_string(i)).c_str(), &sceneObjects[i].scale.x);
+
+					ImGui::NextColumn();
+					ImGui::InputFloat(("Scale Y" + std::to_string(i)).c_str(), &sceneObjects[i].scale.y);
+					ImGui::NextColumn();
+					ImGui::InputFloat(("Scale Z" + std::to_string(i)).c_str(), &sceneObjects[i].scale.z);
+
+
+					ImGui::Columns(1, nullptr, true);
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+					ImGui::Text("Rotaion will come soon.");
+					ImGui::PopStyleColor();
+					ImGui::Separator();
+
+
+				}
+			}
 
 			
 
