@@ -1135,31 +1135,23 @@ int main()
 				for (size_t i = 0; i < sizeof(sceneObjects) / sizeof(sceneObjects[0]); i++)
 				{
 					ImGui::Separator();
-					ImGui::Columns(1, nullptr, true);
-					ImGui::Columns(3, nullptr, true);
-					ImGui::InputFloat(("Position X##" + std::to_string(i)).c_str(), &sceneObjects[i].translation.x);
+					float T[3] = { sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z };
+					ImGui::InputFloat3(("Position##" + std::to_string(i)).c_str(), T);
+					sceneObjects[i].translation = glm::vec3(T[0], T[1], T[2]);
 
-					ImGui::NextColumn();
-					ImGui::InputFloat(("Position Y##" + std::to_string(i)).c_str(), &sceneObjects[i].translation.y);
-					ImGui::NextColumn();
-					ImGui::InputFloat(("Position Z##" + std::to_string(i)).c_str(), &sceneObjects[i].translation.z);
-
-					ImGui::Columns(1, nullptr, true);
-					ImGui::Columns(3, nullptr, true);
-					ImGui::InputFloat(("Scale X " + std::to_string(i)).c_str(), &sceneObjects[i].scale.x);
-
-					ImGui::NextColumn();
-					ImGui::InputFloat(("Scale Y" + std::to_string(i)).c_str(), &sceneObjects[i].scale.y);
-					ImGui::NextColumn();
-					ImGui::InputFloat(("Scale Z" + std::to_string(i)).c_str(), &sceneObjects[i].scale.z);
+					float S[3] = { sceneObjects[i].scale.x, sceneObjects[i].scale.y, sceneObjects[i].scale.z };
+					ImGui::InputFloat3(("Scale##" + std::to_string(i)).c_str(), S);
+					sceneObjects[i].scale = glm::vec3(S[0], S[1], S[2]);
 
 
+					glm::vec3 eular = func.Quat_to_euler(sceneObjects[i].rotation);
+					float F[3] = {eular.x, eular.y, eular.z};
+					ImGui::InputFloat3(("Rotation##" + std::to_string(i)).c_str(), F);
+					sceneObjects[i].rotation = func.Euler_to_quat(F[0], F[1], F[2]);
+					
 
 
 					ImGui::Columns(1, nullptr, true);
-					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
-					ImGui::Text("Rotaion will come soon.");
-					ImGui::PopStyleColor();
 					ImGui::Separator();
 
 
