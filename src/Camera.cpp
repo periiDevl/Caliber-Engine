@@ -210,7 +210,7 @@ void Camera::Inputs(GLFWwindow* window, float ctrlSpeed, float norSpeed)
 	}
 
 }
-void Camera::Trackaballmovement(GLFWwindow* window, float ctrlSpeed, float norSpeed)
+void Camera::Trackaballmovement(GLFWwindow* window, float speed)
 {
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
