@@ -134,7 +134,7 @@ void Camera::TrackBallMouse(GLFWwindow* window)
 		float rotY = sensitivity * (float)(mouseX - (width / 2)) / width;
 
 		// The center point around which to rotate both the orientation and position
-		glm::vec3 centerPoint = glm::vec3(0, 0, 0);
+		glm::vec3 centerPoint = glm::vec3(Position.x, Position.y, Position.z) + glm::vec3(Orientation.x * 10, Orientation.y * 10, Orientation.z * 10);
 
 		// Calculates the upcoming change in the Orientation
 		glm::vec3 newOrientation = glm::rotate(Orientation, glm::radians(-rotX), glm::normalize(glm::cross(Orientation, Up)));
@@ -171,20 +171,20 @@ void Camera::TrackBallMouse(GLFWwindow* window)
 }
 
 
-void Camera::Inputs(GLFWwindow* window, float ctrlSpeed, float norSpeed)
+void Camera::Inputs(GLFWwindow* window, float normalSpeed, float highSpeed)
 {
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
 		Position += speed * getDirection(Orientation, false);
 	}
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-	{
-		Position += speed * -getDirection(glm::cross(Orientation, Up), false);
-	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
 		Position += speed * -getDirection(Orientation, false);
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		Position += speed * -getDirection(glm::cross(Orientation, Up), false);
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
@@ -202,32 +202,49 @@ void Camera::Inputs(GLFWwindow* window, float ctrlSpeed, float norSpeed)
 
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 	{
-		speed = norSpeed;
+		speed = highSpeed / 100;
 	}
 	else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
 	{
-		speed = ctrlSpeed;
+		speed = normalSpeed / 100;
 	}
 
 }
-void Camera::Trackaballmovement(GLFWwindow* window)
+void Camera::Trackaballmovement(GLFWwindow* window, float normalSpeed, float highSpeed)
 {
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		Position += speed * 3 * getDirection(Orientation, false);
+		Position += speed * getDirection(Orientation, false);
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		Position += speed * 3 * -getDirection(Orientation, false);
+		Position += speed * -getDirection(Orientation, false);
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		Position += speed * -getDirection(glm::cross(Orientation, Up), false);
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		Position += speed * getDirection(glm::cross(Orientation, Up), false);
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 	{
-		Position += speed * 3 * getDirection(Up, false);
+		Position += speed * getDirection(Up, false);
 	}
 	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
 	{
-		Position += speed * 3 * -getDirection(Up, false);
+		Position += speed * -getDirection(Up, false);
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+	{
+		speed = highSpeed / 100;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
+	{
+		speed = normalSpeed / 100;
 	}
 	
 

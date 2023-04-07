@@ -145,8 +145,8 @@ int main()
 	int height = myData.data[6];
 	float gamma = myData.data[7];
 	float exposure = myData.data[8];
-	float normalSpeed = myData.data[9];
-	float ctrlSpeed = myData.data[10];
+	float highCameraSpeed = myData.data[9];
+	float cameraNormalSpeed = myData.data[10];
 	bool enableskybox = myData.data[11];
 	float fogNear = myData.data[12];
 	float viewFarPlane = myData.data[13];
@@ -730,11 +730,11 @@ int main()
 			
 			
 			if (run) {
-				camera.Inputs(window, ctrlSpeed * crntTime, normalSpeed * crntTime);
+				camera.Inputs(window, cameraNormalSpeed * crntTime, highCameraSpeed * crntTime);
 
 			}
 			else {
-				camera.Trackaballmovement(window);
+				camera.Trackaballmovement(window, cameraNormalSpeed * crntTime, highCameraSpeed * crntTime);
 			}
 			
 
@@ -1265,8 +1265,8 @@ int main()
 
 					if (ImGui::BeginTabItem("Viewport settings"))
 					{
-						ImGui::InputFloat("Shift Speed", &normalSpeed, 0.3f, 1, "%.3f", 0);
-						ImGui::InputFloat("Normal Speed", &ctrlSpeed, 0.3f, 1, "%.3f", 0);
+						ImGui::InputFloat("Shift Speed", &highCameraSpeed, 0.3f, 1, "%.3f", 0);
+						ImGui::InputFloat("Normal Speed", &cameraNormalSpeed, 0.3f, 1, "%.3f", 0);
 
 						ImGui::EndTabItem();
 					}
@@ -1327,7 +1327,7 @@ int main()
 		sve.saveVec4(sceneObjects[i].rotation, "Metric/orian.metric");
 	}
 	myData.data = { float(vsync), float(renderShadows), float(msaaSamples), float(bloom), float(wireframe),
-					float(width), float(height), gamma, exposure, normalSpeed, ctrlSpeed, float(enableskybox),
+					float(width), float(height), gamma, exposure, highCameraSpeed, cameraNormalSpeed, float(enableskybox),
 					fogNear, viewFarPlane, float(bakeShadows), float(colorChoice), FXAA_SPAN_MAX, FXAA_REDUCE_MIN, FXAA_REDUCE_MUL, BloomSpreadBlur, 
 	float(shadowMapWidth), float(shadowMapHeight), float(shadowSampleRadius), DepthBias1, DepthBias2};
 	

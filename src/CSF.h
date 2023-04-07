@@ -51,6 +51,7 @@ public:
 
 	const float levelShade = 300000000000000000000.0;
 
+	uniform mat4 model;
 	vec4 pointLight()
 	{	
 		// used in two variables so I calculate it here to not have to do it twice
@@ -92,10 +93,12 @@ public:
 
 		// diffuse lighting
 		vec3 normal = normalize(Normal);
-		vec3 lightDirection = normalize(lightPos + crntPos);
-		float diffuse = max(dot(normal, lightDirection), 0.0f);
+		vec3 lightDirection = normalize(lightPos - crntPos);
+		lightDirection = mat3(transpose(inverse(model))) * lightDirection;
+		float diffuse = max(dot(normal, -lightDirection), 0.0f);
 		float level = floor(diffuse * levelShade);
 		diffuse = level / levelShade;
+
 
 		// specular lighting
 		float specular = 0.0f;

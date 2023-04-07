@@ -54,7 +54,7 @@ public:
 	// Exports the camera matrix to a shader
 	void Matrix(Shader& shader, const char* uniform);
 	// Handles camera inputs
-	void Trackaballmovement(GLFWwindow* window);
+	void Trackaballmovement(GLFWwindow* window, float normalSpeed, float highSpeed);
 	void Inputs(GLFWwindow* window, float ctrlSpeed, float norSpeed);
 	void Mouse(GLFWwindow* window);
 	void TrackBallMouse(GLFWwindow* window);
