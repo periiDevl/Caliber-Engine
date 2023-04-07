@@ -335,7 +335,7 @@ int main()
 	for (size_t i = 0; i < sizeof(sceneObjects) / sizeof(sceneObjects[0]); i++)
 	{
 		sceneObjects[i].translation = sve.loadVec3("Metric/world.metric", i + 1);
-		sceneObjects[i].rotation = sve.loadVec4("Metric/orian.metric", i + 1);
+		sceneObjects[i].rotation = sve.loadVec3("Metric/orian.metric", i + 1);
 		sceneObjects[i].scale = sve.loadVec3("Metric/scale.metric", i + 1);
 	}
 
@@ -1147,10 +1147,9 @@ int main()
 					sceneObjects[i].scale = glm::vec3(S[0], S[1], S[2]);
 
 
-					glm::vec3 eular = func.Quat_to_euler(sceneObjects[i].rotation);
-					float F[3] = {eular.x, eular.y, eular.z};
+					float F[3] = { sceneObjects[i].rotation.x, sceneObjects[i].rotation.y, sceneObjects[i].rotation.z};
 					ImGui::InputFloat3(("Rotation##" + std::to_string(i)).c_str(), F);
-					sceneObjects[i].rotation = func.Euler_to_quat(F[0], F[1], F[2]);
+					sceneObjects[i].rotation = glm::vec3(F[0], F[1], F[2]);
 					
 
 

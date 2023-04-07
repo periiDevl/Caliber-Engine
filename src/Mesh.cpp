@@ -1,5 +1,5 @@
 #include "Mesh.h"
-
+#include"Functions.h"
 Mesh::Mesh(std::vector <Vertex>& vertices, std::vector <GLuint>& indices, std::vector <Texture>& textures)
 {
 	Mesh::vertices = vertices;
@@ -29,10 +29,11 @@ void Mesh::Draw
 	Camera& camera,
 	glm::mat4 matrix,
 	glm::vec3 translation, 
-	glm::quat rotation, 
+	glm::vec3 rotation, 
 	glm::vec3 scale
 )
 {
+	Functions function;
 	// Bind shader to be able to access uniforms
 	shader.Activate();
 	VAO.Bind();
@@ -67,7 +68,7 @@ void Mesh::Draw
 
 	// Transform the matrices to their correct form
 	trans = glm::translate(trans, translation);
-	rot = glm::mat4_cast(rotation);
+	rot = glm::mat4_cast(function.Euler_to_quat(rotation.x, rotation.y, rotation.z));
 	sca = glm::scale(sca, scale);
 
 	// Push the matrices to the vertex shader

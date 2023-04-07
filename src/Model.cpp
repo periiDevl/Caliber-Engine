@@ -2,7 +2,7 @@
 
 Model::Model(const char* fl,
 	glm::vec3 trans,
-	glm::quat rot,
+	glm::vec3 rot,
 	glm::vec3 sca,
 	glm::vec3 id)
 {

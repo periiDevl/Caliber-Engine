@@ -4,6 +4,7 @@
 #include<json/json.h>
 #include"Mesh.h"
 #include<bullet/btBulletDynamicsCommon.h>
+#include"Functions.h"
 using json = nlohmann::json;
 
 
@@ -12,7 +13,7 @@ class Model
 public:
 	btRigidBody* boxRigidBody;
 	glm::vec3 translation;
-	glm::quat rotation = glm::quat(1, 0, 0, 0);
+	glm::vec3 rotation = glm::vec3(0, 0, 0);
 	glm::vec3 scale;
 	glm::vec3 ID = glm::vec3(0, 0, 0);
 	const char* file = "models/rocket/scene.gltf";
@@ -20,7 +21,7 @@ public:
 	// Loads in a model from a file and stores tha information in 'data', 'JSON', and 'file'
 	Model(const char* fl = "models/rocket/scene.gltf",
 		glm::vec3 trans = glm::vec3(0.0f, 0.0f, 0.0f),
-		glm::quat rot = glm::quat(1.0f, 0.0f, 0.0f, 0.0f),
+		glm::vec3 rot = glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3 sca = glm::vec3(1.0f, 1.0f, 1.0f),
 		glm::vec3 id = glm::vec3(0, 0, 0));
 
@@ -62,9 +63,9 @@ public:
 		if (staticBody) {
 			mass = 0;
 		}
-		
-
-		btDefaultMotionState* boxMotionState = new btDefaultMotionState(btTransform(btQuaternion(rotation.x, rotation.y, rotation.z, rotation.w), btVector3(translation.x, translation.y, translation.z)));
+		Functions func;
+		glm::quat rotationQuat = func.Euler_to_quat(rotation.x, rotation.y, rotation.z);
+		btDefaultMotionState* boxMotionState = new btDefaultMotionState(btTransform(btQuaternion(rotationQuat.x, rotationQuat.y, rotationQuat.z, rotationQuat.w), btVector3(translation.x, translation.y, translation.z)));
 		btVector3 boxInertia(0, 0, 0);
 		boxShape->calculateLocalInertia(mass, boxInertia);
 		boxRigidBody = new btRigidBody(mass, boxMotionState, boxShape, boxInertia);
@@ -75,10 +76,12 @@ public:
 	btTransform phys;
 	void PHYSICS_SETUP()
 	{
+		Functions func;
 		boxRigidBody->setGravity(btVector3(0, -9.81, 0));
 		boxRigidBody->getMotionState()->getWorldTransform(phys);
 		translation = glm::vec3(phys.getOrigin().getX(), phys.getOrigin().getY(), phys.getOrigin().getZ());
-		rotation = glm::quat(phys.getRotation().getX(), phys.getRotation().getY(), phys.getRotation().getZ(), phys.getRotation().getW());
+		glm::quat rotationQuat = glm::quat(phys.getRotation().getX(), phys.getRotation().getY(), phys.getRotation().getZ(), phys.getRotation().getW());
+		rotation = func.Quat_to_euler(rotationQuat);
 
 		
 		
@@ -104,7 +107,7 @@ public:
 		std::stringstream ss;
 		ss << "Model(" << this->file << ", " << std::to_string(ID.x) << " " << std::to_string(ID.y) << " " << std::to_string(ID.z) << ", "
 			<< std::to_string(translation.x) << " " << std::to_string(translation.y) << " " << std::to_string(translation.z) << ", "
-			<< std::to_string(rotation.x) << " " << std::to_string(rotation.y) << " " << std::to_string(rotation.z) << " " << std::to_string(rotation.w) << ", "
+			<< std::to_string(rotation.x) << " " << std::to_string(rotation.y) << " " << std::to_string(rotation.z) << " " << std::to_string(rotation.z) << ", "
 			<< std::to_string(scale.x) << " " << std::to_string(scale.y) << " " << std::to_string(scale.z) << ")";
 		return ss.str();
 	}
@@ -124,7 +127,6 @@ public:
 		model.file = file.c_str();
 		model.translation = translation;
 		model.ID = ID;
-		model.rotation = rotation;
 		model.scale = scale;
 
 
