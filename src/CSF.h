@@ -88,11 +88,11 @@ public:
 	vec4 direcLight()
 	{
 		// ambient lighting
-		float ambient = 0.20f;
+		float ambient = 0.35f;
 
 		// diffuse lighting
 		vec3 normal = normalize(Normal);
-		vec3 lightDirection = normalize(lightPos);
+		vec3 lightDirection = normalize(lightPos + crntPos);
 		float diffuse = max(dot(normal, lightDirection), 0.0f);
 		float level = floor(diffuse * levelShade);
 		diffuse = level / levelShade;

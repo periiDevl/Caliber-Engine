@@ -660,7 +660,6 @@ int main()
 			renderShadows = false;
 		}
 
-		sceneObjects[2].translation = glm::vec3(70);
 		// Check if the user has entered a specific string
 		
 		if (strcmp(console.input_buf, "quit") == 0 && glfwGetKey(window, GLFW_KEY_ENTER))
