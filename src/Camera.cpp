@@ -202,11 +202,11 @@ void Camera::Inputs(GLFWwindow* window, float normalSpeed, float highSpeed)
 
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 	{
-		speed = highSpeed / 100;
+		speed = highSpeed;
 	}
 	else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
 	{
-		speed = normalSpeed / 100;
+		speed = normalSpeed;
 	}
 
 }
@@ -240,11 +240,11 @@ void Camera::Trackaballmovement(GLFWwindow* window, float normalSpeed, float hig
 
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 	{
-		speed = highSpeed / 100;
+		speed = highSpeed;
 	}
 	else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
 	{
-		speed = normalSpeed / 100;
+		speed = normalSpeed;
 	}
 	
 

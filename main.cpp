@@ -165,6 +165,8 @@ int main()
 	float DepthBias1 = myData.data[23];
 	float DepthBias2 = myData.data[24];
 	
+	bool no_resize = true;
+	bool no_move = true;
 	// Initialize GLFW
 	setup.SETUP_GLFW();
 	
@@ -221,7 +223,7 @@ int main()
 	// In this case the viewport goes from x = 0, y = 0, to x = 800, y = 800
 	glViewport(0, 0, width, height);
 
-	console.AddLog("(Using OpenGL 3.3) Hello World!");
+	console.AddLog("(Using OpenGL 330 core) Hello World!");
 
 	setup.SETUP_IMGUI(window);
 	// Generates shaders
@@ -730,11 +732,11 @@ int main()
 			
 			
 			if (run) {
-				camera.Inputs(window, cameraNormalSpeed * crntTime, highCameraSpeed * crntTime);
+				camera.Inputs(window, cameraNormalSpeed * fixed_timestep, highCameraSpeed * fixed_timestep);
 
 			}
 			else {
-				camera.Trackaballmovement(window, cameraNormalSpeed * crntTime, highCameraSpeed * crntTime);
+				camera.Trackaballmovement(window, cameraNormalSpeed * fixed_timestep, highCameraSpeed * fixed_timestep);
 			}
 			
 
@@ -786,9 +788,9 @@ int main()
 			btCollisionWorld::ClosestRayResultCallback rayCallback(rayFromWorld, rayToWorld);
 			dynamicsWorld->rayTest(rayFromWorld, rayToWorld, rayCallback);
 
-			if (rayCallback.hasHit()) {
-				printf("Collision!!!!!");
-			}
+			//if (rayCallback.hasHit()) {
+				//printf("Collision!!!!!");
+			//}
 
 
 
@@ -1050,9 +1052,8 @@ int main()
 		console.Draw();
 		if (run == false) {
 			
-			ImGui::Begin("Viewport");
+			ImGui::Begin("Viewport",0, (no_resize ? ImGuiWindowFlags_NoResize : 0) | (no_move ? ImGuiWindowFlags_NoMove : 0));
 			{
-				
 				if (ImGui::Button("play"))
 				{
 					if (run == false) {
@@ -1089,7 +1090,9 @@ int main()
 			ImGui::End();
 
 
-			ImGui::Begin("Preferences");
+
+
+			ImGui::Begin("Preferences", 0, (no_resize ? ImGuiWindowFlags_NoResize : 0) | (no_move ? ImGuiWindowFlags_NoMove : 0));
 			{
 
 				ImGui::BeginTabBar("Preferences Bar");
@@ -1124,8 +1127,18 @@ int main()
 					{
 						EyESoRETheme();
 					}
-
+					ImGui::EndTabItem();
 				}
+
+				if (ImGui::BeginTabItem("Layout")) {
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+					ImGui::Text("Values here will not be saved.");
+					ImGui::PopStyleColor();
+					ImGui::Checkbox("No Window Moving", &no_move);
+					ImGui::Checkbox("No Window Resize", &no_resize);
+					ImGui::EndTabItem();
+				}
+
 
 			}
 			ImGui::End();
@@ -1133,7 +1146,7 @@ int main()
 			ImGui::Begin("background", 0, ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
 			
-			ImGui::Begin("Scene Hierarchy");
+			ImGui::Begin("Scene Hierarchy", 0, (no_resize ? ImGuiWindowFlags_NoResize : 0) | (no_move ? ImGuiWindowFlags_NoMove : 0));
 			{
 				for (size_t i = 0; i < sizeof(sceneObjects) / sizeof(sceneObjects[0]); i++)
 				{
@@ -1162,7 +1175,7 @@ int main()
 
 			
 
-			if (ImGui::Begin("project settings")) {
+			if (ImGui::Begin("project settings", 0, (no_resize ? ImGuiWindowFlags_NoResize : 0) | (no_move ? ImGuiWindowFlags_NoMove : 0))) {
 				if (ImGui::BeginTabBar("project tabs"))
 				{
 
@@ -1310,13 +1323,9 @@ int main()
 
 	}
 
-	//ISSUE! THE MODEL IS BEING SAVED TWICE
-	// ___________________________________
-	//sve.clearFile("Metric/world.metric");
+
 	remove("Metric/world.metric");
-	//sve.clearFile("Metric/orian.metric");
 	remove("Metric/orian.metric");
-	//sve.clearFile("Metric/scale.metric");
 	remove("Metric/scale.metric");
 	size_t numObjects = sizeof(sceneObjects) / sizeof(sceneObjects[0]);
 	for (size_t i = 0; i < numObjects; i++)
@@ -1324,7 +1333,7 @@ int main()
 
 		sve.saveVec3(sceneObjects[i].scale, "Metric/scale.metric");
 		sve.saveVec3(sceneObjects[i].translation, "Metric/world.metric");
-		sve.saveVec4(sceneObjects[i].rotation, "Metric/orian.metric");
+		sve.saveVec3(sceneObjects[i].rotation, "Metric/orian.metric");
 	}
 	myData.data = { float(vsync), float(renderShadows), float(msaaSamples), float(bloom), float(wireframe),
 					float(width), float(height), gamma, exposure, highCameraSpeed, cameraNormalSpeed, float(enableskybox),
