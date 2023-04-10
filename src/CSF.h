@@ -95,9 +95,12 @@ public:
 		vec3 normal = normalize(Normal);
 		vec3 lightDirection = normalize(lightPos - crntPos);
 		lightDirection = mat3(transpose(inverse(model))) * lightDirection;
-		float diffuse = max(dot(normal, -lightDirection), 0.0f);
+		float falloffFactor = 0.0f; // set to zero to remove the distance term
+		float diffuse = max(dot(normal, -lightDirection), 0.0f) * 3 / (falloffFactor + 1.0f);
 		float level = floor(diffuse * levelShade);
 		diffuse = level / levelShade;
+
+		
 
 
 		// specular lighting
