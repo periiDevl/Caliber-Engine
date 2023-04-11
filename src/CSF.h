@@ -89,7 +89,7 @@ public:
 	vec4 direcLight()
 	{
 		// ambient lighting
-		float ambient = 0.35f;
+		float ambient = 1.00f;
 
 		// diffuse lighting
 		vec3 normal = normalize(Normal);

@@ -246,7 +246,7 @@ int main()
 	blurProgram.Activate();
 	glUniform1f(glGetUniformLocation(blurProgram.ID, "spreadBlur"), BloomSpreadBlur);
 
-	glm::vec3 lightPos = glm::vec3(0.5f, 1, 0.5f);
+	glm::vec3 lightPos = glm::vec3(0.5f, 1, 0.0f);
 	unlitProgram.Activate();
 	glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 1, 0, 1);
 
