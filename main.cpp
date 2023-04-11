@@ -34,7 +34,7 @@ Save sve;
 //component.AddObject("path/to/object.obj");
 
 
-const float WorldRadius = 300;
+const float WorldRadius = 200;
 const float objectWorldMult = 2;
 
 bool run = false; 
@@ -830,7 +830,7 @@ int main()
 			
 		
 				
-			scene.TRY_DRAWING(sizeof(sceneObjects) / sizeof(sceneObjects[0]), sceneObjects, shadowMapProgram, camera, objectWorldMult / 1.11f);
+			scene.TRY_DRAWING(sizeof(sceneObjects) / sizeof(sceneObjects[0]), sceneObjects, shadowMapProgram, camera, objectWorldMult / 1.03f);
 		}
 
 		// Switch back to the default framebuffer
