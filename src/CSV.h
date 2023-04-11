@@ -16,33 +16,48 @@ layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec3 aColor;
 layout (location = 3) in vec2 aTex;
 
-
 out vec3 crntPos;
 out vec3 Normal;
 out vec3 color;
 out vec2 texCoord;
-out vec4 fragPosLight;
-
-
+out vec3 eyeLightDir;
 
 uniform mat4 camMatrix;
 uniform mat4 model;
 uniform mat4 translation;
 uniform mat4 rotation;
 uniform mat4 scale;
-uniform mat4 lightProjection;
 
+// Define the light position in world space
+uniform vec3 lightPos;
 
 void main()
 {
-	crntPos = vec3(model * translation * rotation * scale * vec4(aPos, 1.0f));
-	Normal = aNormal;
-	color = aColor;
-	texCoord = mat2(0.0, -1.0, 1.0, 0.0) * aTex;
-	fragPosLight = lightProjection * vec4(crntPos, 1.0f);
+    // Transform vertex position into world space
+    vec3 worldPos = vec3(model * translation * rotation * scale * vec4(aPos, 1.0f));
+    
+    // Transform normal vector into world space
+    vec3 worldNormal = normalize(vec3(model * vec4(aNormal, 0.0f)));
+    
+    // Transform light position into object space
+    vec3 objectLightPos = vec3(model * vec4(lightPos, 1.0f));
+    
+    // Transform light position into eye space
+    vec3 eyeLightPos = vec3(camMatrix * vec4(objectLightPos, 1.0f));
+    
+    // Calculate eye space light direction
+    eyeLightDir = normalize(eyeLightPos - worldPos);
+    
+    // Pass other vertex data through to fragment shader
+    crntPos = worldPos;
+    Normal = worldNormal;
+    color = aColor;
+    texCoord = mat2(0.0, -1.0, 1.0, 0.0) * aTex;
 	
-	gl_Position = camMatrix * vec4(crntPos, 1.0);
+    // Transform vertex position into clip space
+    gl_Position = camMatrix * vec4(worldPos, 1.0);
 }
+
 		)";
 
 

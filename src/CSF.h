@@ -93,10 +93,10 @@ public:
 
 		// diffuse lighting
 		vec3 normal = normalize(Normal);
-		vec3 lightDirection = normalize(lightPos - crntPos);
+		vec3 lightDirection = normalize(lightPos * 5 - crntPos);
 		lightDirection = mat3(transpose(inverse(model))) * lightDirection;
 		float falloffFactor = 0.0f; // set to zero to remove the distance term
-		float diffuse = max(dot(normal, -lightDirection), 0.0f) * 3 / (falloffFactor + 1.0f);
+		float diffuse = max(dot(normal, lightDirection), 0.0f) * 2 / (falloffFactor + 1.0f);
 		float level = floor(diffuse * levelShade);
 		diffuse = level / levelShade;
 
