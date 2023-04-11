@@ -89,16 +89,16 @@ public:
 	vec4 direcLight()
 	{
 		// ambient lighting
-		float ambient = 1.00f;
+		float ambient = 0.50f;
 
 		// diffuse lighting
 		vec3 normal = normalize(Normal);
 		vec3 lightDirection = normalize(lightPos * 5 - crntPos);
 		lightDirection = mat3(transpose(inverse(model))) * lightDirection;
 		float falloffFactor = 0.0f; // set to zero to remove the distance term
-		float diffuse = max(dot(normal, lightDirection), 0.0f) * 2 / (falloffFactor + 1.0f);
+		float diffuse = ambient;
 		float level = floor(diffuse * levelShade);
-		diffuse = level / levelShade;
+		//diffuse = level / levelShade;
 
 		
 
