@@ -830,7 +830,7 @@ int main()
 			
 		
 				
-			scene.TRY_DRAWING(sizeof(sceneObjects) / sizeof(sceneObjects[0]), sceneObjects, shadowMapProgram, camera, objectWorldMult);
+			scene.TRY_DRAWING(sizeof(sceneObjects) / sizeof(sceneObjects[0]), sceneObjects, shadowMapProgram, camera, objectWorldMult / 1.11f);
 		}
 
 		// Switch back to the default framebuffer
