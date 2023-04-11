@@ -34,7 +34,7 @@ Save sve;
 //component.AddObject("path/to/object.obj");
 
 
-const float WorldRadius = 70;
+const float WorldRadius = 300;
 const float objectWorldMult = 2;
 
 bool run = false; 
