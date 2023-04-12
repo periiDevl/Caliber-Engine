@@ -34,7 +34,7 @@ Save sve;
 //component.AddObject("path/to/object.obj");
 
 
-const float WorldRadius = 200;
+const float WorldRadius = 40;
 const float objectWorldMult = 2;
 
 bool run = false; 
@@ -164,6 +164,7 @@ int main()
 	int	shadowSampleRadius = myData.data[22];
 	float DepthBias1 = myData.data[23];
 	float DepthBias2 = myData.data[24];
+	float avgShadow = myData.data[25];
 	
 	bool no_resize = true;
 	bool no_move = true;
@@ -251,6 +252,7 @@ int main()
 	glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 1, 0, 1);
 
 	shaderProgram.Activate();
+	glUniform1f(glGetUniformLocation(shaderProgram.ID, "avgShadow"), avgShadow);
 	glUniform4f(glGetUniformLocation(shaderProgram.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 	glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), fogNear);
@@ -261,6 +263,7 @@ int main()
 
 	glUniform1f(glGetUniformLocation(shaderProgram.ID, "bias1"), DepthBias1);
 	glUniform1f(glGetUniformLocation(shaderProgram.ID, "bias2"), DepthBias2);
+
 
 	glUniform1i(glGetUniformLocation(shaderProgram.ID, "sampleRadius"), shadowSampleRadius);
 	skyboxShader.Activate();
@@ -830,7 +833,7 @@ int main()
 			
 		
 				
-			scene.TRY_DRAWING(sizeof(sceneObjects) / sizeof(sceneObjects[0]), sceneObjects, shadowMapProgram, camera, objectWorldMult / 1.03f);
+			scene.TRY_DRAWING(sizeof(sceneObjects) / sizeof(sceneObjects[0]), sceneObjects, shadowMapProgram, camera, objectWorldMult);
 		}
 
 		// Switch back to the default framebuffer
@@ -1236,9 +1239,11 @@ int main()
 							}
 							ImGui::InputInt("Sample Radius", &shadowSampleRadius, 0, 100);
 
+							ImGui::InputFloat("Average Shadow (Transparency)", &avgShadow);
 							ImGui::InputFloat("Depth Bias 1", &DepthBias1);
 							ImGui::InputFloat("Depth Bias 2", &DepthBias2);
-
+							shaderProgram.Activate();
+							glUniform1f(glGetUniformLocation(shaderProgram.ID, "avgShadow"), avgShadow);
 							
 						}
 						ImGui::Separator();
@@ -1268,7 +1273,7 @@ int main()
 						
 
 						
-
+						
 						
 
 
@@ -1338,7 +1343,7 @@ int main()
 	myData.data = { float(vsync), float(renderShadows), float(msaaSamples), float(bloom), float(wireframe),
 					float(width), float(height), gamma, exposure, highCameraSpeed, cameraNormalSpeed, float(enableskybox),
 					fogNear, viewFarPlane, float(bakeShadows), float(colorChoice), FXAA_SPAN_MAX, FXAA_REDUCE_MIN, FXAA_REDUCE_MUL, BloomSpreadBlur, 
-	float(shadowMapWidth), float(shadowMapHeight), float(shadowSampleRadius), DepthBias1, DepthBias2};
+	float(shadowMapWidth), float(shadowMapHeight), float(shadowSampleRadius), DepthBias1, DepthBias2, avgShadow };
 	
 	myData.saveData();
 	

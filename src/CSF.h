@@ -47,6 +47,8 @@ public:
 	uniform float bias1;
 	uniform float bias2;
 
+	uniform float avgShadow = 1.0f;
+
 	uniform int sampleRadius; // increase the sample radius
 
 	const float levelShade = 300000000000000000000.0;
@@ -149,7 +151,7 @@ public:
 			}
 
 			// Get average shadow
-			shadow /= pow((sampleRadius * 2 + 1), 2);
+			shadow /= pow((sampleRadius * 2 + avgShadow), 2);
 		}
 
 
