@@ -18,6 +18,8 @@
 #include "src/Presave.h"
 #include"src/Console.h"
 #include"src/IMGUI_Themes.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb_image_write.h>
 Console console;
 
 CSV vert;
@@ -39,6 +41,25 @@ const float objectWorldMult = 2;
 
 bool run = false; 
 
+void saveScreenshot(GLFWwindow* window, const char* filename) {
+	int width, height;
+	glfwGetFramebufferSize(window, &width, &height);
+
+	unsigned char* pixels = new unsigned char[width * height * 4];
+	glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+	for (int y = 0; y < height / 2; ++y) {
+		for (int x = 0; x < width; ++x) {
+			for (int c = 0; c < 4; ++c) {
+				std::swap(pixels[(y * width + x) * 4 + c], pixels[((height - y - 1) * width + x) * 4 + c]);
+			}
+		}
+	}
+
+	stbi_write_png(filename, width, height, 4, pixels, 0);
+
+	delete[] pixels;
+}
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 std::array save = {1};
@@ -1057,7 +1078,7 @@ int main()
 			
 			ImGui::Begin("Viewport",0, (no_resize ? ImGuiWindowFlags_NoResize : 0) | (no_move ? ImGuiWindowFlags_NoMove : 0));
 			{
-				if (ImGui::Button("play"))
+				if (ImGui::Button("Run"))
 				{
 					if (run == false) {
 						run = true;
@@ -1067,6 +1088,10 @@ int main()
 						run = false;
 					}
 				}
+
+
+
+
 				ImGui::BeginTabBar("Viewport");
 				if (ImGui::BeginTabItem("Render")) {
 					ImGui::BeginChild("ViewportRender");
@@ -1315,12 +1340,12 @@ int main()
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 
-
-
+		if (glfwGetKey(window, GLFW_KEY_0)) {
+			glFinish(); 
+			saveScreenshot(window, "screenshot.png");
+		}
 		
-		// Swap the back buffer with the front buffer
 		glfwSwapBuffers(window);
-		// Take care of all GLFW events
 		glfwPollEvents();
 		
 	
