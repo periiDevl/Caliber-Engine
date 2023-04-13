@@ -20,6 +20,7 @@
 #include"src/IMGUI_Themes.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_image_write.h>
+#include<thread>
 Console console;
 
 CSV vert;
@@ -48,6 +49,7 @@ void saveScreenshot(GLFWwindow* window, const char* filename) {
 	unsigned char* pixels = new unsigned char[width * height * 4];
 	glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
+	// Swap the rows to fix the image orientation
 	for (int y = 0; y < height / 2; ++y) {
 		for (int x = 0; x < width; ++x) {
 			for (int c = 0; c < 4; ++c) {
@@ -56,10 +58,16 @@ void saveScreenshot(GLFWwindow* window, const char* filename) {
 		}
 	}
 
-	stbi_write_png(filename, width, height, 4, pixels, 0);
+	// Create a new thread to save the screenshot
+	std::thread saveThread([=]() {
+		stbi_write_png(filename, width, height, 4, pixels, 0);
+		delete[] pixels;
+		});
 
-	delete[] pixels;
+	// Detach the thread and return immediately
+	saveThread.detach();
 }
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 std::array save = {1};
