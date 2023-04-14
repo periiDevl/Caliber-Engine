@@ -22,7 +22,7 @@ public:
 	glm::vec3 trackballPos;
 	// Prevents the camera from jumping around when first clicking left click
 	bool firstClick = true;
-
+	bool run = false;
 
 	glm::vec3 getDirection(glm::vec3 direction, bool vertical)
 	{

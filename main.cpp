@@ -20,6 +20,7 @@
 #include"src/IMGUI_Themes.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_image_write.h>
+#include"UIIMGUI.h"
 #include<thread>
 Console console;
 
@@ -694,29 +695,6 @@ int main()
 			renderShadows = false;
 		}
 
-		// Check if the user has entered a specific string
-		
-		if (strcmp(console.input_buf, "quit") == 0 && glfwGetKey(window, GLFW_KEY_ENTER))
-		{
-				// The user has written the "quit" string
-			glfwSetWindowShouldClose(window, GLFW_TRUE);
-		}
-		else
-		{
-				// The user has written a different string
-				// ...
-		}
-
-			
-
-
-		
-		//sceneObjects[1].UpdatePhysics();
-		
-		
-		//float randomFloat = static_cast<float>(rand()) / RAND_MAX;
-		//std::cout << randomFloat << std::endl;
-		// Update the flight controller with user input
 
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE))
 		{
@@ -728,7 +706,6 @@ int main()
 		}
 
 
-
 		if (vsync == 0)
 		{
 			glfwSwapInterval(0);
@@ -738,38 +715,29 @@ int main()
 			glfwSwapInterval(1);
 		}
 		
-		// Updates counter and times
 		crntTime = glfwGetTime();
 		timeDiff = crntTime - prevTime;
 		counter++;
-		if (!run) {
-			camera.TrackBallMouse(window);
-		}
-		else {
+		camera.run = run;
 
-			camera.Mouse(window);
-		}
+		camera.TrackBallMouse(window);
+
+		camera.Mouse(window);
 
 
 		if (timeDiff >= fixed_timestep) {
-			// Creates new title
 			std::string FPS = std::to_string((1.0 / timeDiff) * counter);
 			std::string ms = std::to_string((timeDiff / counter) * 1000);
 			std::string newTitle = "Caliber renderer window - " + FPS + "FPS / " + ms + "ms";
 			glfwSetWindowTitle(window, newTitle.c_str());
 
-			// Resets times and counter
 			prevTime = crntTime;
 			counter = 0;
 			
 			
-			if (run) {
-				camera.Inputs(window, cameraNormalSpeed * fixed_timestep, highCameraSpeed * fixed_timestep);
-
-			}
-			else {
-				camera.Trackaballmovement(window, cameraNormalSpeed * fixed_timestep, highCameraSpeed * fixed_timestep);
-			}
+			camera.Inputs(window, cameraNormalSpeed * fixed_timestep, highCameraSpeed * fixed_timestep);
+			camera.Trackaballmovement(window, cameraNormalSpeed * fixed_timestep, highCameraSpeed * fixed_timestep);
+			
 			
 
 			if (run) {
@@ -778,53 +746,29 @@ int main()
 				sphereRigidBody->getMotionState()->getWorldTransform(currentTransform);
 				btVector3 currentPosition = currentTransform.getOrigin();
 
-				// Calculate the desired camera position, independent of the physics simulation
 				glm::vec3 desiredCameraPosition = camera.Position;
 
-				// Calculate the required velocity to move the sphere rigid body to the desired camera position
 				btVector3 desiredPosition = btVector3(desiredCameraPosition.x, desiredCameraPosition.y, desiredCameraPosition.z);
 				btVector3 velocity = (desiredPosition - currentPosition) / (fixed_timestep);
 
-				// Apply the velocity to the sphere rigid body
 				sphereRigidBody->setLinearVelocity(velocity);
 				sphereRigidBody->setAngularVelocity(btVector3(0, 0, 0));
 				sphereRigidBody->setAngularFactor(btVector3(0, 0, 0));
 
 				sphereRigidBody->setGravity(btVector3(0, 0, 0));
 
-				// Step the simulation
 				dynamicsWorld->stepSimulation(fixed_timestep, substep);
 
-				// Update the camera position based on the new position of the sphere
 				btTransform updatedTransform;
 				sphereRigidBody->getMotionState()->getWorldTransform(updatedTransform);
 				camera.Position = glm::vec3(updatedTransform.getOrigin().getX(), updatedTransform.getOrigin().getY(), updatedTransform.getOrigin().getZ());
 
 			}
 
-
-
-
-			float deadZone = WorldRadius / 100000000000000000; // The size of the dead zone around the edge of the radius
-
-			if (glm::length(camera.Position - glm::vec3(0)) > WorldRadius  - deadZone) {
-				// Camera is outside of the boundary, set position back to the edge of the radius
+			if (glm::length(camera.Position - glm::vec3(0)) > WorldRadius  - WorldRadius / 100000000000000000) {
 				glm::vec3 direction = glm::normalize(camera.Position - glm::vec3(0));
-				camera.Position = glm::vec3(0) + direction * (WorldRadius - deadZone);
+				camera.Position = glm::vec3(0) + direction * (WorldRadius - WorldRadius / 100000000000000000);
 			}
-
-
-			btVector3 rayFromWorld(camera.Position.x, camera.Position.y, camera.Position.x); // starting point of the ray
-			btVector3 rayToWorld(camera.Position.x, camera.Position.y - 1, camera.Position.x); // ending point of the ray
-
-			btCollisionWorld::ClosestRayResultCallback rayCallback(rayFromWorld, rayToWorld);
-			dynamicsWorld->rayTest(rayFromWorld, rayToWorld, rayCallback);
-
-			//if (rayCallback.hasHit()) {
-				//printf("Collision!!!!!");
-			//}
-
-
 
 			GizmosBoundry.scale = glm::vec3(WorldRadius);
 		}
@@ -834,37 +778,22 @@ int main()
 		
 		
 		glm::mat4 orthgonalProjection = glm::ortho(-WorldRadius, WorldRadius, -WorldRadius, WorldRadius, 0.1f, viewFarPlane);
-		//direc lights
-
 		glm::mat4 lightView = glm::lookAt(20.0f * lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 lightProjection = orthgonalProjection * lightView;
 
 		
 		glEnable(GL_DEPTH_TEST);
 		
-		// Preparations for the Shadow Map
+		//have function here
 		if (renderShadows) {
-
-
-
 			shadowMapProgram.Activate();
 			glUniformMatrix4fv(glGetUniformLocation(shadowMapProgram.ID, "lightProjection"), 1, GL_FALSE, glm::value_ptr(lightProjection));
-
-			//-------spot lights
-			//glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-			//glm::mat4 lightProjection = perspectiveProjection * lightView;
-
 			glViewport(0, 0, shadowMapWidth, shadowMapHeight);
 			glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFBO);
-		
 			glClear(GL_DEPTH_BUFFER_BIT);
-
-			
-		
-				
 			scene.TRY_DRAWING(sizeof(sceneObjects) / sizeof(sceneObjects[0]), sceneObjects, shadowMapProgram, camera, objectWorldMult);
 		}
-
+		//---------------------------------------------
 		// Switch back to the default framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		// Switch back to the default viewport
@@ -872,22 +801,13 @@ int main()
 		// Bind the custom framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 		// Specify the color of the background
+		//-------------------------------------------
 		
 
-
-
-
-		
-
-		//camera stack
-		//camera2.updateMatrix(60.0f, 0.1f, farPlane);
-		
-
-
-		// Send the light matrix to the shader
-		
 		shaderProgram.Activate();
 		glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "lightProjection"), 1, GL_FALSE, glm::value_ptr(lightProjection));
+
+		//have function here
 		if (renderShadows) {
 			// Bind the Shadow Map
 			glActiveTexture(GL_TEXTURE0 + 2);
@@ -896,34 +816,16 @@ int main()
 
 			glUniform1i(glGetUniformLocation(shaderProgram.ID, "shadowMap"), 2);
 		}
-		// Enable depth testing since it's disabled when the framebuffer rectangle
 		glEnable(GL_DEPTH_TEST);
 		
 
 
-		//glClearColor(pow(0.07f, gamma), pow(0.13f, gamma), pow(0.17f, gamma), 1.0f);
-		glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
-		
-		// Clean the back buffer and depth buffer
+		glClearColor(pow(0.07f, gamma), pow(0.13f, gamma), pow(0.17f, gamma), 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-		
-		// Updates and exports the camera matrix to the Vertex Shader
 		camera.updateMatrix3D(60.0f, 0.1f, viewFarPlane);
-		
 		//camera.updateMatrix2D(0.005f,0.4f, viewFarPlane);
 
-
-		//camera stacking
-		//calibericon.Draw(shaderProgram, camera2, glm::vec3(0, 0, 0.0f), euler_to_quat(0, 0, 0), glm::vec3(20, 20, 20));
-
-		///Drawing///
-		//for (int i = 0; i < objectsAmount; i++)
-		//{
-			//sceneObjects[i].Draw(shaderProgram, camera, glm::vec3(0, 0, 0.0f), glm::quat(0, 0, 0, 0), glm::vec3(20, 20, 20));
-		//}
-
-		//glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 		glBindFramebuffer(GL_FRAMEBUFFER, UniversalDepthframebuffer);
 		glViewport(0, 0, width, height);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -939,7 +841,6 @@ int main()
 		scene.TRY_DRAWING(sizeof(sceneObjects) / sizeof(sceneObjects[0]), sceneObjects, shaderProgram, camera, objectWorldMult);
 		GizmosBoundry.Draw(shaderProgram, camera, 1);
 
-		
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glLineWidth(5.0f);
@@ -954,13 +855,6 @@ int main()
 		
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glLineWidth(1.0f);
-		//sceneObjects[1].translation = glm::vec3(0, 1, 0);
-		
-		
-		
-		
-		//sceneObjects[1].translation = glm::vec3(cameratrans.getOrigin().getX(), cameratrans.getOrigin().getY(), cameratrans.getOrigin().getZ());
-		//sceneObjects[1].rotation = glm::quat(cameratrans.getRotation().getW(), cameratrans.getRotation().getX(), cameratrans.getRotation().getY(), cameratrans.getRotation().getZ());
 		
 
 		//SKYBOX
@@ -971,29 +865,22 @@ int main()
 			skyboxShader.Activate();
 			glm::mat4 view = glm::mat4(1.0f);
 			glm::mat4 projection = glm::mat4(1.0f);
-			// We make the mat4 into a mat3 and then a mat4 again in order to get rid of the last row and columns
-			// The last row and column affect the translation of the skybox (which we don't want to affect)
 			view = glm::mat4(glm::mat3(glm::lookAt(camera.Position, camera.Position + camera.Orientation, camera.Up)));
 			projection = glm::perspective(glm::radians(60.0f), (float)width / height, 0.1f, viewFarPlane);
 			glUniformMatrix4fv(glGetUniformLocation(skyboxShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
 			glUniformMatrix4fv(glGetUniformLocation(skyboxShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
-			// Draws the cubemap as the last object so we can save a bit of performance by discarding all fragments
-			// where an object is present (a depth of 1.0f will always fail against any object's depth value)
 			glBindVertexArray(skyboxVAO);
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
 			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 			glBindVertexArray(0);
 
-			// Switch back to the normal depth function
 			glDepthFunc(GL_LESS);
-			//------------
 		}
 		
 		//OUTLINE
 		//-----------
-
 		// Make it so the stencil test always passes
 		glStencilFunc(GL_ALWAYS, 1, 0xFF);
 		// Enable modifying of the stencil buffer
@@ -1021,20 +908,10 @@ int main()
 		glEnable(GL_DEPTH_TEST);
 
 		//-----------
-		
 
-		//rocket.Draw(shaderProgram, camera);
-		//rocket.translation = flightController.getPosition();
-		//rocket.rotation = flightController.getOrientation();
-		//rocket.scale = glm::vec3(1, 1, 1);
-		
-		// Make it so the multisampling FBO is read while the post-processing FBO is drawn
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, postProcessingFBO);
-		// Conclude the multisampling and copy it to the post-processing FBO
 		glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-
-		// Bounce the image data around to blur multiple times
 		bool horizontal = true, first_iteration = true;
 		int Blur_amount = bloom;
 		blurProgram.Activate();
@@ -1044,33 +921,27 @@ int main()
 			glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
 			glUniform1i(glGetUniformLocation(blurProgram.ID, "horizontal"), horizontal);
 
-			// In the first bounc we want to get the data from the bloomTexture
 			if (first_iteration)
 			{
 				glBindTexture(GL_TEXTURE_2D, bloomTexture);
 				first_iteration = false;
 			}
-			// Move the data between the pingPong textures
 			else
 			{
 				glBindTexture(GL_TEXTURE_2D, pingpongBuffer[!horizontal]);
 			}
 
-			// Render the image
 			glBindVertexArray(rectVAO);
 			glDisable(GL_DEPTH_TEST);
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 
-			// Switch between vertical and horizontal blurring
 			horizontal = !horizontal;
 		}
 
-		// Bind the default framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		// Draw the framebuffer rectangle
 		framebufferProgram.Activate();
 		glBindVertexArray(rectVAO);
-		glDisable(GL_DEPTH_TEST); // prevents framebuffer rectangle from being discarded
+		glDisable(GL_DEPTH_TEST);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, postProcessingTexture);
 		glActiveTexture(GL_TEXTURE1);
@@ -1078,110 +949,22 @@ int main()
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glBindTexture(GL_TEXTURE_2D, pingpongBuffer[!horizontal]);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+		if (strcmp(console.input_buf, "quit") == 0 && glfwGetKey(window, GLFW_KEY_ENTER))
+		{
+			glfwSetWindowShouldClose(window, GLFW_TRUE);
+		}
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 		console.Draw();
 		if (run == false) {
-			
-			ImGui::Begin("Viewport",0, (no_resize ? ImGuiWindowFlags_NoResize : 0) | (no_move ? ImGuiWindowFlags_NoMove : 0));
-			{
-				if (ImGui::Button("Run"))
-				{
-					if (run == false) {
-						run = true;
-					}
-					else if (run == true)
-					{
-						run = false;
-					}
-				}
+			//HERE!!!!
+			SETUI(no_resize, no_move, run, postProcessingTexture, shadowMap, depthTexture, colorChoice, msaaSamples, FXAA_SPAN_MAX, FXAA_REDUCE_MIN, FXAA_REDUCE_MUL, framebufferProgram,
+				gamma, exposure, bloom, BloomSpreadBlur, blurProgram, shadowMapWidth, shadowMapHeight, bakeShadows, renderShadows, shadowSampleRadius, avgShadow, DepthBias1, DepthBias2, shaderProgram,
+				fogNear, viewFarPlane, enableskybox, vsync, highCameraSpeed, cameraNormalSpeed, wireframe);
 
 
-
-
-				ImGui::BeginTabBar("Viewport");
-				if (ImGui::BeginTabItem("Render")) {
-					ImGui::BeginChild("ViewportRender");
-					ImGui::Image((ImTextureID)postProcessingTexture, ImGui::GetWindowSize(), ImVec2(0, 1), ImVec2(1, 0));
-					ImGui::EndChild();
-					ImGui::EndTabItem();
-				}
-
-				if (ImGui::BeginTabItem("Shadow framebuffer")) {
-					ImGui::BeginChild("ViewportRender");
-					ImGui::Image((ImTextureID)shadowMap, ImGui::GetWindowSize(), ImVec2(0, 1), ImVec2(1, 0));
-					ImGui::EndChild();
-					ImGui::EndTabItem();
-				}
-
-				if (ImGui::BeginTabItem("Depth framebuffer")) {
-					ImGui::BeginChild("ViewportRender");
-					ImGui::Image((ImTextureID)depthTexture, ImGui::GetWindowSize(), ImVec2(0, 1), ImVec2(1, 0));
-					ImGui::EndChild();
-					ImGui::EndTabItem();
-				}
-
-			}
-			ImGui::End();
-
-
-
-
-			ImGui::Begin("Preferences", 0, (no_resize ? ImGuiWindowFlags_NoResize : 0) | (no_move ? ImGuiWindowFlags_NoMove : 0));
-			{
-
-				ImGui::BeginTabBar("Preferences Bar");
-				if (ImGui::BeginTabItem("Styles")) {
-					
-
-					if (ImGui::RadioButton("Default", &colorChoice, 0) || colorChoice == 0)
-					{
-						DefaultTheme();
-					}
-					if (ImGui::RadioButton("Light", &colorChoice, 1) || colorChoice == 1)
-					{
-						LightTheme();
-					}
-					if (ImGui::RadioButton("Future", &colorChoice, 2) || colorChoice == 2)
-					{
-						FutureTheme();
-					}
-					if (ImGui::RadioButton("Hacker", &colorChoice, 3) || colorChoice == 3)
-					{
-						HackerTheme();
-					}
-					if (ImGui::RadioButton("Cyan_Blue", &colorChoice, 4) || colorChoice == 4)
-					{
-						Cyan_Blue_Theme();
-					}
-					if (ImGui::RadioButton("Jonayes Theme", &colorChoice, 5) || colorChoice == 5)
-					{
-						JonayesTheme();
-					}
-					if (ImGui::RadioButton("EyeSore (For all of you weirdoz)", &colorChoice, 6) || colorChoice == 6)
-					{
-						EyESoRETheme();
-					}
-					ImGui::EndTabItem();
-				}
-
-				if (ImGui::BeginTabItem("Layout")) {
-					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
-					ImGui::Text("Values here will not be saved.");
-					ImGui::PopStyleColor();
-					ImGui::Checkbox("No Window Moving", &no_move);
-					ImGui::Checkbox("No Window Resize", &no_resize);
-					ImGui::EndTabItem();
-				}
-
-
-			}
-			ImGui::End();
-
-			ImGui::Begin("background", 0, ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
-
-			
 			ImGui::Begin("Scene Hierarchy", 0, (no_resize ? ImGuiWindowFlags_NoResize : 0) | (no_move ? ImGuiWindowFlags_NoMove : 0));
 			{
 				for (size_t i = 0; i < sizeof(sceneObjects) / sizeof(sceneObjects[0]); i++)
@@ -1196,10 +979,10 @@ int main()
 					sceneObjects[i].scale = glm::vec3(S[0], S[1], S[2]);
 
 
-					float F[3] = { sceneObjects[i].rotation.x, sceneObjects[i].rotation.y, sceneObjects[i].rotation.z};
+					float F[3] = { sceneObjects[i].rotation.x, sceneObjects[i].rotation.y, sceneObjects[i].rotation.z };
 					ImGui::InputFloat3(("Rotation##" + std::to_string(i)).c_str(), F);
 					sceneObjects[i].rotation = glm::vec3(F[0], F[1], F[2]);
-					
+
 
 
 					ImGui::Columns(1, nullptr, true);
@@ -1208,140 +991,7 @@ int main()
 
 				}
 			}
-
-			
-
-			if (ImGui::Begin("project settings", 0, (no_resize ? ImGuiWindowFlags_NoResize : 0) | (no_move ? ImGuiWindowFlags_NoMove : 0))) {
-				if (ImGui::BeginTabBar("project tabs"))
-				{
-
-					if (ImGui::BeginTabItem("Graphics"))
-					{
-						ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
-						ImGui::Text("This will change how your game looks, make sure you have the proper graphics card.");
-						ImGui::PopStyleColor();
-
-						if (ImGui::CollapsingHeader("Anti-Aliasing", ImGuiTreeNodeFlags_DefaultOpen)) {
-							ImGui::Columns(2, nullptr, true);
-
-							ImGui::Text("Multisample Anti-Aliasing (Needs restart to change)");
-							ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
-							ImGui::Text("MSAA Needs restart to apply it.");
-							ImGui::PopStyleColor();
-							ImGui::InputInt("MSSA Samples", &msaaSamples);
-
-							ImGui::NextColumn();
-							ImGui::Text("Fast Approximate Anti-Aliasing");
-							ImGui::InputFloat("FXAA_SPAN_MAX", &FXAA_SPAN_MAX);
-							ImGui::InputFloat("FXAA_REDUCE_MIN", &FXAA_REDUCE_MIN);
-							ImGui::InputFloat("FXAA_REDUCE_MUL", &FXAA_REDUCE_MUL);
-							glUniform1f(glGetUniformLocation(framebufferProgram.ID, "minEdgeContrast"), FXAA_REDUCE_MIN);
-							glUniform1f(glGetUniformLocation(framebufferProgram.ID, "subPixelAliasing"), FXAA_REDUCE_MUL);
-							glUniform1f(glGetUniformLocation(framebufferProgram.ID, "maximumEdgeDetection"), FXAA_SPAN_MAX);
-							ImGui::Columns(1, nullptr, false);
-						}
-						
-						ImGui::Separator();
-
-						if (ImGui::CollapsingHeader("Post-Processing")) {
-							ImGui::InputFloat("Gamma correction value", &gamma, 0.3f, 1, "%.3f", 0);
-							ImGui::InputFloat("Exposure value", &exposure, 0.3f, 1, "%.3f", 0);
-							glUniform1f(glGetUniformLocation(framebufferProgram.ID, "Gamma"), gamma);
-							glUniform1f(glGetUniformLocation(framebufferProgram.ID, "Exposure"), exposure);
-							if (ImGui::CollapsingHeader("Bloom settings")) {
-								ImGui::InputInt("Bloom Amount", &bloom, 1, 100);
-								ImGui::InputFloat("Bloom Spread", &BloomSpreadBlur);
-								glUniform1f(glGetUniformLocation(blurProgram.ID, "spreadBlur"), BloomSpreadBlur);
-							}
-
-
-						}
-						ImGui::Separator();
-
-
-						if (ImGui::CollapsingHeader("Shadow's", ImGuiTreeNodeFlags_DefaultOpen)) {
-
-							ImGui::InputInt("Shadow Map Width", &shadowMapWidth, 1, 100);
-							ImGui::InputInt("Shadow Map Height", &shadowMapHeight, 1, 100);
-							ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
-							ImGui::Text("Baking the shadow's will not improve the quality it will only freeze the texture");
-							ImGui::PopStyleColor();
-							ImGui::Checkbox("Bake/Static Shadows", &bakeShadows);
-							if (!bakeShadows) {
-								ImGui::Checkbox("Enable shadows", &renderShadows);
-							}
-							ImGui::InputInt("Sample Radius", &shadowSampleRadius, 0, 100);
-
-							ImGui::InputFloat("Average Shadow (Transparency)", &avgShadow);
-							ImGui::InputFloat("Depth Bias 1", &DepthBias1);
-							ImGui::InputFloat("Depth Bias 2", &DepthBias2);
-							shaderProgram.Activate();
-							glUniform1f(glGetUniformLocation(shaderProgram.ID, "avgShadow"), avgShadow);
-							
-						}
-						ImGui::Separator();
-
-						if (ImGui::CollapsingHeader("Atmospheric")) {
-
-
-
-				
-							ImGui::SliderFloat("Fog Near Value", &fogNear, 0, 3, "%.3f", 0);
-							ImGui::InputFloat("Far Plane View distance", &viewFarPlane, 1, 30);
-							shaderProgram.Activate();
-							glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), fogNear);
-							glUniform1f(glGetUniformLocation(shaderProgram.ID, "far"), viewFarPlane);
-
-
-							ImGui::Checkbox("Enable Skybox", &enableskybox);
-						}
-						ImGui::Separator();
-
-						if (ImGui::CollapsingHeader("Screen", ImGuiTreeNodeFlags_DefaultOpen)) {
-							ImGui::Checkbox("Enable Vsync", &vsync);
-						}
-
-						
-
-						
-
-						
-						
-						
-
-
-						ImGui::EndTabItem();
-
-					}
-
-					if (ImGui::BeginTabItem("Viewport settings"))
-					{
-						ImGui::InputFloat("Shift Speed", &highCameraSpeed, 0.3f, 1, "%.3f", 0);
-						ImGui::InputFloat("Normal Speed", &cameraNormalSpeed, 0.3f, 1, "%.3f", 0);
-
-						ImGui::EndTabItem();
-					}
-
-					if (ImGui::BeginTabItem("Debug"))
-					{
-						ImGui::Checkbox("Enable Wireframe", &wireframe);
-						ImGui::EndTabItem();
-					}
-					ImGui::EndTabBar();
-					
-				}
-
-				ImGui::End();
-
-			}
 		}
-		
-		
-			
-		
-		
-		
-		
 		
 
 		ImGui::Render();

@@ -1,0 +1,234 @@
+#pragma once
+
+#include"imgui.h"
+#include"imgui_impl_glfw.h"
+#include"imgui_impl_opengl3.h"
+void SETUI(bool& no_resize, bool& no_move, bool& run, unsigned int& postProcessingTexture, unsigned int& shadowMap, GLuint& depthTexture,
+	static int& colorChoice, int& msaaSamples, float& FXAA_SPAN_MAX, float& FXAA_REDUCE_MIN, float& FXAA_REDUCE_MUL,
+	Shader& framebufferProgram, float& gamma, float& exposure, int& bloom, float& BloomSpreadBlur, Shader& blurProgram, 
+	int& shadowMapWidth, int& shadowMapHeight, bool& bakeShadows, bool& renderShadows, int&	shadowSampleRadius,
+	float& avgShadow, float& DepthBias1, float& DepthBias2, Shader& shaderProgram, float& fogNear, float& viewFarPlane,
+	bool& enableskybox, bool& vsync, float& highCameraSpeed, float& cameraNormalSpeed, bool& wireframe) {
+	ImGui::Begin("Viewport", 0, (no_resize ? ImGuiWindowFlags_NoResize : 0) | (no_move ? ImGuiWindowFlags_NoMove : 0));
+	{
+		if (ImGui::Button("Run"))
+		{
+			if (run == false) {
+				run = true;
+			}
+			else if (run == true)
+			{
+				run = false;
+			}
+		}
+
+
+		ImGui::BeginTabBar("Viewport");
+		if (ImGui::BeginTabItem("Render")) {
+			ImGui::BeginChild("ViewportRender");
+			ImGui::Image((ImTextureID)postProcessingTexture, ImGui::GetWindowSize(), ImVec2(0, 1), ImVec2(1, 0));
+			ImGui::EndChild();
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("Shadow framebuffer")) {
+			ImGui::BeginChild("ViewportRender");
+			ImGui::Image((ImTextureID)shadowMap, ImGui::GetWindowSize(), ImVec2(0, 1), ImVec2(1, 0));
+			ImGui::EndChild();
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("Depth framebuffer")) {
+			ImGui::BeginChild("ViewportRender");
+			ImGui::Image((ImTextureID)depthTexture, ImGui::GetWindowSize(), ImVec2(0, 1), ImVec2(1, 0));
+			ImGui::EndChild();
+			ImGui::EndTabItem();
+		}
+
+	}
+	ImGui::End();
+
+
+
+
+	ImGui::Begin("Preferences", 0, (no_resize ? ImGuiWindowFlags_NoResize : 0) | (no_move ? ImGuiWindowFlags_NoMove : 0));
+	{
+
+		ImGui::BeginTabBar("Preferences Bar");
+		if (ImGui::BeginTabItem("Styles")) {
+
+
+			if (ImGui::RadioButton("Default", &colorChoice, 0) || colorChoice == 0)
+			{
+				DefaultTheme();
+			}
+			if (ImGui::RadioButton("Light", &colorChoice, 1) || colorChoice == 1)
+			{
+				LightTheme();
+			}
+			if (ImGui::RadioButton("Future", &colorChoice, 2) || colorChoice == 2)
+			{
+				FutureTheme();
+			}
+			if (ImGui::RadioButton("Hacker", &colorChoice, 3) || colorChoice == 3)
+			{
+				HackerTheme();
+			}
+			if (ImGui::RadioButton("Cyan_Blue", &colorChoice, 4) || colorChoice == 4)
+			{
+				Cyan_Blue_Theme();
+			}
+			if (ImGui::RadioButton("Jonayes Theme", &colorChoice, 5) || colorChoice == 5)
+			{
+				JonayesTheme();
+			}
+			if (ImGui::RadioButton("EyeSore (For all of you weirdoz)", &colorChoice, 6) || colorChoice == 6)
+			{
+				EyESoRETheme();
+			}
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("Layout")) {
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+			ImGui::Text("Values here will not be saved.");
+			ImGui::PopStyleColor();
+			ImGui::Checkbox("No Window Moving", &no_move);
+			ImGui::Checkbox("No Window Resize", &no_resize);
+			ImGui::EndTabItem();
+		}
+
+
+	}
+	ImGui::End();
+
+	ImGui::Begin("background", 0, ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+
+
+
+
+
+	if (ImGui::Begin("project settings", 0, (no_resize ? ImGuiWindowFlags_NoResize : 0) | (no_move ? ImGuiWindowFlags_NoMove : 0))) {
+		if (ImGui::BeginTabBar("project tabs"))
+		{
+
+			if (ImGui::BeginTabItem("Graphics"))
+			{
+				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+				ImGui::Text("This will change how your game looks, make sure you have the proper graphics card.");
+				ImGui::PopStyleColor();
+
+				if (ImGui::CollapsingHeader("Anti-Aliasing", ImGuiTreeNodeFlags_DefaultOpen)) {
+					ImGui::Columns(2, nullptr, true);
+
+					ImGui::Text("Multisample Anti-Aliasing (Needs restart to change)");
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+					ImGui::Text("MSAA Needs restart to apply it.");
+					ImGui::PopStyleColor();
+					ImGui::InputInt("MSSA Samples", &msaaSamples);
+
+					ImGui::NextColumn();
+					ImGui::Text("Fast Approximate Anti-Aliasing");
+					ImGui::InputFloat("FXAA_SPAN_MAX", &FXAA_SPAN_MAX);
+					ImGui::InputFloat("FXAA_REDUCE_MIN", &FXAA_REDUCE_MIN);
+					ImGui::InputFloat("FXAA_REDUCE_MUL", &FXAA_REDUCE_MUL);
+					glUniform1f(glGetUniformLocation(framebufferProgram.ID, "minEdgeContrast"), FXAA_REDUCE_MIN);
+					glUniform1f(glGetUniformLocation(framebufferProgram.ID, "subPixelAliasing"), FXAA_REDUCE_MUL);
+					glUniform1f(glGetUniformLocation(framebufferProgram.ID, "maximumEdgeDetection"), FXAA_SPAN_MAX);
+					ImGui::Columns(1, nullptr, false);
+				}
+
+				ImGui::Separator();
+
+				if (ImGui::CollapsingHeader("Post-Processing")) {
+					ImGui::InputFloat("Gamma correction value", &gamma, 0.3f, 1, "%.3f", 0);
+					ImGui::InputFloat("Exposure value", &exposure, 0.3f, 1, "%.3f", 0);
+					glUniform1f(glGetUniformLocation(framebufferProgram.ID, "Gamma"), gamma);
+					glUniform1f(glGetUniformLocation(framebufferProgram.ID, "Exposure"), exposure);
+					if (ImGui::CollapsingHeader("Bloom settings")) {
+						ImGui::InputInt("Bloom Amount", &bloom, 1, 100);
+						ImGui::InputFloat("Bloom Spread", &BloomSpreadBlur);
+						glUniform1f(glGetUniformLocation(blurProgram.ID, "spreadBlur"), BloomSpreadBlur);
+					}
+
+
+				}
+				ImGui::Separator();
+
+
+				if (ImGui::CollapsingHeader("Shadow's", ImGuiTreeNodeFlags_DefaultOpen)) {
+
+					ImGui::InputInt("Shadow Map Width", &shadowMapWidth, 1, 100);
+					ImGui::InputInt("Shadow Map Height", &shadowMapHeight, 1, 100);
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+					ImGui::Text("Baking the shadow's will not improve the quality it will only freeze the texture");
+					ImGui::PopStyleColor();
+					ImGui::Checkbox("Bake/Static Shadows", &bakeShadows);
+					if (!bakeShadows) {
+						ImGui::Checkbox("Enable shadows", &renderShadows);
+					}
+					ImGui::InputInt("Sample Radius", &shadowSampleRadius, 0, 100);
+
+					ImGui::InputFloat("Average Shadow (Transparency)", &avgShadow);
+					ImGui::InputFloat("Depth Bias 1", &DepthBias1);
+					ImGui::InputFloat("Depth Bias 2", &DepthBias2);
+					shaderProgram.Activate();
+					glUniform1f(glGetUniformLocation(shaderProgram.ID, "avgShadow"), avgShadow);
+
+				}
+				ImGui::Separator();
+
+				if (ImGui::CollapsingHeader("Atmospheric")) {
+
+
+
+
+					ImGui::SliderFloat("Fog Near Value", &fogNear, 0, 3, "%.3f", 0);
+					ImGui::InputFloat("Far Plane View distance", &viewFarPlane, 1, 30);
+					shaderProgram.Activate();
+					glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), fogNear);
+					glUniform1f(glGetUniformLocation(shaderProgram.ID, "far"), viewFarPlane);
+
+
+					ImGui::Checkbox("Enable Skybox", &enableskybox);
+				}
+				ImGui::Separator();
+
+				if (ImGui::CollapsingHeader("Screen", ImGuiTreeNodeFlags_DefaultOpen)) {
+					ImGui::Checkbox("Enable Vsync", &vsync);
+				}
+
+
+
+
+
+
+
+
+
+
+				ImGui::EndTabItem();
+
+			}
+
+			if (ImGui::BeginTabItem("Viewport settings"))
+			{
+				ImGui::InputFloat("Shift Speed", &highCameraSpeed, 0.3f, 1, "%.3f", 0);
+				ImGui::InputFloat("Normal Speed", &cameraNormalSpeed, 0.3f, 1, "%.3f", 0);
+
+				ImGui::EndTabItem();
+			}
+
+			if (ImGui::BeginTabItem("Debug"))
+			{
+				ImGui::Checkbox("Enable Wireframe", &wireframe);
+				ImGui::EndTabItem();
+			}
+			ImGui::EndTabBar();
+
+		}
+
+		ImGui::End();
+
+	}
+}
