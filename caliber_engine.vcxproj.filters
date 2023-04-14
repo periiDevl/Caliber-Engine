@@ -170,7 +170,7 @@
     <ClInclude Include="src\IMGUI_Themes.h">
       <Filter>Header Files\src</Filter>
     </ClInclude>
-    <ClInclude Include="UIIMGUI.h">
+    <ClInclude Include="src\UIIMGUI.h">
       <Filter>Header Files\src</Filter>
     </ClInclude>
   </ItemGroup>

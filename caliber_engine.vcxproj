@@ -206,9 +206,9 @@
     <ClInclude Include="src\Setup.h" />
     <ClInclude Include="src\shaderClass.h" />
     <ClInclude Include="src\Texture.h" />
+    <ClInclude Include="src\UIIMGUI.h" />
     <ClInclude Include="src\VAO.h" />
     <ClInclude Include="src\VBO.h" />
-    <ClInclude Include="UIIMGUI.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\source\repos\caliber_engine\caliberLogo.jpeg" />
