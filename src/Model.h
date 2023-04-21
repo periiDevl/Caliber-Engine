@@ -79,7 +79,7 @@ public:
 		Functions func;
 		boxRigidBody->setGravity(btVector3(0, -9.81, 0));
 		boxRigidBody->getMotionState()->getWorldTransform(phys);
-		translation = glm::vec3(phys.getOrigin().getX(), phys.getOrigin().getY(), phys.getOrigin().getZ());
+		translation = glm::vec3(phys.getOrigin().getX(), phys.getOrigin().getY() - 1, phys.getOrigin().getZ());
 		glm::quat rotationQuat = glm::quat(phys.getRotation().getX(), phys.getRotation().getY(), phys.getRotation().getZ(), phys.getRotation().getW());
 		rotation = func.Quat_to_euler(rotationQuat);
 

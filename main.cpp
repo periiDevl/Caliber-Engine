@@ -38,8 +38,8 @@ Save sve;
 //component.AddObject("path/to/object.obj");
 
 
-const float WorldRadius = 40;
-const float objectWorldMult = 2;
+const float WorldRadius = 100;
+const float objectWorldMult = 4;
 
 bool run = false; 
 
@@ -630,7 +630,7 @@ int main()
 	
 
 
-	btCollisionShape* sphereShape = new btBoxShape(btVector3(0.3, 1.5, 0.3)); // replace btBoxShape with btSphereShape and the size parameter with 1
+	btCollisionShape* sphereShape = new btBoxShape(btVector3(0.3, 0.3, 0.3)); // replace btBoxShape with btSphereShape and the size parameter with 1
 	btDefaultMotionState* sphereMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0))); // replace boxMotionState with sphereMotionState
 	
 	btVector3 sphereInertia(0, 0, 0);
@@ -646,11 +646,12 @@ int main()
 	const int substep = 10;
 	Model PhysicsCube("models/cube/scene.gltf");
 
-	PhysicsCube.phys.setOrigin(btVector3(0, 20, 0));
+	PhysicsCube.phys.setOrigin(btVector3(0, 0, 0));
 	PhysicsCube.scale = glm::vec3(4, 4, 4);
 	PhysicsCube.BindPhysics(dynamicsWorld, objectWorldMult, true);
 	PhysicsCube.PHYSICS_SETUP();
-	
+	PhysicsCube.phys.setOrigin(btVector3(0, 0, 0));
+	PhysicsCube.scale = glm::vec3(4, 4, 4);
 
 
 	
@@ -849,7 +850,6 @@ int main()
 		PhysicsCube.Draw(unlitProgram, camera, objectWorldMult);
 		PhysicsCube.PhysicsUpdate(true);
 		PhysicsCube.PHYSICS_SETUP();
-		PhysicsCube.scale = glm::vec3(4, 4, 4);
 
 
 		
