@@ -39,7 +39,7 @@ Save sve;
 
 
 const float WorldRadius = 100;
-const float objectWorldMult = 4;
+const float objectWorldMult = 5;
 
 bool run = false; 
 
