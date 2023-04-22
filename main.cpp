@@ -207,7 +207,6 @@ int main()
 	//GLFWwindow* window = glfwCreateWindow(width, height, "Caliber window", glfwGetPrimaryMonitor(), NULL);
 	
 	
-	
 	GLFWwindow* window = glfwCreateWindow(width, height, "Loading Caliber Engine...", NULL, NULL);
 
 	
@@ -234,6 +233,7 @@ int main()
 	}
 
 
+
 	
 	//load Icon
 	int wid, hei;
@@ -254,7 +254,12 @@ int main()
 	// In this case the viewport goes from x = 0, y = 0, to x = 800, y = 800
 	glViewport(0, 0, width, height);
 
-	console.AddLog("(Using OpenGL 330 core) Hello World!");
+	console.AddLog(reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+
+
+	std::string rendererString = "Using : ";
+	rendererString += reinterpret_cast<const char*>(glGetString(GL_RENDERER));
+	console.AddLog(rendererString.c_str());
 
 	setup.SETUP_IMGUI(window);
 	// Generates shaders
@@ -530,7 +535,9 @@ int main()
 	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	
+	glm::mat4 orthgonalProjection = glm::ortho(-WorldRadius, WorldRadius, -WorldRadius, WorldRadius, 0.1f, viewFarPlane);
+	glm::mat4 lightView = glm::lookAt(20.0f * lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 lightProjection = orthgonalProjection * lightView;
 	//glm::mat4 orthgonalProjection = glm::ortho(-WorldRadius, WorldRadius, -WorldRadius, WorldRadius, WorldRadius, farPlane);
 	//glm::mat4 orthgonalProjectionLow = glm::ortho(-40.0f, 40.0f, -40.0f, 40.0f, 1.0f, farPlane);,ks89oxb
 	//glm::mat4 perspectiveProjection = glm::perspective(glm::radians(30.0f), 1.0f, 0.1f, farPlane);
@@ -767,9 +774,7 @@ int main()
 		
 		
 		
-		glm::mat4 orthgonalProjection = glm::ortho(-WorldRadius, WorldRadius, -WorldRadius, WorldRadius, 0.1f, viewFarPlane);
-		glm::mat4 lightView = glm::lookAt(20.0f * lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		glm::mat4 lightProjection = orthgonalProjection * lightView;
+
 
 		
 		glEnable(GL_DEPTH_TEST);
