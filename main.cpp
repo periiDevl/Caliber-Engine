@@ -653,13 +653,7 @@ int main()
 	PhysicsCube.phys.setOrigin(btVector3(0, 0, 0));
 	PhysicsCube.scale = glm::vec3(4, 4, 4);
 
-
-	
-	//camera.getInputAtRun = true;
-	// Main while loop
-	
 	bool bake = true;
-
 
 	GLuint UniversalDepthframebuffer;
 	glGenFramebuffers(1, &UniversalDepthframebuffer);
@@ -677,12 +671,6 @@ int main()
 
 	// Attach the depth texture to the framebuffer
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
-
-	// Check if the framebuffer is complete
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-	{
-		// handle error
-	}
 
 	const float fixed_timestep = 1.0f / 60.0;
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
@@ -729,7 +717,7 @@ int main()
 		if (timeDiff >= fixed_timestep) {
 			std::string FPS = std::to_string((1.0 / timeDiff) * counter);
 			std::string ms = std::to_string((timeDiff / counter) * 1000);
-			std::string newTitle = "Caliber renderer window - " + FPS + "FPS / " + ms + "ms";
+			std::string newTitle = "Caliber Universal Editor- " + FPS + "FPS / " + ms + "ms";
 			glfwSetWindowTitle(window, newTitle.c_str());
 
 			prevTime = crntTime;
@@ -757,6 +745,7 @@ int main()
 				sphereRigidBody->setAngularFactor(btVector3(0, 0, 0));
 
 				sphereRigidBody->setGravity(btVector3(0, 0, 0));
+
 
 				dynamicsWorld->stepSimulation(fixed_timestep, substep);
 
