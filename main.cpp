@@ -19,7 +19,7 @@
 #include"src/Console.h"
 #include"src/IMGUI_Themes.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include <stb_image_write.h>
+//#include <stb_image_write.h>
 #include"src/UIIMGUI.h"
 #include<thread>
 Console console;
@@ -61,7 +61,7 @@ void saveScreenshot(GLFWwindow* window, const char* filename) {
 
 	// Create a new thread to save the screenshot
 	std::thread saveThread([=]() {
-		stbi_write_png(filename, width, height, 4, pixels, 0);
+		//stbi_write_png(filename, width, height, 4, pixels, 0);
 		delete[] pixels;
 		});
 
