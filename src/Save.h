@@ -24,8 +24,6 @@ public:
         std::string line;
         for (int i = 1; i <= lineNum; i++) {
             if (!std::getline(file, line)) {
-                // If the specified line number is out of range,
-                // return a zero vector.
                 return glm::vec3(0.0f);
             }
         }
@@ -43,8 +41,6 @@ public:
         std::string line;
         for (int i = 1; i <= lineNum; i++) {
             if (!std::getline(file, line)) {
-                // If the specified line number is out of range,
-                // return a zero quaternion.
                 return glm::quat(0.0f, 0.0f, 0.0f, 0.0f);
             }
         }

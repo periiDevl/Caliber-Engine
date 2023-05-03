@@ -5,38 +5,26 @@ public:
 	R"(
 	#version 330 core
 
-	// Outputs colors in RGBA
 	layout (location = 0) out vec4 FragColor;
 	layout (location = 1) out vec4 BloomColor;
 
-	// Imports the current position from the Vertex Shader
 	in vec3 crntPos;
-	// Imports the normal from the Vertex Shader
 	in vec3 Normal;
-	// Imports the color from the Vertex Shader
 	in vec3 color;
-	// Imports the texture coordinates from the Vertex Shader
 	in vec2 texCoord;
-	// Imports the fragment position of the light
 	in vec4 fragPosLight;
 
 
 
-	// Gets the Texture Units from the main function
 	uniform sampler2D diffuse0;
 	uniform sampler2D specular0;
 	uniform sampler2D shadowMap;
-	// Gets the color of the light from the main function
 	uniform vec4 lightColor;
-	// Gets the position of the light from the main function
 	uniform vec3 lightPos;
 
-	// Gets the color of the light from the main function
 	uniform vec4 lColor;
-	// Gets the position of the light from the main function
 	uniform vec3 lPos;
 
-	// Gets the position of the camera from the main function
 	uniform vec3 camPos;
 
 	uniform float near = 0.0000000000001f;
@@ -49,31 +37,26 @@ public:
 
 	uniform float avgShadow = 1.0f;
 
-	uniform int sampleRadius; // increase the sample radius
+	uniform int sampleRadius;
 
 	const float levelShade = 300000000000000000000.0;
 
 	uniform mat4 model;
 	vec4 pointLight()
 	{	
-		// used in two variables so I calculate it here to not have to do it twice
 		vec3 lightVec = lightPos - crntPos;
 
-		// intensity of light with respect to distance
 		float dist = length(lightVec);
 		float a = 3.0;
 		float b = 0.7;
 		float inten = 10.0f / (a * dist * dist + b * dist + 1.0f);
 
-		// ambient lighting
 		float ambient = 0.0f;
 
-		// diffuse lighting
 		vec3 normal = normalize(Normal);
 		vec3 lightDirection = normalize(lightVec);
 		float diffuse = max(dot(normal, lightDirection), 0.0f);
 
-		// specular lighting
 		float specular = 0.0f;
 		if (diffuse != 0.0f)
 		{
@@ -90,22 +73,19 @@ public:
 
 	vec4 direcLight()
 	{
-		// ambient lighting
 		float ambient = 0.3f;
 
-		// diffuse lighting
 		vec3 normal = normalize(Normal);
 		vec3 lightDirection = normalize(lightPos * 5 - crntPos);
 		lightDirection = mat3(transpose(inverse(model))) * lightDirection;
-		float falloffFactor = 0.0f; // set to zero to remove the distance term
+		float falloffFactor = 0.0f;
 		float diffuse = ambient;
 		float level = floor(diffuse * levelShade);
-		//diffuse = level / levelShade;
+		diffuse = level / levelShade;
 
 		
 
 
-		// specular lighting
 		float specular = 0.0f;
 		if (diffuse != 0.0f)
 		{
@@ -119,19 +99,14 @@ public:
 		};
 
 
-		// Shadow value
 		float shadow = 0.0f;
 
-		// Sets lightCoords to cull space
 		vec3 lightCoords = fragPosLight.xyz / fragPosLight.w;
 		if (lightCoords.z <= 1.0f)
 		{
-			// Get from [-1, 1] range to [0, 1] range just like the shadow map
 			lightCoords = (lightCoords + 1.0f) / 2.0f;
 			float currentDepth = lightCoords.z;
 
-			// Prevents shadow acne
-			//float bias = max(0.005f * (1.0f - dot(normal, lightDirection)), 0.000001f);
 			float bias = max((bias1 / 1000) * (1.0f - dot(normal, lightDirection)), (bias2 / 1000000));
 
 
@@ -150,7 +125,6 @@ public:
 				}
 			}
 
-			// Get average shadow
 			shadow /= pow((sampleRadius * 2 + avgShadow), 2);
 		}
 
@@ -182,11 +156,9 @@ public:
 		FragColor = direcLight() + vec4(linearizeDepth(gl_FragCoord.z, near / 100, far) * vec3(1.0f, 1.0f, 1.0f), 1.0f);
 	
 
-		//FragColor = direcLight();
 	
 
 	
-		// Calculate brightness by adding up all the channels with different weights each
 		float brightness = dot(FragColor.rgb, vec3(0.2126f, 0.7152f, 0.0722f));
 		if(brightness > 0.15f)
 			BloomColor = vec4(FragColor.rgb, 1.0f);
@@ -207,9 +179,7 @@ in vec2 texCoords;
 uniform sampler2D screenTexture;
 uniform bool horizontal;
 
-// How far from the center to take samples from the fragment you are currently on
 const int radius = 5;
-// Keep it between 1.0f and 2.0f (the higher this is the further the blur reaches)
 float spreadBlur = 1.7f;
 float weights[radius];
 void main()
@@ -307,9 +277,9 @@ void main()
 {
     //vignette
     vec3 vignettecolor = vec3(0, 0, 0);
-    vec2 center = vec2(0.5, 0.5); // center of vignette effect
-    float radius = 0.3; // radius of vignette effect
-    float vignettestrength = 0.7; // strength of vignette effect
+    vec2 center = vec2(0.5, 0.5); 
+    float radius = 0.3; 
+    float vignettestrength = 0.7;
 
     vec2 uv = texCoords - center;
     float dist = length(uv);
@@ -350,19 +320,15 @@ in vec2 texCoords;
 uniform sampler2D screenTexture;
 uniform bool horizontal;
 
-// How far from the center to take samples from the fragment you are currently on
 const int radius = 5;
-// Keep it between 1.0f and 2.0f (the higher this is the further the blur reaches)
 uniform float spreadBlur = 1.7f;
 
 float weights[radius];
 void main()
 {             
-    // Calculate the weights using the Gaussian equation
     float x = 0.0f;
     for (int i = 0; i < radius; i++)
     {
-        // Decides the distance between each sample on the Gaussian function
         if (spreadBlur <= 2.0f)
             x += 3.0f / radius;
         else
@@ -375,25 +341,19 @@ void main()
     vec2 tex_offset = 1.0f / textureSize(screenTexture, 0);
     vec3 result = texture(screenTexture, texCoords).rgb * weights[0];
 
-    // Calculate horizontal blur
     if(horizontal)
     {
         for(int i = 1; i < radius; i++)
         {
-            // Take into account pixels to the right
             result += texture(screenTexture, texCoords + vec2(tex_offset.x * i, 0.0)).rgb * weights[i];
-            // Take into account pixels on the left
             result += texture(screenTexture, texCoords - vec2(tex_offset.x * i, 0.0)).rgb * weights[i];
         }
     }
-    // Calculate vertical blur
     else
     {
         for(int i = 1; i < radius; i++)
         {
-            // Take into account pixels above
             result += texture(screenTexture, texCoords + vec2(0.0, tex_offset.y * i)).rgb * weights[i];
-            // Take into account pixels below
             result += texture(screenTexture, texCoords - vec2(0.0, tex_offset.y * i)).rgb * weights[i];
         }
     }

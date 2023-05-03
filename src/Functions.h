@@ -54,7 +54,6 @@ public:
 		glm::vec3 const& up
 	)
 	{
-		//you want to.y to be -
 		glm::vec3  direction = to - from;
 		float directionLength = glm::length(direction);
 
@@ -64,7 +63,6 @@ public:
 		direction /= directionLength;
 
 		if (glm::abs(glm::dot(direction, up)) > .9999f) {
-			//you might to have add an alternative variable
 			return glm::quatLookAt(direction, glm::vec3(0));
 		}
 		else {

@@ -50,7 +50,6 @@ void saveScreenshot(GLFWwindow* window, const char* filename) {
 	unsigned char* pixels = new unsigned char[width * height * 4];
 	glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
-	// Swap the rows to fix the image orientation
 	for (int y = 0; y < height / 2; ++y) {
 		for (int x = 0; x < width; ++x) {
 			for (int c = 0; c < 4; ++c) {
@@ -59,13 +58,11 @@ void saveScreenshot(GLFWwindow* window, const char* filename) {
 		}
 	}
 
-	// Create a new thread to save the screenshot
 	std::thread saveThread([=]() {
 		//stbi_write_png(filename, width, height, 4, pixels, 0);
 		delete[] pixels;
 		});
 
-	// Detach the thread and return immediately
 	saveThread.detach();
 }
 
@@ -109,22 +106,16 @@ float skyboxVertices[] =
 
 unsigned int skyboxIndices[] =
 {
-	// Right
 	1, 2, 6,
 	6, 5, 1,
-	// Left
 	0, 4, 7,
 	7, 3, 0,
-	// Top
 	4, 5, 6,
 	6, 7, 4,
-	// Bottom
 	0, 3, 2,
 	2, 1, 0,
-	// Back
 	0, 1, 5,
 	5, 4, 0,
-	// Front
 	3, 7, 6,
 	6, 2, 3
 };
@@ -158,7 +149,6 @@ int main()
 {
 	
 	
-	//scene.TRY_OBJ_RECOVERING_TEST(objectAmt, sceneObjects);
 	//PlaySound(TEXT("balls.wav"), NULL, SND_ASYNC);
 	
 	Presave<float> myData;
@@ -198,7 +188,6 @@ int main()
 	
 	bool no_resize = true;
 	bool no_move = true;
-	// Initialize GLFW
 	setup.SETUP_GLFW();
 	
 
@@ -210,14 +199,12 @@ int main()
 	GLFWwindow* window = glfwCreateWindow(width, height, "Loading Caliber Engine...", NULL, NULL);
 
 	
-	// Error check if the window fails to create
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
 		return -1; 
 	}
-	// Introduce the window into the current context
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
@@ -235,23 +222,17 @@ int main()
 
 
 	
-	//load Icon
 	int wid, hei;
 	int channels;
-	//!rememer! make sure to install the icon
 	unsigned char* pixels = stbi_load("Icon.png", &wid, &hei, &channels, 4);
 
-	//change icon
 	GLFWimage images[1];
 	images[0].width = wid;
 	images[0].height = hei;
 	images[0].pixels = pixels;
 	glfwSetWindowIcon(window, 1, images);
 	
-	//Load GLAD so it configures OpenGL
 	gladLoadGL();
-	// Specify the viewport of OpenGL in the Window
-	// In this case the viewport goes from x = 0, y = 0, to x = 800, y = 800
 	glViewport(0, 0, width, height);
 
 	console.AddLog(reinterpret_cast<const char*>(glGetString(GL_VERSION)));
@@ -262,7 +243,6 @@ int main()
 	console.AddLog(rendererString.c_str());
 
 	setup.SETUP_IMGUI(window);
-	// Generates shaders
 	Shader shaderProgram(vert.Default, frag.Default);
 	Shader unlitProgram(vert.Default, frag.Unlit);
 	Shader framebufferProgram(vert.Frame, frag.Frame);
@@ -276,7 +256,6 @@ int main()
 
 	
 
-	// Take care of all the light related things
 	glm::vec4 lightColor = glm::vec4(1.0f, 0.8f, 0.6f, 1.0f) * 3.0f;
 
 	blurProgram.Activate();
@@ -303,14 +282,7 @@ int main()
 	glUniform1i(glGetUniformLocation(shaderProgram.ID, "sampleRadius"), shadowSampleRadius);
 	skyboxShader.Activate();
 	glUniform1i(glGetUniformLocation(skyboxShader.ID, "skybox"), 0);
-	/*
-	glm::vec4 lColor = glm::vec4(10, 10, 10, 1);
-	glm::vec3 lPos = glm::vec3(1.9f, 1, 0.5f);
 
-
-	glUniform4f(glGetUniformLocation(shaderProgram.ID, "lColor"), lColor.x, lColor.y, lColor.z, lColor.w);
-	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lPos"), lPos.x, lPos.y, lPos.z);
-	*/
 
 	
 
@@ -319,7 +291,6 @@ int main()
 	glUniform1i(glGetUniformLocation(framebufferProgram.ID, "bloomTexture"), 1);
 	glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);
 	glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
-	//AA
 	glUniform1f(glGetUniformLocation(framebufferProgram.ID, "minEdgeContrast"), FXAA_REDUCE_MIN);
 	glUniform1f(glGetUniformLocation(framebufferProgram.ID, "subPixelAliasing"), FXAA_REDUCE_MUL);
 	glUniform1f(glGetUniformLocation(framebufferProgram.ID, "maximumEdgeDetection"), FXAA_SPAN_MAX);
@@ -330,47 +301,21 @@ int main()
 	glUniform1i(glGetUniformLocation(blurProgram.ID, "screenTexture"), 0);
 
 
-	// Enables the Depth Buffer
 	glEnable(GL_DEPTH_TEST);
-
-	//outlining
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
-
-	// Enables Multisampling
 	glEnable(GL_MULTISAMPLE);
-
-	// Enables Cull Facing
 	glEnable(GL_CULL_FACE);
-	// Keeps front faces
 	glCullFace(GL_FRONT);
-	// Uses counter clock-wise standard
 	glFrontFace(GL_CCW);
-
-	// Creates camera object
 	Camera camera(width, height, glm::vec3(0, 0, 0.0f));
-
-
 	//camera stacking
 	//Camera camera2(width, height, glm::vec3(22.0f, 15.0, 0.0f));
-	
-
-	
-	
-	
-	
-	// Load in models
-
-	
-	
 
 	Component scene;
 	Model sceneObjects[] = { Model("models/ExampleModel/scene.gltf"),Model("models/ExampleModel/scene.gltf"),
 		};
 	Model GizmosBoundry = ("models/Gizmos/BoundSphere/scene.gltf");
-
-	//glm::vec3 hello = sve.loadVec3("work.txt", 0);
 
 	for (size_t i = 0; i < sizeof(sceneObjects) / sizeof(sceneObjects[0]); i++)
 	{
@@ -379,17 +324,6 @@ int main()
 		sceneObjects[i].scale = sve.loadVec3("Metric/scale.metric", i + 1);
 	}
 
-
-
-	
-
-
-	//sceneObjects[2].scale = glm::vec3(2.0f);
-	
-	//Model rocket("models/rocket/scene.gltf");
-
-
-	// Prepare framebuffer rectangle VBO and VAO
 	unsigned int rectVAO, rectVBO;
 	glGenVertexArrays(1, &rectVAO);
 	glGenBuffers(1, &rectVBO);
@@ -403,18 +337,11 @@ int main()
 
 
 
-	// Variables to create periodic event for FPS displaying
 	double prevTime = 0.0;
 	double crntTime = 0.0;
 	double timeDiff;
-	// Keeps track of the Blur_amount of frames in timeDiff
 	unsigned int counter = 0;
 
-	// Use this to disable VSync (not advized)
-	//glfwSwapInterval(0);
-
-
-	// Create Frame Buffer Object
 	unsigned int FBO;
 	glGenFramebuffers(1, &FBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
@@ -422,18 +349,16 @@ int main()
 
 
 
-	// Create Framebuffer Texture
 	unsigned int framebufferTexture;
 	glGenTextures(1, &framebufferTexture);
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, framebufferTexture);
 	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, msaaSamples, GL_RGB16F, width, height, GL_TRUE);
 	glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // Prevents edge bleeding
-	glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // Prevents edge bleeding
+	glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, framebufferTexture, 0);
 
-	// Create Render Buffer Object
 	unsigned int RBO;
 	glGenRenderbuffers(1, &RBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
@@ -441,12 +366,10 @@ int main()
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
 
 
-	// Error checking framebuffer
 	auto fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (fboStatus != GL_FRAMEBUFFER_COMPLETE)
 		std::cout << "Framebuffer error: " << fboStatus << std::endl;
 
-	// Create Ping Pong Framebuffers for repetitive blurring
 	unsigned int pingpongFBO[2];
 	unsigned int pingpongBuffer[2];
 	glGenFramebuffers(2, pingpongFBO);
@@ -467,12 +390,10 @@ int main()
 			std::cout << "Ping-Pong Framebuffer error: " << fboStatus << std::endl;
 	}
 
-	// Create Frame Buffer Object
 	unsigned int postProcessingFBO;
 	glGenFramebuffers(1, &postProcessingFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, postProcessingFBO);
 
-	// Create Framebuffer Texture
 	unsigned int postProcessingTexture;
 	glGenTextures(1, &postProcessingTexture);
 	glBindTexture(GL_TEXTURE_2D, postProcessingTexture);
@@ -483,7 +404,6 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, postProcessingTexture, 0);
 
-	// Create Second Framebuffer Texture
 	unsigned int bloomTexture;
 	glGenTextures(1, &bloomTexture);
 	glBindTexture(GL_TEXTURE_2D, bloomTexture);
@@ -494,27 +414,16 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, bloomTexture, 0);
 
-	// Tell OpenGL we need to draw to both attachments
 	unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 	glDrawBuffers(2, attachments);
 
-	// Error checking framebuffer
 	fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (fboStatus != GL_FRAMEBUFFER_COMPLETE)
 		std::cout << "Post-Processing Framebuffer error: " << fboStatus << std::endl;
 
 
-	// Framebuffer for Shadow Map
 	unsigned int shadowMapFBO;
 	glGenFramebuffers(1, &shadowMapFBO);
-	// Texture for Shadow Map FBO
-	
-
-	//shadowMapWidth = 15000, shadowMapHeight = 15000;
-
-	
-	
-
 	
 	unsigned int shadowMap;
 	glGenTextures(1, &shadowMap);
@@ -524,13 +433,11 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-	// Prevents darkness outside the frustrum
 	float clampColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, clampColor);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowMap, 0);
-	// Needed since we don't touch the color buffer
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -538,11 +445,6 @@ int main()
 	glm::mat4 orthgonalProjection = glm::ortho(-WorldRadius, WorldRadius, -WorldRadius, WorldRadius, 0.1f, viewFarPlane);
 	glm::mat4 lightView = glm::lookAt(20.0f * lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 lightProjection = orthgonalProjection * lightView;
-	//glm::mat4 orthgonalProjection = glm::ortho(-WorldRadius, WorldRadius, -WorldRadius, WorldRadius, WorldRadius, farPlane);
-	//glm::mat4 orthgonalProjectionLow = glm::ortho(-40.0f, 40.0f, -40.0f, 40.0f, 1.0f, farPlane);,ks89oxb
-	//glm::mat4 perspectiveProjection = glm::perspective(glm::radians(30.0f), 1.0f, 0.1f, farPlane);
-
-	//0.29, 1.00, 0.62,
 	
 	DefaultTheme();
 	
@@ -550,7 +452,6 @@ int main()
 
 	
 	
-	// Create VAO, VBO, and EBO for the skybox
 	unsigned int skyboxVAO, skyboxVBO, skyboxEBO;
 	glGenVertexArrays(1, &skyboxVAO);
 	glGenBuffers(1, &skyboxVBO);
@@ -567,7 +468,6 @@ int main()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 
-	// All the faces of the cubemap (make sure they are in this exact order)
 	std::string facesCubemap[6] =
 	{
 		"skybox/deafult/right.jpg",
@@ -578,20 +478,14 @@ int main()
 		"skybox/deafult/back.jpg"
 	};
 
-	// Creates the cubemap texture object
 	unsigned int cubemapTexture;
 	glGenTextures(1, &cubemapTexture);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	// These are very important to prevent seams
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	// This might help with seams on some systems
-	//glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-
-	// Cycles through all the textures and attaches them to the cubemap object
 	for (unsigned int i = 0; i < 6; i++)
 	{
 		int width, height, nrChannels;
@@ -626,19 +520,18 @@ int main()
 
 
 	
-	// Initialize the Bullet physics engine
 	btBroadphaseInterface* broadphase = new btDbvtBroadphase();
 	btDefaultCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();
 	btCollisionDispatcher* dispatcher = new btCollisionDispatcher(collisionConfiguration);
 	btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
 	btDiscreteDynamicsWorld* dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
-	dynamicsWorld->setGravity(btVector3(0, -9.81, 0));  // Apply gravity
+	dynamicsWorld->setGravity(btVector3(0, -9.81, 0));
 
 	
 
 
-	btCollisionShape* sphereShape = new btBoxShape(btVector3(0.3, 0.3, 0.3)); // replace btBoxShape with btSphereShape and the size parameter with 1
-	btDefaultMotionState* sphereMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0))); // replace boxMotionState with sphereMotionState
+	btCollisionShape* sphereShape = new btBoxShape(btVector3(0.3, 0.3, 0.3));
+	btDefaultMotionState* sphereMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0))); 
 	
 	btVector3 sphereInertia(0, 0, 0);
 	sphereShape->calculateLocalInertia(1, sphereInertia);
@@ -649,7 +542,6 @@ int main()
 	sphereRigidBody->setActivationState(DISABLE_DEACTIVATION);
 
 
-	// Perform simulation
 	const int substep = 10;
 	Model PhysicsCube("models/cube/scene.gltf");
 
@@ -666,7 +558,6 @@ int main()
 	glGenFramebuffers(1, &UniversalDepthframebuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, UniversalDepthframebuffer);
 
-	// Create a depth texture
 	GLuint depthTexture;
 	glGenTextures(1, &depthTexture);
 	glBindTexture(GL_TEXTURE_2D, depthTexture);
@@ -675,8 +566,6 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	// Attach the depth texture to the framebuffer
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
 
 	const float fixed_timestep = 1.0f / 60.0;
@@ -779,7 +668,6 @@ int main()
 		
 		glEnable(GL_DEPTH_TEST);
 		
-		//have function here
 		if (renderShadows) {
 			shadowMapProgram.Activate();
 			glUniformMatrix4fv(glGetUniformLocation(shadowMapProgram.ID, "lightProjection"), 1, GL_FALSE, glm::value_ptr(lightProjection));
@@ -788,23 +676,15 @@ int main()
 			glClear(GL_DEPTH_BUFFER_BIT);
 			scene.TRY_DRAWING(sizeof(sceneObjects) / sizeof(sceneObjects[0]), sceneObjects, shadowMapProgram, camera, objectWorldMult);
 		}
-		//---------------------------------------------
-		// Switch back to the default framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		// Switch back to the default viewport
 		glViewport(0, 0, width, height);
-		// Bind the custom framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-		// Specify the color of the background
-		//-------------------------------------------
 		
 
 		shaderProgram.Activate();
 		glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "lightProjection"), 1, GL_FALSE, glm::value_ptr(lightProjection));
 
-		//have function here
 		if (renderShadows) {
-			// Bind the Shadow Map
 			glActiveTexture(GL_TEXTURE0 + 2);
 
 			glBindTexture(GL_TEXTURE_2D, shadowMap);
@@ -819,20 +699,17 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		camera.updateMatrix3D(60.0f, 0.1f, viewFarPlane);
-		//camera.updateMatrix2D(0.005f,0.4f, viewFarPlane);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, UniversalDepthframebuffer);
 		glViewport(0, 0, width, height);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		//Drawing depth
 		scene.TRY_DRAWING(sizeof(sceneObjects) / sizeof(sceneObjects[0]), sceneObjects, UniversalDepthProgram, camera, objectWorldMult);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, width, height);
 		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 
-		//Normal scene drawing
 		scene.TRY_DRAWING(sizeof(sceneObjects) / sizeof(sceneObjects[0]), sceneObjects, shaderProgram, camera, objectWorldMult);
 		GizmosBoundry.Draw(shaderProgram, camera, 1);
 
@@ -851,8 +728,6 @@ int main()
 		glLineWidth(1.0f);
 		
 
-		//SKYBOX
-		//------------
 		if (enableskybox) {
 			glDepthFunc(GL_LEQUAL);
 
@@ -873,35 +748,23 @@ int main()
 			glDepthFunc(GL_LESS);
 		}
 		
-		//OUTLINE
-		//-----------
-		// Make it so the stencil test always passes
 		glStencilFunc(GL_ALWAYS, 1, 0xFF);
-		// Enable modifying of the stencil buffer
 		glStencilMask(0xFF);
-		// Draw the normal model
 		//House.Draw(shaderProgram, camera, glm::vec3(0), euler_to_quat(0, 0, 0), glm::vec3(10));
 		
 		//sphere.Draw(shaderProgram, camera, glm::vec3(0), euler_to_quat(0, 0, 0), glm::vec3(10));
-		// Make it so only the pixels without the value 1 pass the test
 		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-		// Disable modifying of the stencil buffer
 		glStencilMask(0x00);
-		// Disable the depth buffer
 		glDisable(GL_DEPTH_TEST);
-		// Second method from the tutorial
 		outlineShader.Activate();
 		glUniform1f(glGetUniformLocation(outlineShader.ID, "outlining"), 0.05f);
 		//House.Draw(outlineShader, camera, glm::vec3(0), euler_to_quat(0, 0, 0), glm::vec3(10));
 		//sphere.Draw(outlineShader, camera, glm::vec3(0), euler_to_quat(0, 0, 0), glm::vec3(10));
 		// Enable modifying of the stencil buffer
 		glStencilMask(0xFF);
-		// Clear stencil buffer
 		glStencilFunc(GL_ALWAYS, 0, 0xFF);
-		// Enable the depth buffer
 		glEnable(GL_DEPTH_TEST);
 
-		//-----------
 
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, postProcessingFBO);
@@ -953,7 +816,6 @@ int main()
 		ImGui::NewFrame();
 		console.Draw();
 		if (run == false) {
-			//HERE!!!!
 			SETUI(no_resize, no_move, run, postProcessingTexture, shadowMap, depthTexture, colorChoice, msaaSamples, FXAA_SPAN_MAX, FXAA_REDUCE_MIN, FXAA_REDUCE_MUL, framebufferProgram,
 				gamma, exposure, bloom, BloomSpreadBlur, blurProgram, shadowMapWidth, shadowMapHeight, bakeShadows, renderShadows, shadowSampleRadius, avgShadow, DepthBias1, DepthBias2, shaderProgram,
 				fogNear, viewFarPlane, enableskybox, vsync, highCameraSpeed, cameraNormalSpeed, wireframe);
@@ -1026,13 +888,11 @@ int main()
 	
 	
 	
-	// Clean up
 	delete dynamicsWorld;
 	delete solver;
 	delete dispatcher;
 	delete collisionConfiguration;
 	delete broadphase;
-	// Delete all the objects we've created
 	shaderProgram.Delete();
 	framebufferProgram.Delete();
 	shadowMapProgram.Delete();
@@ -1043,16 +903,13 @@ int main()
 	glDeleteFramebuffers(1, &FBO);
 	glDeleteFramebuffers(1, &postProcessingFBO);
 
-	// Deletes all ImGUI instances
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
 
 
 	
-	// Delete window before ending the program
 	glfwDestroyWindow(window);
-	// Terminate GLFW before ending the program
 	glfwTerminate();
 
 	
@@ -1067,8 +924,6 @@ int main()
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-	// make sure the viewport matches the new window dimensions; note that width and 
-	// height will be significantly larger than specified on retina displays.
 	glViewport(0, 0, width, height);
 }
 

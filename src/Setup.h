@@ -6,13 +6,8 @@ class Setup
 public:
 
     bool IsError;
-    // Default constructor for the Component class
     Setup()
     {
-        // Initialize the object counter to 0
-        //objects = 0;
-
-        // Initialize all elements in the OSWsave array to default values
 
     }
 

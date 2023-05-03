@@ -37,10 +37,8 @@ public:
         std::ofstream output("project.caliber");
         printf("save info");
         if (output) {
-            // Clear the file first
             output.clear();
 
-            // Write new data to file
             for (const auto& value : data) {
                 output << value << std::endl;
             }
