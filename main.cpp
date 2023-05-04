@@ -347,8 +347,8 @@ int main()
 		sca.y = std::stof(token);
 		std::getline(iss, token, ',');
 		sca.z = std::stof(token);
-		//std::getline(iss, token, ',');
-		//path = token.c_str();
+		std::getline(iss, token, ',');
+		path = token.c_str();
 
 		Model obj = Model(path.c_str());
 
@@ -892,9 +892,6 @@ int main()
 				float F[3] = { sceneObjects[i].rotation.x, sceneObjects[i].rotation.y, sceneObjects[i].rotation.z };
 				ImGui::InputFloat3(("Rotation##" + std::to_string(i)).c_str(), F);
 				sceneObjects[i].rotation = glm::vec3(F[0], F[1], F[2]);
-
-
-
 				ImGui::Columns(1, nullptr, true);
 				ImGui::Separator();
 
@@ -924,8 +921,8 @@ int main()
 	std::ofstream Caliboutfile("world.caliber");
 	for (const auto& obj : sceneObjects) {
 		Caliboutfile << obj.translation.x << "," << obj.translation.y << "," << obj.translation.z << ","
-			<< obj.rotation.x << "," << obj.rotation.y << "," << obj.rotation.z
-			<< obj.scale.x << "," << obj.scale.y << "," << obj.scale.z
+			<< obj.rotation.x << "," << obj.rotation.y << "," << obj.rotation.z << ","
+			<< obj.scale.x << "," << obj.scale.y << "," << obj.scale.z << "," << obj.file
 			<< "\n";
 	}
 	Caliboutfile.close();

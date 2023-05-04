@@ -11,7 +11,7 @@ Model::Model(const char* fl,
 	scale = sca;
 	ID = id;
 	file = fl;
-	std::string text = get_file_contents(file);
+	std::string text = get_file_contents(file.c_str());
 	JSON = json::parse(text);
 
 	Model::file = file;

@@ -16,7 +16,7 @@ public:
 	glm::vec3 rotation = glm::vec3(0, 0, 0);
 	glm::vec3 scale;
 	glm::vec3 ID = glm::vec3(0, 0, 0);
-	const char* file = "models/rocket/scene.gltf";
+	std::string file = "models/rocket/scene.gltf";
 
 	Model(const char* fl = "models/rocket/scene.gltf",
 		glm::vec3 trans = glm::vec3(0.0f, 0.0f, 0.0f),
