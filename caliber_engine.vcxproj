@@ -172,7 +172,6 @@
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdcpp17</LanguageStandard>
     </ClCompile>
     <ClCompile Include="src\Camera.cpp" />
-    <ClCompile Include="src\Component.cpp" />
     <ClCompile Include="src\EBO.cpp" />
     <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\Model.cpp" />
@@ -192,7 +191,6 @@
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="src\Camera.h" />
-    <ClInclude Include="src\Component.h" />
     <ClInclude Include="src\Console.h" />
     <ClInclude Include="src\CSF.h" />
     <ClInclude Include="src\CSV.h" />

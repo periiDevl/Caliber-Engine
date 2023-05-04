@@ -9,7 +9,6 @@
 #include<Windows.h>
 #include"src/FlightController.h"
 #include"src/Functions.h"
-#include"src/Component.h"
 #include"src/CSF.h"
 #include"src/CSV.h"
 #include"src/Setup.h"
@@ -185,6 +184,8 @@ int main()
 	float DepthBias1 = myData.data[23];
 	float DepthBias2 = myData.data[24];
 	float avgShadow = myData.data[25];
+
+	bool BPL_LIGHTING = myData.data[26];
 	
 	bool no_resize = true;
 	bool no_move = true;
@@ -272,6 +273,8 @@ int main()
 	glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), fogNear);
 	glUniform1f(glGetUniformLocation(shaderProgram.ID, "far"), viewFarPlane);
 
+	glUniform1i(glGetUniformLocation(shaderProgram.ID, "BPL_Lighting"), BPL_LIGHTING);
+
 
 	glUniform1f(glGetUniformLocation(shaderProgram.ID, "worldRadius"), WorldRadius);
 
@@ -312,17 +315,52 @@ int main()
 	//camera stacking
 	//Camera camera2(width, height, glm::vec3(22.0f, 15.0, 0.0f));
 
-	Component scene;
-	Model sceneObjects[] = { Model("models/ExampleModel/scene.gltf"),Model("models/ExampleModel/scene.gltf"),
-		};
+	std::vector<Model> sceneObjects;
+
+	std::ifstream calibFile("world.caliber");
+	std::string line;
+	while (std::getline(calibFile, line)) {
+		std::string path = "models/cube/scene.gltf";
+		glm::vec3 pos;
+		glm::vec3 rot;
+		glm::vec3 sca;
+		std::istringstream iss(line);
+
+		std::string token;
+		std::getline(iss, token, ',');
+		pos.x = std::stof(token);
+		std::getline(iss, token, ',');
+		pos.y = std::stof(token);
+		std::getline(iss, token, ',');
+		pos.z = std::stof(token);
+
+		std::getline(iss, token, ',');
+		rot.x = std::stof(token);
+		std::getline(iss, token, ',');
+		rot.y = std::stof(token);
+		std::getline(iss, token, ',');
+		rot.z = std::stof(token);
+
+		std::getline(iss, token, ',');
+		sca.x = std::stof(token);
+		std::getline(iss, token, ',');
+		sca.y = std::stof(token);
+		std::getline(iss, token, ',');
+		sca.z = std::stof(token);
+		//std::getline(iss, token, ',');
+		//path = token.c_str();
+
+		Model obj = Model(path.c_str());
+
+
+		obj.translation = pos;
+		obj.rotation = rot;
+		obj.scale = sca;
+		sceneObjects.push_back(obj);
+	}
+
 	Model GizmosBoundry = ("models/Gizmos/BoundSphere/scene.gltf");
 
-	for (size_t i = 0; i < sizeof(sceneObjects) / sizeof(sceneObjects[0]); i++)
-	{
-		sceneObjects[i].translation = sve.loadVec3("Metric/world.metric", i + 1);
-		sceneObjects[i].rotation = sve.loadVec3("Metric/orian.metric", i + 1);
-		sceneObjects[i].scale = sve.loadVec3("Metric/scale.metric", i + 1);
-	}
 
 	unsigned int rectVAO, rectVBO;
 	glGenVertexArrays(1, &rectVAO);
@@ -674,7 +712,12 @@ int main()
 			glViewport(0, 0, shadowMapWidth, shadowMapHeight);
 			glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFBO);
 			glClear(GL_DEPTH_BUFFER_BIT);
-			scene.TRY_DRAWING(sizeof(sceneObjects) / sizeof(sceneObjects[0]), sceneObjects, shadowMapProgram, camera, objectWorldMult);
+
+			for (int i = 0; i < sceneObjects.size(); i++)
+			{
+				sceneObjects[i].Draw(shadowMapProgram, camera, objectWorldMult);
+			}
+
 		}
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, width, height);
@@ -704,13 +747,19 @@ int main()
 		glViewport(0, 0, width, height);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		scene.TRY_DRAWING(sizeof(sceneObjects) / sizeof(sceneObjects[0]), sceneObjects, UniversalDepthProgram, camera, objectWorldMult);
+		for (int i = 0; i < sceneObjects.size(); i++)
+		{
+			sceneObjects[i].Draw(UniversalDepthProgram, camera, objectWorldMult);
+		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, width, height);
 		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 
-		scene.TRY_DRAWING(sizeof(sceneObjects) / sizeof(sceneObjects[0]), sceneObjects, shaderProgram, camera, objectWorldMult);
+		for (int i = 0; i < sceneObjects.size(); i++)
+		{
+			sceneObjects[i].Draw(shaderProgram, camera, objectWorldMult);
+		}
 		GizmosBoundry.Draw(shaderProgram, camera, 1);
 
 
@@ -818,34 +867,38 @@ int main()
 		if (run == false) {
 			SETUI(no_resize, no_move, run, postProcessingTexture, shadowMap, depthTexture, colorChoice, msaaSamples, FXAA_SPAN_MAX, FXAA_REDUCE_MIN, FXAA_REDUCE_MUL, framebufferProgram,
 				gamma, exposure, bloom, BloomSpreadBlur, blurProgram, shadowMapWidth, shadowMapHeight, bakeShadows, renderShadows, shadowSampleRadius, avgShadow, DepthBias1, DepthBias2, shaderProgram,
-				fogNear, viewFarPlane, enableskybox, vsync, highCameraSpeed, cameraNormalSpeed, wireframe);
-
+				fogNear, viewFarPlane, enableskybox, vsync, highCameraSpeed, cameraNormalSpeed, wireframe, BPL_LIGHTING);
 
 			ImGui::Begin("Scene Hierarchy", 0, (no_resize ? ImGuiWindowFlags_NoResize : 0) | (no_move ? ImGuiWindowFlags_NoMove : 0));
+			if (ImGui::Button("+"))
 			{
-				for (size_t i = 0; i < sizeof(sceneObjects) / sizeof(sceneObjects[0]); i++)
-				{
-					ImGui::Separator();
-					float T[3] = { sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z };
-					ImGui::InputFloat3(("Position##" + std::to_string(i)).c_str(), T);
-					sceneObjects[i].translation = glm::vec3(T[0], T[1], T[2]);
 
-					float S[3] = { sceneObjects[i].scale.x, sceneObjects[i].scale.y, sceneObjects[i].scale.z };
-					ImGui::InputFloat3(("Scale##" + std::to_string(i)).c_str(), S);
-					sceneObjects[i].scale = glm::vec3(S[0], S[1], S[2]);
+				sceneObjects.push_back(Model("models/cube/scene.gltf"));
 
+			}
+			
+			for (size_t i = 0; i < sceneObjects.size(); i++)
+			{
+				ImGui::Separator();
+				float T[3] = { sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z };
+				ImGui::InputFloat3(("Position##" + std::to_string(i)).c_str(), T);
+				sceneObjects[i].translation = glm::vec3(T[0], T[1], T[2]);
 
-					float F[3] = { sceneObjects[i].rotation.x, sceneObjects[i].rotation.y, sceneObjects[i].rotation.z };
-					ImGui::InputFloat3(("Rotation##" + std::to_string(i)).c_str(), F);
-					sceneObjects[i].rotation = glm::vec3(F[0], F[1], F[2]);
-
-
-
-					ImGui::Columns(1, nullptr, true);
-					ImGui::Separator();
+				float S[3] = { sceneObjects[i].scale.x, sceneObjects[i].scale.y, sceneObjects[i].scale.z };
+				ImGui::InputFloat3(("Scale##" + std::to_string(i)).c_str(), S);
+				sceneObjects[i].scale = glm::vec3(S[0], S[1], S[2]);
 
 
-				}
+				float F[3] = { sceneObjects[i].rotation.x, sceneObjects[i].rotation.y, sceneObjects[i].rotation.z };
+				ImGui::InputFloat3(("Rotation##" + std::to_string(i)).c_str(), F);
+				sceneObjects[i].rotation = glm::vec3(F[0], F[1], F[2]);
+
+
+
+				ImGui::Columns(1, nullptr, true);
+				ImGui::Separator();
+
+
 			}
 		}
 		
@@ -868,21 +921,20 @@ int main()
 	}
 
 
-	remove("Metric/world.metric");
-	remove("Metric/orian.metric");
-	remove("Metric/scale.metric");
-	size_t numObjects = sizeof(sceneObjects) / sizeof(sceneObjects[0]);
-	for (size_t i = 0; i < numObjects; i++)
-	{
-
-		sve.saveVec3(sceneObjects[i].scale, "Metric/scale.metric");
-		sve.saveVec3(sceneObjects[i].translation, "Metric/world.metric");
-		sve.saveVec3(sceneObjects[i].rotation, "Metric/orian.metric");
+	std::ofstream Caliboutfile("world.caliber");
+	for (const auto& obj : sceneObjects) {
+		Caliboutfile << obj.translation.x << "," << obj.translation.y << "," << obj.translation.z << ","
+			<< obj.rotation.x << "," << obj.rotation.y << "," << obj.rotation.z
+			<< obj.scale.x << "," << obj.scale.y << "," << obj.scale.z
+			<< "\n";
 	}
+	Caliboutfile.close();
+
+
 	myData.data = { float(vsync), float(renderShadows), float(msaaSamples), float(bloom), float(wireframe),
 					float(width), float(height), gamma, exposure, highCameraSpeed, cameraNormalSpeed, float(enableskybox),
 					fogNear, viewFarPlane, float(bakeShadows), float(colorChoice), FXAA_SPAN_MAX, FXAA_REDUCE_MIN, FXAA_REDUCE_MUL, BloomSpreadBlur, 
-	float(shadowMapWidth), float(shadowMapHeight), float(shadowSampleRadius), DepthBias1, DepthBias2, avgShadow };
+	float(shadowMapWidth), float(shadowMapHeight), float(shadowSampleRadius), DepthBias1, DepthBias2, avgShadow, float(BPL_LIGHTING) };
 	
 	myData.saveData();
 	

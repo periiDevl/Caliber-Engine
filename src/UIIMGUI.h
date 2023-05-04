@@ -8,7 +8,7 @@ void SETUI(bool& no_resize, bool& no_move, bool& run, unsigned int& postProcessi
 	Shader& framebufferProgram, float& gamma, float& exposure, int& bloom, float& BloomSpreadBlur, Shader& blurProgram, 
 	int& shadowMapWidth, int& shadowMapHeight, bool& bakeShadows, bool& renderShadows, int&	shadowSampleRadius,
 	float& avgShadow, float& DepthBias1, float& DepthBias2, Shader& shaderProgram, float& fogNear, float& viewFarPlane,
-	bool& enableskybox, bool& vsync, float& highCameraSpeed, float& cameraNormalSpeed, bool& wireframe) {
+	bool& enableskybox, bool& vsync, float& highCameraSpeed, float& cameraNormalSpeed, bool& wireframe, bool& BPL_LIGHTING) {
 	ImGui::Begin("Viewport", 0, (no_resize ? ImGuiWindowFlags_NoResize : 0) | (no_move ? ImGuiWindowFlags_NoMove : 0));
 	{
 		if (ImGui::Button("Run"))
@@ -156,8 +156,8 @@ void SETUI(bool& no_resize, bool& no_move, bool& run, unsigned int& postProcessi
 				ImGui::Separator();
 
 
-				if (ImGui::CollapsingHeader("Shadow's", ImGuiTreeNodeFlags_DefaultOpen)) {
-
+				if (ImGui::CollapsingHeader("Lighting", ImGuiTreeNodeFlags_DefaultOpen)) {
+					ImGui::Checkbox("BPL_LIGHTING", &BPL_LIGHTING);
 					ImGui::InputInt("Shadow Map Width", &shadowMapWidth, 1, 100);
 					ImGui::InputInt("Shadow Map Height", &shadowMapHeight, 1, 100);
 					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));

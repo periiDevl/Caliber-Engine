@@ -41,6 +41,8 @@ public:
 
 	const float levelShade = 300000000000000000000.0;
 
+	uniform bool BPL_Lighting;
+
 	uniform mat4 model;
 	vec4 pointLight()
 	{	
@@ -89,13 +91,21 @@ public:
 		float specular = 0.0f;
 		if (diffuse != 0.0f)
 		{
-			float specularLight = 0.50f;
+			float specularLight = 0.20f;
 			vec3 viewDirection = normalize(camPos - crntPos);
 			vec3 halfwayVec = normalize(viewDirection + lightDirection);
 			float specAmount = pow(max(dot(normal, halfwayVec), 0.0f), 16);
 			level = floor(specAmount * levelShade);
 			specAmount = level / levelShade;
 			specular = specAmount * specularLight;
+
+			// non blinn
+			if (!BPL_Lighting)
+			{
+				vec3 reflectionDirection = reflect(-lightDirection, normal);
+				specAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0f), 16);
+				specular = specAmount * specularLight;
+			}
 		};
 
 
