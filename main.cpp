@@ -607,6 +607,10 @@ int main()
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
 
 	const float fixed_timestep = 1.0f / 60.0;
+
+
+
+
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
 		if (bakeShadows && bake)
@@ -872,9 +876,19 @@ int main()
 			ImGui::Begin("Scene Hierarchy", 0, (no_resize ? ImGuiWindowFlags_NoResize : 0) | (no_move ? ImGuiWindowFlags_NoMove : 0));
 			if (ImGui::Button("+"))
 			{
+				ImGui::OpenPopup("Object Settings");
 
-				sceneObjects.push_back(Model("models/cube/scene.gltf"));
-
+				
+			}
+			if (ImGui::BeginPopup("Object Settings"))
+			{
+				char objName[128];
+				ImGui::InputText("File Path", objName, ImGuiInputTextFlags_EnterReturnsTrue);
+				
+				if (glfwGetKey(window, GLFW_KEY_ENTER)) {
+					sceneObjects.push_back(Model(objName));
+				}
+				ImGui::EndPopup();
 			}
 			
 			for (size_t i = 0; i < sceneObjects.size(); i++)

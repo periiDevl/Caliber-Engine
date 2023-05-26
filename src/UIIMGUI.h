@@ -108,6 +108,7 @@ void SETUI(bool& no_resize, bool& no_move, bool& run, unsigned int& postProcessi
 
 
 
+
 	if (ImGui::Begin("project settings", 0, (no_resize ? ImGuiWindowFlags_NoResize : 0) | (no_move ? ImGuiWindowFlags_NoMove : 0))) {
 		if (ImGui::BeginTabBar("project tabs"))
 		{
