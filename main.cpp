@@ -142,6 +142,40 @@ void createStaticBox(btDynamicsWorld* dynamicsWorld, btVector3 position, btVecto
 	dynamicsWorld->addRigidBody(boxRigidBody);
 }
 
+glm::vec3 moveObjectInXAxis(GLFWwindow* window, const glm::vec3& objectPosition, const glm::vec3 cameraOrientation) {
+	double xpos, ypos;
+	glfwGetCursorPos(window, &xpos, &ypos);
+
+	static double lastX = xpos;
+	double deltaX = xpos - lastX;
+	lastX = xpos;
+
+	float sensitivity = 0.06f; 
+	glm::vec3 updatedObjectPosition = objectPosition;
+	updatedObjectPosition.x += static_cast<float>(deltaX * sensitivity);
+
+	return updatedObjectPosition;
+}
+glm::vec3 moveObjectInZAxis(GLFWwindow* window, const glm::vec3& objectPosition, const glm::vec3 cameraOrientation) {
+	double xpos, ypos;
+	glfwGetCursorPos(window, &xpos, &ypos);
+
+	static double lastX = xpos;
+	double deltaX = xpos - lastX;
+	lastX = xpos;
+
+	float sensitivity = 0.06f;
+	glm::vec3 updatedObjectPosition = objectPosition;
+	updatedObjectPosition.z += static_cast<float>(deltaX * sensitivity);
+
+	return updatedObjectPosition;
+}
+
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+
 
 
 int main()
@@ -763,25 +797,25 @@ int main()
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glLineWidth(5.0f);
 		
-
+		sceneObjects[0].Draw(shaderProgram, camera, objectWorldMult);
+		sceneObjects[0].translation.x = moveObjectInXAxis(window, sceneObjects[0].translation, camera.Orientation).x;
 		PhysicsCube.Draw(unlitProgram, camera, objectWorldMult);
 		PhysicsCube.PhysicsUpdate(true);
 		PhysicsCube.PHYSICS_SETUP();
-
+		glm::mat4 view = glm::mat4(1.0f);
+		glm::mat4 projection = glm::mat4(1.0f);
+		view = glm::mat4(glm::mat3(glm::lookAt(camera.Position, camera.Position + camera.Orientation, camera.Up)));
+		projection = glm::perspective(glm::radians(60.0f), (float)width / height, 0.1f, viewFarPlane);
 
 		
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glLineWidth(1.0f);
 		
-
 		if (enableskybox) {
 			glDepthFunc(GL_LEQUAL);
 
 			skyboxShader.Activate();
-			glm::mat4 view = glm::mat4(1.0f);
-			glm::mat4 projection = glm::mat4(1.0f);
-			view = glm::mat4(glm::mat3(glm::lookAt(camera.Position, camera.Position + camera.Orientation, camera.Up)));
-			projection = glm::perspective(glm::radians(60.0f), (float)width / height, 0.1f, viewFarPlane);
+
 			glUniformMatrix4fv(glGetUniformLocation(skyboxShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
 			glUniformMatrix4fv(glGetUniformLocation(skyboxShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
