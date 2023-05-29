@@ -262,7 +262,7 @@ int main()
 	blurProgram.Activate();
 	glUniform1f(glGetUniformLocation(blurProgram.ID, "spreadBlur"), BloomSpreadBlur);
 
-	glm::vec3 lightPos = glm::vec3(0.5f, 1, 0.0f);
+	glm::vec3 lightPos = glm::vec3(0.5f, 1, 0.5f);
 	unlitProgram.Activate();
 	glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 1, 0, 1);
 
@@ -613,6 +613,7 @@ int main()
 
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
+		glfwSwapInterval(vsync);
 		if (bakeShadows && bake)
 		{
 			renderShadows = true;
@@ -632,16 +633,8 @@ int main()
 			
 		}
 
-
-		if (vsync == 0)
-		{
-			glfwSwapInterval(0);
-		}
-		if (vsync == 1)
-		{
-			glfwSwapInterval(1);
-		}
 		
+
 		crntTime = glfwGetTime();
 		timeDiff = crntTime - prevTime;
 		counter++;
@@ -868,10 +861,19 @@ int main()
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 		console.Draw();
+
+
 		if (run == false) {
 			SETUI(no_resize, no_move, run, postProcessingTexture, shadowMap, depthTexture, colorChoice, msaaSamples, FXAA_SPAN_MAX, FXAA_REDUCE_MIN, FXAA_REDUCE_MUL, framebufferProgram,
 				gamma, exposure, bloom, BloomSpreadBlur, blurProgram, shadowMapWidth, shadowMapHeight, bakeShadows, renderShadows, shadowSampleRadius, avgShadow, DepthBias1, DepthBias2, shaderProgram,
 				fogNear, viewFarPlane, enableskybox, vsync, highCameraSpeed, cameraNormalSpeed, wireframe, BPL_LIGHTING);
+			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "minEdgeContrast"), FXAA_REDUCE_MIN);
+			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "subPixelAliasing"), FXAA_REDUCE_MUL);
+			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "maximumEdgeDetection"), FXAA_SPAN_MAX);
+			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);
+			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
+			glUniform1f(glGetUniformLocation(blurProgram.ID, "spreadBlur"), BloomSpreadBlur);
+
 
 			ImGui::Begin("Scene Hierarchy", 0, (no_resize ? ImGuiWindowFlags_NoResize : 0) | (no_move ? ImGuiWindowFlags_NoMove : 0));
 			if (ImGui::Button("+"))

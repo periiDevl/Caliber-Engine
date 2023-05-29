@@ -133,9 +133,7 @@ void SETUI(bool& no_resize, bool& no_move, bool& run, unsigned int& postProcessi
 					ImGui::InputFloat("FXAA_SPAN_MAX", &FXAA_SPAN_MAX);
 					ImGui::InputFloat("FXAA_REDUCE_MIN", &FXAA_REDUCE_MIN);
 					ImGui::InputFloat("FXAA_REDUCE_MUL", &FXAA_REDUCE_MUL);
-					glUniform1f(glGetUniformLocation(framebufferProgram.ID, "minEdgeContrast"), FXAA_REDUCE_MIN);
-					glUniform1f(glGetUniformLocation(framebufferProgram.ID, "subPixelAliasing"), FXAA_REDUCE_MUL);
-					glUniform1f(glGetUniformLocation(framebufferProgram.ID, "maximumEdgeDetection"), FXAA_SPAN_MAX);
+
 					ImGui::Columns(1, nullptr, false);
 				}
 
@@ -144,12 +142,9 @@ void SETUI(bool& no_resize, bool& no_move, bool& run, unsigned int& postProcessi
 				if (ImGui::CollapsingHeader("Post-Processing")) {
 					ImGui::InputFloat("Gamma correction value", &gamma, 0.3f, 1, "%.3f", 0);
 					ImGui::InputFloat("Exposure value", &exposure, 0.3f, 1, "%.3f", 0);
-					glUniform1f(glGetUniformLocation(framebufferProgram.ID, "Gamma"), gamma);
-					glUniform1f(glGetUniformLocation(framebufferProgram.ID, "Exposure"), exposure);
 					if (ImGui::CollapsingHeader("Bloom settings")) {
 						ImGui::InputInt("Bloom Amount", &bloom, 1, 100);
 						ImGui::InputFloat("Bloom Spread", &BloomSpreadBlur);
-						glUniform1f(glGetUniformLocation(blurProgram.ID, "spreadBlur"), BloomSpreadBlur);
 					}
 
 

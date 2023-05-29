@@ -119,7 +119,7 @@ public:
 			float currentDepth = lightCoords.z;
 
 
-			float bias = max((bias1 / 1000) * (1.0f - dot(normal, lightDirection)), (bias2 / 1000000));
+			float bias = max((bias1 / 300) * (1.0f - dot(normal, lightDirection)), (bias2 / 300000));
 
 
 			
