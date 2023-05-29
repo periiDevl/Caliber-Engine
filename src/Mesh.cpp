@@ -1,5 +1,7 @@
 #include "Mesh.h"
 #include"Functions.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 Mesh::Mesh(std::vector <Vertex>& vertices, std::vector <GLuint>& indices, std::vector <Texture>& textures)
 {
 	Mesh::vertices = vertices;
@@ -19,16 +21,14 @@ Mesh::Mesh(std::vector <Vertex>& vertices, std::vector <GLuint>& indices, std::v
 }
 
 
-void Mesh::Draw
-(
-	Shader& shader, 
+void Mesh::Draw(
+	Shader& shader,
 	Camera& camera,
 	glm::mat4 matrix,
-	glm::vec3 translation, 
-	glm::vec3 rotation, 
+	glm::vec3 translation,
+	glm::vec3 rotation,
 	glm::vec3 scale
-)
-{
+) {
 	Functions function;
 	shader.Activate();
 	VAO.Bind();
@@ -36,16 +36,13 @@ void Mesh::Draw
 	unsigned int numDiffuse = 0;
 	unsigned int numSpecular = 0;
 
-	for (unsigned int i = 0; i < textures.size(); i++)
-	{
+	for (unsigned int i = 0; i < textures.size(); i++) {
 		std::string num;
 		std::string type = textures[i].type;
-		if (type == "diffuse")
-		{
+		if (type == "diffuse") {
 			num = std::to_string(numDiffuse++);
 		}
-		else if (type == "specular")
-		{
+		else if (type == "specular") {
 			num = std::to_string(numSpecular++);
 		}
 		textures[i].texUnit(shader, (type + num).c_str(), i);
@@ -62,9 +59,19 @@ void Mesh::Draw
 	rot = glm::mat4_cast(function.Euler_to_quat(rotation.x, rotation.y, rotation.z));
 	sca = glm::scale(sca, scale);
 
+	for (int i = 0; i < vertices.size(); i++) {
+		vertices[i].position = glm::vec3(rot * glm::vec4(vertices[i].position, 1.0f));
+		vertices[i].normal = normalize(glm::vec3(glm::inverse(matrix) * glm::vec4(vertices[i].normal, 0.0f)));
+	}
+
+
+
 	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "translation"), 1, GL_FALSE, glm::value_ptr(trans));
+
 	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "rotation"), 1, GL_FALSE, glm::value_ptr(rot));
+
 	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "scale"), 1, GL_FALSE, glm::value_ptr(sca));
+
 	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(matrix));
 
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);

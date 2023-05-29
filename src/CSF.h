@@ -75,17 +75,18 @@ public:
 
 	vec4 direcLight()
 	{
-		float ambient = 0.3f;
 
+
+		float ambient = 0.20f;
+
+		// diffuse lighting
 		vec3 normal = normalize(Normal);
-		vec3 lightDirection = normalize(lightPos * 5 - crntPos);
-		lightDirection = mat3(transpose(inverse(model))) * lightDirection;
-		float falloffFactor = 0.0f;
-		float diffuse = ambient;
+		vec3 lightDirection = normalize(lightPos);
+		float diffuse = max(dot(normal, lightDirection), 0.0f);
 		float level = floor(diffuse * levelShade);
 		diffuse = level / levelShade;
 
-		
+
 
 
 		float specular = 0.0f;
@@ -116,6 +117,7 @@ public:
 		{
 			lightCoords = (lightCoords + 1.0f) / 2.0f;
 			float currentDepth = lightCoords.z;
+
 
 			float bias = max((bias1 / 1000) * (1.0f - dot(normal, lightDirection)), (bias2 / 1000000));
 
