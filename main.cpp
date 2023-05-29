@@ -225,7 +225,7 @@ int main()
 	
 	int wid, hei;
 	int channels;
-	unsigned char* pixels = stbi_load("Icon.png", &wid, &hei, &channels, 4);
+	unsigned char* pixels = stbi_load("MainIcon.png", &wid, &hei, &channels, 4);
 
 	GLFWimage images[1];
 	images[0].width = wid;
