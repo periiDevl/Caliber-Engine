@@ -270,12 +270,12 @@ int main()
 	gladLoadGL();
 	glViewport(0, 0, width, height);
 
-	console.AddLog(reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+	console.log(reinterpret_cast<const char*>(glGetString(GL_VERSION)));
 
 
 	std::string rendererString = "Using : ";
 	rendererString += reinterpret_cast<const char*>(glGetString(GL_RENDERER));
-	console.AddLog(rendererString.c_str());
+	console.log(rendererString.c_str());
 
 	setup.SETUP_IMGUI(window);
 	Shader shaderProgram(vert.Default, frag.Default);
@@ -394,6 +394,7 @@ int main()
 	}
 
 	Model GizmosBoundry = ("models/Gizmos/BoundSphere/scene.gltf");
+	Model GizmosSphere = ("models/Gizmos/Sphere/scene.gltf");
 
 
 	unsigned int rectVAO, rectVBO;
@@ -807,7 +808,6 @@ int main()
 		view = glm::mat4(glm::mat3(glm::lookAt(camera.Position, camera.Position + camera.Orientation, camera.Up)));
 		projection = glm::perspective(glm::radians(60.0f), (float)width / height, 0.1f, viewFarPlane);
 
-		
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glLineWidth(1.0f);
 		
@@ -894,10 +894,50 @@ int main()
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-		console.Draw();
+		console.Draw(no_resize,no_move);
 
 
 		if (run == false) {
+			ImGui::Begin("Viewport", 0, (no_resize ? ImGuiWindowFlags_NoResize : 0) | (no_move ? ImGuiWindowFlags_NoMove : 0));
+			{
+				if (ImGui::Button("Run"))
+				{
+					if (run == false) {
+						run = true;
+					}
+					else if (run == true)
+					{
+						run = false;
+					}
+				}
+
+
+				ImGui::BeginTabBar("Viewport");
+				if (ImGui::BeginTabItem("Render")) {
+					ImGui::BeginChild("ViewportRender");
+					ImGui::Image((ImTextureID)postProcessingTexture, ImGui::GetWindowSize(), ImVec2(0, 1), ImVec2(1, 0));
+					ImGui::EndChild();
+					ImGui::EndTabItem();
+				}
+
+				if (ImGui::BeginTabItem("Shadow framebuffer")) {
+					ImGui::BeginChild("ViewportRender");
+					ImGui::Image((ImTextureID)shadowMap, ImGui::GetWindowSize(), ImVec2(0, 1), ImVec2(1, 0));
+					ImGui::EndChild();
+					ImGui::EndTabItem();
+				}
+
+				if (ImGui::BeginTabItem("Depth framebuffer")) {
+					ImGui::BeginChild("ViewportRender");
+					ImGui::Image((ImTextureID)depthTexture, ImGui::GetWindowSize(), ImVec2(0, 1), ImVec2(1, 0));
+					ImGui::EndChild();
+					ImGui::EndTabItem();
+				}
+
+				ImGui::EndTabBar();
+			}
+			ImGui::End();
+
 			SETUI(no_resize, no_move, run, postProcessingTexture, shadowMap, depthTexture, colorChoice, msaaSamples, FXAA_SPAN_MAX, FXAA_REDUCE_MIN, FXAA_REDUCE_MUL, framebufferProgram,
 				gamma, exposure, bloom, BloomSpreadBlur, blurProgram, shadowMapWidth, shadowMapHeight, bakeShadows, renderShadows, shadowSampleRadius, avgShadow, DepthBias1, DepthBias2, shaderProgram,
 				fogNear, viewFarPlane, enableskybox, vsync, highCameraSpeed, cameraNormalSpeed, wireframe, BPL_LIGHTING);

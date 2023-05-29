@@ -9,44 +9,7 @@ void SETUI(bool& no_resize, bool& no_move, bool& run, unsigned int& postProcessi
 	int& shadowMapWidth, int& shadowMapHeight, bool& bakeShadows, bool& renderShadows, int&	shadowSampleRadius,
 	float& avgShadow, float& DepthBias1, float& DepthBias2, Shader& shaderProgram, float& fogNear, float& viewFarPlane,
 	bool& enableskybox, bool& vsync, float& highCameraSpeed, float& cameraNormalSpeed, bool& wireframe, bool& BPL_LIGHTING) {
-	ImGui::Begin("Viewport", 0, (no_resize ? ImGuiWindowFlags_NoResize : 0) | (no_move ? ImGuiWindowFlags_NoMove : 0));
-	{
-		if (ImGui::Button("Run"))
-		{
-			if (run == false) {
-				run = true;
-			}
-			else if (run == true)
-			{
-				run = false;
-			}
-		}
 
-
-		ImGui::BeginTabBar("Viewport");
-		if (ImGui::BeginTabItem("Render")) {
-			ImGui::BeginChild("ViewportRender");
-			ImGui::Image((ImTextureID)postProcessingTexture, ImGui::GetWindowSize(), ImVec2(0, 1), ImVec2(1, 0));
-			ImGui::EndChild();
-			ImGui::EndTabItem();
-		}
-
-		if (ImGui::BeginTabItem("Shadow framebuffer")) {
-			ImGui::BeginChild("ViewportRender");
-			ImGui::Image((ImTextureID)shadowMap, ImGui::GetWindowSize(), ImVec2(0, 1), ImVec2(1, 0));
-			ImGui::EndChild();
-			ImGui::EndTabItem();
-		}
-
-		if (ImGui::BeginTabItem("Depth framebuffer")) {
-			ImGui::BeginChild("ViewportRender");
-			ImGui::Image((ImTextureID)depthTexture, ImGui::GetWindowSize(), ImVec2(0, 1), ImVec2(1, 0));
-			ImGui::EndChild();
-			ImGui::EndTabItem();
-		}
-
-	}
-	ImGui::End();
 
 
 
@@ -97,12 +60,12 @@ void SETUI(bool& no_resize, bool& no_move, bool& run, unsigned int& postProcessi
 			ImGui::Checkbox("No Window Resize", &no_resize);
 			ImGui::EndTabItem();
 		}
-
+		ImGui::EndTabBar();
 
 	}
 	ImGui::End();
 
-	ImGui::Begin("background", 0, ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+	//ImGui::Begin("background", 0, ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
 
 

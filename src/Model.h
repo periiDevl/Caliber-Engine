@@ -30,6 +30,12 @@ public:
 		Camera& camera,
 		float worldSize
 	);
+	void Draw
+	(
+		Shader& shader,
+		Camera& camera,
+		float worldSize, glm::vec3 position, glm::vec3 rot, glm::vec3 scale
+	);
 
 	btTriangleMesh* getVerticesFromFile(const char* filePath, float divideValue)
 	{
