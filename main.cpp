@@ -156,29 +156,6 @@ glm::vec3 moveObjectInXAxis(GLFWwindow* window, const glm::vec3& objectPosition,
 
 	return updatedObjectPosition;
 }
-glm::vec3 moveRaycastInFrontOfCamera(GLFWwindow* window, const glm::vec3& cameraPosition, const glm::vec3& cameraForward, const float raycastDistance) {
-	double xpos, ypos;
-	glfwGetCursorPos(window, &xpos, &ypos);
-
-	static double lastX = xpos;
-	double deltaX = xpos - lastX;
-	lastX = xpos;
-
-	float sensitivity = 0.06f;
-	glm::vec3 cameraRight = glm::normalize(glm::cross(cameraForward, glm::vec3(0.0f, 1.0f, 0.0f)));
-	glm::vec3 offset = cameraRight * static_cast<float>(deltaX * sensitivity);
-
-	glm::vec3 raycastOrigin = cameraPosition;
-	glm::vec3 raycastDirection = glm::normalize(cameraForward + offset);
-
-	glm::vec3 raycastEndpoint = raycastOrigin + raycastDirection * raycastDistance;
-
-	// Perform raycast or use the raycast endpoint as desired
-
-	return raycastEndpoint;
-}
-
-
 glm::vec3 moveObjectInZAxis(GLFWwindow* window, const glm::vec3& objectPosition, const glm::vec3 cameraOrientation) {
 	double xpos, ypos;
 	glfwGetCursorPos(window, &xpos, &ypos);
@@ -217,8 +194,8 @@ int main()
 	int msaaSamples = myData.data[2];
 	int bloom = myData.data[3];
 	bool wireframe = myData.data[4];
-	int width = 1920;
-	int height = 1080;
+	int width = myData.data[5];
+	int height = myData.data[6];
 	float gamma = myData.data[7];
 	float exposure = myData.data[8];
 	float highCameraSpeed = myData.data[9];
@@ -252,10 +229,9 @@ int main()
 	
 	
 	//GLFWwindow* window = glfwCreateWindow(width, height, "Caliber window", glfwGetPrimaryMonitor(), NULL);
+	
+	
 	GLFWwindow* window = glfwCreateWindow(width, height, "Loading Caliber Engine...", NULL, NULL);
-	glfwSetWindowAttrib(window, GLFW_RESIZABLE, GLFW_FALSE);
-
-
 
 	
 	if (window == NULL)
@@ -265,7 +241,7 @@ int main()
 		return -1; 
 	}
 	glfwMakeContextCurrent(window);
-
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
@@ -672,7 +648,6 @@ int main()
 
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
-		glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 		glfwSwapInterval(vsync);
 		if (bakeShadows && bake)
 		{
@@ -820,9 +795,6 @@ int main()
 		GizmosBoundry.Draw(shaderProgram, camera, 1);
 
 
-
-
-
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glLineWidth(5.0f);
 		
@@ -834,35 +806,11 @@ int main()
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection = glm::mat4(1.0f);
 		view = glm::mat4(glm::mat3(glm::lookAt(camera.Position, camera.Position + camera.Orientation, camera.Up)));
-
-
-
-
+		projection = glm::perspective(glm::radians(60.0f), (float)width / height, 0.1f, viewFarPlane);
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glLineWidth(1.0f);
 		
-		double xpos, ypos;
-		glfwGetCursorPos(window, &xpos, &ypos);
-
-		int width, height;
-		glfwGetFramebufferSize(window, &width, &height);
-
-		float ndcX = (float)xpos / (float)width * 2.0f - 1.0f;
-		float ndcY = (float)ypos / (float)height * 2.0f - 1.0f;
-
-		float sensitivityX = 10.25;
-		float sensitivityY = 5.8;
-
-		float offsetX = ndcX * sensitivityX;
-		float offsetY = -ndcY * sensitivityY;
-
-		float rayDistance = 10.0f;
-		glm::vec3 offsetVector = glm::normalize(glm::cross(camera.Orientation, camera.Up)) * offsetX;
-		glm::vec3 offsetPosition = camera.Position + offsetVector + camera.Up * offsetY;
-		glm::vec3 rayEndPosition = offsetPosition + camera.Orientation * rayDistance;
-		GizmosSphere.Draw(unlitProgram, camera, 1, rayEndPosition, glm::vec3(0), glm::vec3(0.1f));
-
 		if (enableskybox) {
 			glDepthFunc(GL_LEQUAL);
 
