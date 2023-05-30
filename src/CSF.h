@@ -156,27 +156,38 @@ public:
 
 	void main()
 	{
-		//linear fog
-		//black fog
-		//FragColor = direcLight() + vec4(linearizeDepth(gl_FragCoord.z) * vec3(-1.0f, -1.0f, -1.0f), 1.0f);
-		//normal
+		// linear fog
+		// black fog
+		// FragColor = direcLight() + vec4(linearizeDepth(gl_FragCoord.z) * vec3(-1.0f, -1.0f, -1.0f), 1.0f);
+		// normal
 
 		float distance = length(crntPos);
 		if (distance > worldRadius) {
 			discard;
 		}
-		FragColor = direcLight() + vec4(linearizeDepth(gl_FragCoord.z, near / 100, far) * vec3(1.0f, 1.0f, 1.0f), 1.0f);
-	
 
-	
+		vec3 originalColor = FragColor.rgb;
 
-	
+		vec3 offset = vec3(0.01f); // Small offset to the color components
+
+		// Check if the color matches (1, 0, 0), (0, 1, 0), or (0, 0, 1),
+		// and apply the offset to the matched colors
+		if (originalColor == vec3(1.0f, 0.0f, 0.0f) ||
+			originalColor == vec3(0.0f, 1.0f, 0.0f) ||
+			originalColor == vec3(0.0f, 0.0f, 1.0f)) {
+			originalColor += offset;
+		}
+
+		FragColor = direcLight() + vec4(linearizeDepth(gl_FragCoord.z, near / 100, far) * originalColor, 1.0f);
+
 		float brightness = dot(FragColor.rgb, vec3(0.2126f, 0.7152f, 0.0722f));
-		if(brightness > 0.15f)
+		if (brightness > 0.15f)
 			BloomColor = vec4(FragColor.rgb, 1.0f);
 		else
 			BloomColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 	}
+
+
 
 
 	)";
