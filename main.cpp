@@ -232,7 +232,7 @@ int main()
 	
 	
 	GLFWwindow* window = glfwCreateWindow(width, height, "Loading Caliber Engine...", NULL, NULL);
-
+	glfwSetWindowAttrib(window, GLFW_RESIZABLE, GLFW_FALSE);
 	
 	if (window == NULL)
 	{
@@ -648,6 +648,24 @@ int main()
 
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
+		double xpos, ypos;
+		glfwGetCursorPos(window, &xpos, &ypos);
+
+		int width, height;
+		glfwGetWindowSize(window, &width, &height);
+
+		int glX = static_cast<int>(xpos);
+		int glY = height - static_cast<int>(ypos) - 1;
+
+		float pixelColor[3];
+		glReadPixels(glX, glY, 1, 1, GL_RGB, GL_FLOAT, pixelColor);
+
+		float red = pixelColor[0];
+		float green = pixelColor[1];
+		float blue = pixelColor[2];
+
+		std::cout << "RGB: " << red << ", " << green << ", " << blue << std::endl;
+
 		glfwSwapInterval(vsync);
 		if (bakeShadows && bake)
 		{
@@ -794,6 +812,12 @@ int main()
 		}
 		GizmosBoundry.Draw(shaderProgram, camera, 1);
 
+		glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 0, 1, 1);
+		GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(0), glm::vec3(0), glm::vec3(6));
+		glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 1, 0, 0, 1);
+
+		GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(0,10,0), glm::vec3(0), glm::vec3(6));
+		glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 0, 1, 1);
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glLineWidth(5.0f);
@@ -998,7 +1022,11 @@ int main()
 			glFinish(); 
 			saveScreenshot(window, "screenshot.png");
 		}
-		
+
+
+
+
+
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 		
