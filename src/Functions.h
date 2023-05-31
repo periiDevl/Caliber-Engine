@@ -11,6 +11,13 @@
 #include <random>
 class Functions {
 public:
+	bool ClickOnRGBID(GLFWwindow* window,int button,glm::vec3 rgb, glm::vec3 targetID) {
+		//GLFW_MOUSE_BUTTON_LEFT
+		if (rgb == targetID && glfwGetMouseButton(window, button) == GLFW_PRESS) {
+			return true;
+		}
+		return false;
+	}
 	glm::quat Euler_to_quat(double roll, double pitch, double yaw)
 	{
 		double cr = cos(roll * 0.5);

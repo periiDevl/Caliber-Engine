@@ -667,7 +667,11 @@ int main()
 
 			std::cout << "RGB: " << red << ", " << green << ", " << blue << std::endl;
 			std::string rgbOutput = "RGB: " + std::to_string(red) + ", " + std::to_string(green) + ", " + std::to_string(blue);
-			console.log(rgbOutput.c_str());
+			//console.log(rgbOutput.c_str());
+
+			if (func.ClickOnRGBID(window, GLFW_MOUSE_BUTTON_LEFT, glm::vec3(red, green, blue), glm::vec3(0, 0, 1))) {
+				console.log("Balls");
+			}
 		}
 
 		glfwSwapInterval(vsync);
