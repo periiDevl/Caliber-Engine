@@ -41,6 +41,30 @@ const float WorldRadius = 100;
 const float objectWorldMult = 5;
 
 bool run = false; 
+void checkMouseOverObject(const glm::vec3& position, const glm::vec3& cameraPosition, const glm::vec3& cameraOrientation, float width, float height, GLFWwindow* window) {
+	// Get the current mouse position
+	double mouseX, mouseY;
+	glfwGetCursorPos(window, &mouseX, &mouseY);
+
+	// Translate 3D position to 2D screen coordinate
+	glm::mat4 viewMatrix = glm::lookAt(cameraPosition, cameraPosition + cameraOrientation, glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 projectionMatrix = glm::perspective(glm::radians(60.0f), width / height, 0.1f, 100.0f);
+	glm::vec4 viewport = glm::vec4(0, 0, width, height);
+	glm::vec3 screenPos = glm::project(position, viewMatrix, projectionMatrix, viewport);
+
+	// Calculate the distance between the mouse and the object's projected position
+	float distance = glm::sqrt(glm::pow(screenPos.x - mouseX, 2) + glm::pow(screenPos.y - (height - mouseY), 2));
+
+	// Check if the mouse is within the specified radius
+	float radius = 200.0f; // Replace with your desired radius
+	if (distance <= radius) {
+		std::cout << "Mouse is over the object!" << std::endl;
+	}
+}
+
+
+
+
 
 void saveScreenshot(GLFWwindow* window, const char* filename) {
 	int width, height;
@@ -665,7 +689,7 @@ int main()
 			float green = pixelColor[1];
 			float blue = pixelColor[2];
 
-			std::cout << "RGB: " << red << ", " << green << ", " << blue << std::endl;
+			//std::cout << "RGB: " << red << ", " << green << ", " << blue << std::endl;
 			std::string rgbOutput = "RGB: " + std::to_string(red) + ", " + std::to_string(green) + ", " + std::to_string(blue);
 			//console.log(rgbOutput.c_str());
 
@@ -828,6 +852,8 @@ int main()
 
 		GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(0, 10, 0), glm::vec3(0), glm::vec3(6));
 		glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 0, 1, 1);
+
+		checkMouseOverObject(glm::vec3(0, 10, 0), camera.Position, camera.Orientation, width, height, window);
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glLineWidth(5.0f);
