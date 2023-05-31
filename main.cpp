@@ -881,23 +881,24 @@ int main()
 		for (int i = 0; i < sceneObjects.size(); i++)
 		{
 			sceneObjects[i].Draw(shaderProgram, camera, objectWorldMult);
+
+			glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 0, 1, 1);
+			GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation), glm::vec3(0), glm::vec3(4));
+			if (checkMouseOverObject(sceneObjects[i].translation, camera.Position, camera.Orientation, width, height, window) && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+			{
+
+				sceneObjects[i].translation.x = moveObjectInXAxis(window, sceneObjects[i].translation, camera.Orientation, camera.Position).x;
+
+			};
 		}
 		glfwSetMouseButtonCallback(window, mouseButtonCallback);
-		if (checkMouseOverObject(sceneObjects[0].translation, camera.Position, camera.Orientation, width, height, window) && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-		{
-			glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 0, 1, 1);
-			GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[0].translation), glm::vec3(0), glm::vec3(4));
-			glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 1, 0, 0, 1);
-			sceneObjects[0].translation.x = moveObjectInXAxis(window, sceneObjects[0].translation, camera.Orientation, camera.Position).x;
-
-		};
+		
 		GizmosBoundry.Draw(shaderProgram, camera, 1);
 	//	if (func.ClickOnRGBID(window, GLFW_MOUSE_BUTTON_LEFT, glm::vec3(pixelColor[0], pixelColor[1], pixelColor[2]), glm::vec3(0, 0, 1))) {
 //		}
 
 
-		GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(0, 10, 0), glm::vec3(0), glm::vec3(6));
-		glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 0, 1, 1);
+		
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glLineWidth(5.0f);
