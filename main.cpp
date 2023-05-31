@@ -36,6 +36,13 @@ Save sve;
 // Add an object to the component
 //component.AddObject("path/to/object.obj");
 
+static glm::vec3 Deg(const glm::vec3& radians)
+{
+	return glm::vec3(radians.x * 180.0f / 3.14159f,
+		radians.y * 180.0f / 3.14159f,
+		radians.z * 180.0f / 3.14159f);
+}
+
 
 const float WorldRadius = 100;
 const float objectWorldMult = 5;
@@ -226,24 +233,34 @@ glm::vec3 moveObjectInZAxis(GLFWwindow* window, const glm::vec3& objectPosition,
 	glm::vec2 deltaXY = currentMousePosition - initialMousePosition;
 	float sensitivity = 0.0011f;
 
-	float distance = glm::distance(objectPosition, cameraPosition);
+	glm::mat4 cameraRotation = glm::mat4(glm::quat(glm::radians(cameraOrientation)));
 
+	glm::vec3 localDelta = glm::vec3(deltaXY.x, deltaXY.y, 0.0f) * sensitivity;
+	glm::vec3 globalDelta = glm::vec3(cameraRotation * glm::vec4(localDelta, 0.0f));
+
+	glm::vec3 cameraForward = glm::normalize(cameraPosition - objectPosition);
+	glm::vec3 cameraRight = glm::normalize(glm::cross(cameraForward, glm::vec3(0.0f, 1.0f, 0.0f)));
+	glm::vec3 cameraUp = glm::cross(cameraRight, cameraForward);
+
+	float elevationAngle = glm::degrees(std::asin(cameraUp.y)); 
+
+	glm::vec2 projectedDelta(glm::dot(deltaXY, glm::vec2(cameraRight.x, cameraUp.x)),
+		glm::dot(deltaXY, glm::vec2(cameraRight.y, cameraUp.y)));
+
+	projectedDelta.y *= std::cos(glm::radians(elevationAngle)); 
+
+	float distance = glm::distance(objectPosition, cameraPosition);
 	sensitivity *= distance;
 
-	float combinedDelta = (deltaXY.x + deltaXY.y) * sensitivity;
+	glm::vec3 delta = globalDelta.x * cameraRight + globalDelta.y * cameraUp;
+	delta.z = -glm::dot(deltaXY, glm::normalize(glm::vec2(cameraForward.x, cameraForward.y))) * sensitivity;
 
-	if (deltaXY.x < 0 && deltaXY.y < 0) {
-		combinedDelta = -glm::abs(combinedDelta);
-	}
-
-	glm::vec3 updatedObjectPosition = objectPosition;
-	updatedObjectPosition.z += combinedDelta;
+	glm::vec3 updatedObjectPosition = objectPosition + delta;
 
 	initialMousePosition = currentMousePosition;
 
 	return updatedObjectPosition;
 }
-
 
 
 
@@ -920,9 +937,9 @@ int main()
 		for (int i = 0; i < sceneObjects.size(); i++)
 		{
 			sceneObjects[i].Draw(shaderProgram, camera, objectWorldMult);
-			GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x - 1.0f, sceneObjects[i].translation.y, sceneObjects[i].translation.z), glm::vec3(0), glm::vec3(0.4));
+			GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x - 1.0f, sceneObjects[i].translation.y, sceneObjects[i].translation.z), Deg(glm::vec3(90, -90, 0)), glm::vec3(0.4));
 			glDisable(GL_DEPTH_TEST);
-			GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x - 1.0f, sceneObjects[i].translation.y, sceneObjects[i].translation.z), glm::vec3(0), glm::vec3(0.4));
+			GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x - 1.0f, sceneObjects[i].translation.y, sceneObjects[i].translation.z), Deg(glm::vec3(90, -90, 0)), glm::vec3(0.4));
 			if (checkMouseOverObject(glm::vec3(sceneObjects[i].translation.x - 1.0f, sceneObjects[i].translation.y, sceneObjects[i].translation.z), camera.Position, camera.Orientation, width, height, window) && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 			{
 
@@ -932,9 +949,9 @@ int main()
 			glEnable(GL_DEPTH_TEST);
 			glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 0, 1, 1);
 
-			GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z + 1.0f), glm::vec3(0), glm::vec3(0.4));
+			GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z + 1.0f), Deg(glm::vec3(-90,0,0)), glm::vec3(0.4));
 			glDisable(GL_DEPTH_TEST);
-			GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z + 1.0f), glm::vec3(0), glm::vec3(0.4));
+			GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z + 1.0f), Deg(glm::vec3(-90,0,0)), glm::vec3(0.4));
 			glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 1, 0, 0, 1);
 			if (checkMouseOverObject(glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z + 1.0f), camera.Position, camera.Orientation, width, height, window) && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 			{
@@ -946,9 +963,9 @@ int main()
 
 			glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 1, 0, 1);
 
-			GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y + 1.0f, sceneObjects[i].translation.z), glm::vec3(0), glm::vec3(0.4));
+			GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y + 1.0f, sceneObjects[i].translation.z), Deg(glm::vec3(0)), glm::vec3(0.4));
 			glDisable(GL_DEPTH_TEST);
-			GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y + 1.0f, sceneObjects[i].translation.z), glm::vec3(0), glm::vec3(0.4));
+			GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y + 1.0f, sceneObjects[i].translation.z), Deg(glm::vec3(0)), glm::vec3(0.4));
 			glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 1, 0, 0, 1);
 			if (checkMouseOverObject(glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y + 1.0f, sceneObjects[i].translation.z), camera.Position, camera.Orientation, width, height, window) && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 			{
