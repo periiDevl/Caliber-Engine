@@ -645,7 +645,7 @@ int main()
 
 
 
-
+	float pixelColor[3];
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
 		if (!run) {
@@ -658,7 +658,7 @@ int main()
 			int glX = static_cast<int>(xpos);
 			int glY = height - static_cast<int>(ypos) - 1;
 
-			float pixelColor[3];
+			
 			glReadPixels(glX, glY, 1, 1, GL_RGB, GL_FLOAT, pixelColor);
 
 			float red = pixelColor[0];
@@ -669,10 +669,9 @@ int main()
 			std::string rgbOutput = "RGB: " + std::to_string(red) + ", " + std::to_string(green) + ", " + std::to_string(blue);
 			//console.log(rgbOutput.c_str());
 
-			if (func.ClickOnRGBID(window, GLFW_MOUSE_BUTTON_LEFT, glm::vec3(red, green, blue), glm::vec3(0, 0, 1))) {
-				console.log("Balls");
-			}
+			
 		}
+
 
 		glfwSwapInterval(vsync);
 		if (bakeShadows && bake)
@@ -819,7 +818,10 @@ int main()
 			sceneObjects[i].Draw(shaderProgram, camera, objectWorldMult);
 		}
 		GizmosBoundry.Draw(shaderProgram, camera, 1);
-
+		if (func.ClickOnRGBID(window, GLFW_MOUSE_BUTTON_LEFT, glm::vec3(pixelColor[0], pixelColor[1], pixelColor[2]), glm::vec3(0, 0, 1))) {
+			console.log("Balls");
+			sceneObjects[0].translation.x = moveObjectInXAxis(window, sceneObjects[0].translation, camera.Orientation).x;
+		}
 		glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 0, 1, 1);
 		GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(0), glm::vec3(0), glm::vec3(6));
 		glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 1, 0, 0, 1);
@@ -831,7 +833,7 @@ int main()
 		glLineWidth(5.0f);
 		
 		sceneObjects[0].Draw(shaderProgram, camera, objectWorldMult);
-		sceneObjects[0].translation.x = moveObjectInXAxis(window, sceneObjects[0].translation, camera.Orientation).x;
+		
 		PhysicsCube.Draw(unlitProgram, camera, objectWorldMult);
 		PhysicsCube.PhysicsUpdate(true);
 		PhysicsCube.PHYSICS_SETUP();
