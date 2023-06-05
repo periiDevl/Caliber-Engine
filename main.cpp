@@ -353,7 +353,7 @@ int main()
 	
 	
 	GLFWwindow* window = glfwCreateWindow(width, height, "Loading Caliber Engine...", NULL, NULL);
-	glfwSetWindowAttrib(window, GLFW_RESIZABLE, GLFW_FALSE);
+	//glfwSetWindowAttrib(window, GLFW_RESIZABLE, GLFW_FALSE);
 	
 	if (window == NULL)
 	{
@@ -769,6 +769,7 @@ int main()
 	float pixelColor[3];
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
+		glfwGetWindowSize(window, &width, &height);
 		if (!run) {
 			double xpos, ypos;
 			glfwGetCursorPos(window, &xpos, &ypos);
@@ -1254,11 +1255,11 @@ int main()
 }
 
 
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
 }
-
 
 
 
