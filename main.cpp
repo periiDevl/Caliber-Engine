@@ -44,13 +44,10 @@ static glm::vec3 Deg(const glm::vec3& radians)
 }
 
 
-const float WorldRadius = 100;
+const float WorldRadius = 1500;
 const float objectWorldMult = 5;
 
 bool run = false; 
-
-
-
 
 
 void saveScreenshot(GLFWwindow* window, const char* filename) {
@@ -471,6 +468,7 @@ int main()
 	//Camera camera2(width, height, glm::vec3(22.0f, 15.0, 0.0f));
 
 	std::vector<Model> sceneObjects;
+	Model gird("models/grid/scene.gltf");
 
 	std::ifstream calibFile("world.caliber");
 	std::string line;
@@ -981,13 +979,12 @@ int main()
 		GizmosBoundry.Draw(shaderProgram, camera, 1);
 	//	if (func.ClickOnRGBID(window, GLFW_MOUSE_BUTTON_LEFT, glm::vec3(pixelColor[0], pixelColor[1], pixelColor[2]), glm::vec3(0, 0, 1))) {
 //		}
-
-
-		
+		gird.Draw(shaderProgram, camera, 1, glm::vec3(0), glm::vec3(0), glm::vec3(10));
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glLineWidth(5.0f);
 		
+
 		sceneObjects[0].Draw(shaderProgram, camera, objectWorldMult);
 		
 		PhysicsCube.Draw(unlitProgram, camera, objectWorldMult);
