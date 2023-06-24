@@ -44,10 +44,11 @@ static glm::vec3 Deg(const glm::vec3& radians)
 }
 
 
-const float WorldRadius = 1500;
+const float WorldRadius = 700;
 const float objectWorldMult = 5;
 
 bool run = false; 
+
 
 
 void saveScreenshot(GLFWwindow* window, const char* filename) {
@@ -359,6 +360,7 @@ int main()
 		return -1; 
 	}
 	glfwMakeContextCurrent(window);
+	glfwSetWindowAttrib(window, GLFW_RESIZABLE, GLFW_FALSE);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -414,7 +416,7 @@ int main()
 	blurProgram.Activate();
 	glUniform1f(glGetUniformLocation(blurProgram.ID, "spreadBlur"), BloomSpreadBlur);
 
-	glm::vec3 lightPos = glm::vec3(0.5f, 1, 0.5f);
+	glm::vec3 lightPos = glm::vec3(0.5f, 1.0f, 0.0f);
 	unlitProgram.Activate();
 	glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 1, 0, 1);
 
@@ -915,7 +917,7 @@ int main()
 		
 
 
-		glClearColor(pow(0.07f, gamma), pow(0.13f, gamma), pow(0.17f, gamma), 1.0f);
+		glClearColor(pow(0.05f, gamma), pow(0.05f, gamma), pow(0.05f, gamma), 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		camera.updateMatrix3D(60.0f, 0.1f, viewFarPlane);
@@ -980,10 +982,10 @@ int main()
 	//	if (func.ClickOnRGBID(window, GLFW_MOUSE_BUTTON_LEFT, glm::vec3(pixelColor[0], pixelColor[1], pixelColor[2]), glm::vec3(0, 0, 1))) {
 //		}
 		gird.Draw(shaderProgram, camera, 1, glm::vec3(0), glm::vec3(0), glm::vec3(10));
-
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glLineWidth(5.0f);
 		
+
 
 		sceneObjects[0].Draw(shaderProgram, camera, objectWorldMult);
 		
@@ -998,7 +1000,7 @@ int main()
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glLineWidth(1.0f);
 		
-		if (enableskybox) {
+		if (enableskybox && run) {
 			glDepthFunc(GL_LEQUAL);
 
 			skyboxShader.Activate();

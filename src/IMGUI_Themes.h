@@ -228,7 +228,7 @@ void DefaultTheme()
 	ImVec4* colors = ImGui::GetStyle().Colors;
 	colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 	colors[ImGuiCol_TextDisabled] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-	colors[ImGuiCol_WindowBg] = ImVec4(0.22, 0.23, 0.25, 1);
+	colors[ImGuiCol_WindowBg] = ImVec4(0.22 - 0.05f, 0.23 - 0.05f, 0.25 - 0.05f, 0.8f);
 	colors[ImGuiCol_ChildBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 	colors[ImGuiCol_PopupBg] = ImVec4(0.19f, 0.19f, 0.19f, 0.92f);
 	colors[ImGuiCol_Border] = ImVec4(1, 1, 1, 0.29f);
