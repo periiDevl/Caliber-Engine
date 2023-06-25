@@ -107,7 +107,7 @@ void Camera::TrackBallMouse(GLFWwindow* window)
 			float rotX = sensitivity * (float)(mouseY - (height / 2)) / height;
 			float rotY = sensitivity * (float)(mouseX - (width / 2)) / width;
 
-			glm::vec3 centerPoint = glm::vec3(Position.x, Position.y, Position.z) + glm::vec3(Orientation.x * 2, Orientation.y * 2, Orientation.z * 2);
+			glm::vec3 centerPoint = glm::vec3(Position.x, Position.y, Position.z) + glm::vec3(Orientation.x * 100, Orientation.y * 100, Orientation.z * 100);
 
 			glm::vec3 newOrientation = glm::rotate(Orientation, glm::radians(-rotX), glm::normalize(glm::cross(Orientation, Up)));
 			newOrientation = glm::rotate(newOrientation, glm::radians(-rotY), Up);
