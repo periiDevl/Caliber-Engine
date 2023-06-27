@@ -46,7 +46,7 @@ void Camera::Matrix(Shader& shader, const char* uniform)
 
 void Camera::Mouse(GLFWwindow* window)
 {
-	if (run) {
+	
 		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
 		{
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
@@ -83,13 +83,13 @@ void Camera::Mouse(GLFWwindow* window)
 
 			firstClick = true;
 		}
-	}
+	
 }
 
 
 void Camera::TrackBallMouse(GLFWwindow* window)
 {
-	if (!run) {
+	
 		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
 		{
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
@@ -134,13 +134,13 @@ void Camera::TrackBallMouse(GLFWwindow* window)
 
 			firstClick = true;
 		}
-	}
+	
 }
 
 
 void Camera::Inputs(GLFWwindow* window, float normalSpeed, float highSpeed)
 {
-	if (run) {
+	
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		{
 			Position += speed * getDirection(Orientation, false);
@@ -175,11 +175,11 @@ void Camera::Inputs(GLFWwindow* window, float normalSpeed, float highSpeed)
 		{
 			speed = normalSpeed;
 		}
-	}
+	
 }
 void Camera::Trackaballmovement(GLFWwindow* window, float normalSpeed, float highSpeed)
 {
-	if (!run) {
+	
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		{
 			Position += speed * getDirection(Orientation, false);
@@ -214,5 +214,5 @@ void Camera::Trackaballmovement(GLFWwindow* window, float normalSpeed, float hig
 			speed = normalSpeed;
 		}
 
-	}
+	
 }

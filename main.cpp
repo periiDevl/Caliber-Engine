@@ -741,7 +741,7 @@ int main()
 	for (size_t i = 0; i < sceneObjects.size(); i++)
 	{
 		sceneObjects[i].BindPhysics(dynamicsWorld, objectWorldMult, true);
-		sceneObjects[i].PHYSICS_SETUP();
+		sceneObjects[i].PHYSICS_SETUP(true, objectWorldMult);
 	}
 
 	bool bake = true;
@@ -818,9 +818,8 @@ int main()
 		crntTime = glfwGetTime();
 		timeDiff = crntTime - prevTime;
 		counter++;
-		camera.run = run;
 
-		camera.TrackBallMouse(window);
+		//camera.TrackBallMouse(window);
 
 		camera.Mouse(window);
 
@@ -836,7 +835,7 @@ int main()
 			
 			
 			camera.Inputs(window, cameraNormalSpeed * fixed_timestep, highCameraSpeed * fixed_timestep);
-			camera.Trackaballmovement(window, cameraNormalSpeed * fixed_timestep, highCameraSpeed * fixed_timestep);
+			//camera.Trackaballmovement(window, cameraNormalSpeed * fixed_timestep, highCameraSpeed * fixed_timestep);
 			
 			
 
@@ -990,8 +989,7 @@ int main()
 			PhysicsCube.scale = sceneObjects[i].scale;
 			PhysicsCube.Draw(unlitProgram, camera, objectWorldMult);
 
-			sceneObjects[i].PhysicsUpdate(true);
-			sceneObjects[i].PHYSICS_SETUP();
+			sceneObjects[i].PHYSICS_SETUP(true, objectWorldMult);
 		}
 		
 
@@ -1160,6 +1158,12 @@ int main()
 				
 				if (glfwGetKey(window, GLFW_KEY_ENTER)) {
 					sceneObjects.push_back(Model(objName));
+				}
+				if (ImGui::Button("Cube")) {
+					sceneObjects.push_back(Model("models/cube/scene.gltf"));
+					sceneObjects.back().file = "models/cube/scene.gltf";
+					sceneObjects.back().BindPhysics(dynamicsWorld, objectWorldMult, true);
+					sceneObjects.back().PHYSICS_SETUP(true, objectWorldMult);
 				}
 				ImGui::EndPopup();
 			}

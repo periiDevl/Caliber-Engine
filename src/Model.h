@@ -79,31 +79,27 @@ public:
 	}
 
 	btTransform phys;
-	void PHYSICS_SETUP()
+	void PHYSICS_SETUP(bool staticBody, float objectWorldMult)
 	{
 		Functions func;
-		boxRigidBody->setGravity(btVector3(0, -9.81, 0));
-		boxRigidBody->getMotionState()->getWorldTransform(phys);
-		translation = glm::vec3(phys.getOrigin().getX(), phys.getOrigin().getY() - 1, phys.getOrigin().getZ());
-		glm::quat rotationQuat = glm::quat(phys.getRotation().getX(), phys.getRotation().getY(), phys.getRotation().getZ(), phys.getRotation().getW());
-		rotation = func.Quat_to_euler(rotationQuat);
-
-		
-		
-
-
-	}
-
-	void PhysicsUpdate(bool staticBody)
-	{
 		if (staticBody)
 		{
 			boxRigidBody->setWorldTransform(phys);
 			boxRigidBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
 		}
-		phys.setOrigin(btVector3(translation.x, translation.y + 1, translation.z));
+		boxRigidBody->setGravity(btVector3(0, -9.81, 0));
+		boxRigidBody->getMotionState()->getWorldTransform(phys);
 		//translation = glm::vec3(phys.getOrigin().getX(), phys.getOrigin().getY() - 1, phys.getOrigin().getZ());
+		glm::quat rotationQuat = glm::quat(phys.getRotation().getX(), phys.getRotation().getY(), phys.getRotation().getZ(), phys.getRotation().getW());
+		rotation = func.Quat_to_euler(rotationQuat);
+
+		phys.setOrigin(btVector3(translation.x, translation.y + 1, translation.z));
+
+		btCollisionShape* boxShape = new btBoxShape(btVector3(scale.x / objectWorldMult, scale.y / objectWorldMult, scale.z / objectWorldMult));
+		boxRigidBody->setCollisionShape(boxShape);
+
 	}
+
 
 
 
