@@ -45,7 +45,7 @@ static glm::vec3 Deg(const glm::vec3& radians)
 
 
 const float WorldRadius = 700;
-const float objectWorldMult = 5;
+const float objectWorldMult = 2;
 
 bool run = false; 
 
@@ -738,13 +738,11 @@ int main()
 
 	const int substep = 10;
 	Model PhysicsCube("models/cube/scene.gltf");
-
-	PhysicsCube.phys.setOrigin(btVector3(0, 0, 0));
+	/*
+	PhysicsCube.position = glm::vec3(0,0,0);
 	PhysicsCube.scale = glm::vec3(4, 4, 4);
 	PhysicsCube.BindPhysics(dynamicsWorld, objectWorldMult, true);
-	PhysicsCube.PHYSICS_SETUP();
-	PhysicsCube.phys.setOrigin(btVector3(0, 0, 0));
-	PhysicsCube.scale = glm::vec3(4, 4, 4);
+	*/
 
 	bool bake = true;
 
@@ -935,63 +933,79 @@ int main()
 		glViewport(0, 0, width, height);
 		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 
+		
 		for (int i = 0; i < sceneObjects.size(); i++)
 		{
 			sceneObjects[i].Draw(shaderProgram, camera, objectWorldMult);
-			GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x - 1.0f, sceneObjects[i].translation.y, sceneObjects[i].translation.z), Deg(glm::vec3(90, -90, 0)), glm::vec3(0.4));
-			glDisable(GL_DEPTH_TEST);
-			GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x - 1.0f, sceneObjects[i].translation.y, sceneObjects[i].translation.z), Deg(glm::vec3(90, -90, 0)), glm::vec3(0.4));
-			if (checkMouseOverObject(glm::vec3(sceneObjects[i].translation.x - 1.0f, sceneObjects[i].translation.y, sceneObjects[i].translation.z), camera.Position, camera.Orientation, width, height, window) && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-			{
+		
+			if (!run) {
+				GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x - 1.0f, sceneObjects[i].translation.y, sceneObjects[i].translation.z), Deg(glm::vec3(90, -90, 0)), glm::vec3(0.4));
+				glDisable(GL_DEPTH_TEST);
+				GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x - 1.0f, sceneObjects[i].translation.y, sceneObjects[i].translation.z), Deg(glm::vec3(90, -90, 0)), glm::vec3(0.4));
+				if (checkMouseOverObject(glm::vec3(sceneObjects[i].translation.x - 1.0f, sceneObjects[i].translation.y, sceneObjects[i].translation.z), camera.Position, camera.Orientation, width, height, window) && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+				{
 
-				sceneObjects[i].translation.x = moveObjectInXAxis(window, sceneObjects[i].translation, camera.Orientation, camera.Position).x;
+					sceneObjects[i].translation.x = moveObjectInXAxis(window, sceneObjects[i].translation, camera.Orientation, camera.Position).x;
 
-			};
-			glEnable(GL_DEPTH_TEST);
-			glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 0, 1, 1);
+				};
+				glEnable(GL_DEPTH_TEST);
+				glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 0, 1, 1);
 
-			GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z + 1.0f), Deg(glm::vec3(-90,0,0)), glm::vec3(0.4));
-			glDisable(GL_DEPTH_TEST);
-			GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z + 1.0f), Deg(glm::vec3(-90,0,0)), glm::vec3(0.4));
-			glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 1, 0, 0, 1);
-			if (checkMouseOverObject(glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z + 1.0f), camera.Position, camera.Orientation, width, height, window) && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-			{
+				GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z + 1.0f), Deg(glm::vec3(-90, 0, 0)), glm::vec3(0.4));
+				glDisable(GL_DEPTH_TEST);
+				GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z + 1.0f), Deg(glm::vec3(-90, 0, 0)), glm::vec3(0.4));
+				glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 1, 0, 0, 1);
+				if (checkMouseOverObject(glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z + 1.0f), camera.Position, camera.Orientation, width, height, window) && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+				{
 
-				sceneObjects[i].translation.z = moveObjectInZAxis(window, sceneObjects[i].translation, camera.Orientation, camera.Position).z;
+					sceneObjects[i].translation.z = moveObjectInZAxis(window, sceneObjects[i].translation, camera.Orientation, camera.Position).z;
 
-			};
-			glEnable(GL_DEPTH_TEST);
+				};
+				glEnable(GL_DEPTH_TEST);
 
-			glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 1, 0, 1);
+				glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 1, 0, 1);
 
-			GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y + 1.0f, sceneObjects[i].translation.z), Deg(glm::vec3(0)), glm::vec3(0.4));
-			glDisable(GL_DEPTH_TEST);
-			GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y + 1.0f, sceneObjects[i].translation.z), Deg(glm::vec3(0)), glm::vec3(0.4));
-			glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 1, 0, 0, 1);
-			if (checkMouseOverObject(glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y + 1.0f, sceneObjects[i].translation.z), camera.Position, camera.Orientation, width, height, window) && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-			{
+				GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y + 1.0f, sceneObjects[i].translation.z), Deg(glm::vec3(0)), glm::vec3(0.4));
+				glDisable(GL_DEPTH_TEST);
+				GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y + 1.0f, sceneObjects[i].translation.z), Deg(glm::vec3(0)), glm::vec3(0.4));
+				glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 1, 0, 0, 1);
+				if (checkMouseOverObject(glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y + 1.0f, sceneObjects[i].translation.z), camera.Position, camera.Orientation, width, height, window) && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+				{
 
-				sceneObjects[i].translation.y = moveObjectInYAxis(window, sceneObjects[i].translation, camera.Orientation, camera.Position).y;
+					sceneObjects[i].translation.y = moveObjectInYAxis(window, sceneObjects[i].translation, camera.Orientation, camera.Position).y;
 
-			};
-			glEnable(GL_DEPTH_TEST);
+				};
+				glEnable(GL_DEPTH_TEST);
+				GizmosBoundry.Draw(shaderProgram, camera, 1);
+				gird.Draw(shaderProgram, camera, 1, glm::vec3(0), glm::vec3(0), glm::vec3(10));
+			}
 		}
+
 		glfwSetMouseButtonCallback(window, mouseButtonCallback);
 		
-		GizmosBoundry.Draw(shaderProgram, camera, 1);
-	//	if (func.ClickOnRGBID(window, GLFW_MOUSE_BUTTON_LEFT, glm::vec3(pixelColor[0], pixelColor[1], pixelColor[2]), glm::vec3(0, 0, 1))) {
-//		}
-		gird.Draw(shaderProgram, camera, 1, glm::vec3(0), glm::vec3(0), glm::vec3(10));
+
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glLineWidth(5.0f);
 		
 
+		for (size_t i = 0; i < sceneObjects.size(); i++)
+		{
 
-		sceneObjects[0].Draw(shaderProgram, camera, objectWorldMult);
+			PhysicsCube.position = glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y + 1, sceneObjects[i].translation.z);
+			PhysicsCube.translation = glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z);
+			PhysicsCube.scale = sceneObjects[i].scale;
+			PhysicsCube.BindPhysics(dynamicsWorld, objectWorldMult, true);
+
+			PhysicsCube.Draw(unlitProgram, camera, objectWorldMult);
+			PhysicsCube.PhysicsUpdate(true);
+			PhysicsCube.PHYSICS_SETUP();
+		}
+
+
+
+
 		
-		PhysicsCube.Draw(unlitProgram, camera, objectWorldMult);
-		PhysicsCube.PhysicsUpdate(true);
-		PhysicsCube.PHYSICS_SETUP();
+
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection = glm::mat4(1.0f);
 		view = glm::mat4(glm::mat3(glm::lookAt(camera.Position, camera.Position + camera.Orientation, camera.Up)));
