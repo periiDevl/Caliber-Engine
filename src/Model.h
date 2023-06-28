@@ -11,10 +11,11 @@ using json = nlohmann::json;
 class Model
 {
 public:
+	bool deleted = false;
 	btRigidBody* boxRigidBody;
-	glm::vec3 translation;
+	glm::vec3 translation = glm::vec3(0);
 	glm::vec3 rotation = glm::vec3(0, 0, 0);
-	glm::vec3 scale;
+	glm::vec3 scale = glm::vec3(0);
 	glm::vec3 ID = glm::vec3(0, 0, 0);
 	std::string file = "models/rocket/scene.gltf";
 
@@ -90,10 +91,18 @@ public:
 		boxRigidBody->setGravity(btVector3(0, -9.81, 0));
 		boxRigidBody->getMotionState()->getWorldTransform(phys);
 		//translation = glm::vec3(phys.getOrigin().getX(), phys.getOrigin().getY() - 1, phys.getOrigin().getZ());
-		glm::quat rotationQuat = glm::quat(phys.getRotation().getX(), phys.getRotation().getY(), phys.getRotation().getZ(), phys.getRotation().getW());
-		rotation = func.Quat_to_euler(rotationQuat);
 
 		phys.setOrigin(btVector3(translation.x, translation.y + 1, translation.z));
+		
+
+		float radiansX = btRadians(rotation.x);
+		float radiansY = btRadians(rotation.y);
+		float radiansZ = btRadians(rotation.z);
+
+		btQuaternion quaternionRotation;
+		quaternionRotation.setEulerZYX(radiansZ, radiansY, radiansX);
+
+		phys.setRotation(quaternionRotation);
 
 		btCollisionShape* boxShape = new btBoxShape(btVector3(scale.x / objectWorldMult, scale.y / objectWorldMult, scale.z / objectWorldMult));
 		boxRigidBody->setCollisionShape(boxShape);

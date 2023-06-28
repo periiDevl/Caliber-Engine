@@ -20,12 +20,12 @@ public:
 	}
 	glm::quat Euler_to_quat(double roll, double pitch, double yaw)
 	{
-		double cr = cos(roll * 0.5);
-		double sr = sin(roll * 0.5);
-		double cp = cos(pitch * 0.5);
-		double sp = sin(pitch * 0.5);
-		double cy = cos(yaw * 0.5);
-		double sy = sin(yaw * 0.5);
+		double cr = cos(glm::radians(roll) * 0.5);
+		double sr = sin(glm::radians(roll) * 0.5);
+		double cp = cos(glm::radians(pitch) * 0.5);
+		double sp = sin(glm::radians(pitch) * 0.5);
+		double cy = cos(glm::radians(yaw) * 0.5);
+		double sy = sin(glm::radians(yaw) * 0.5);
 
 		glm::quat q;
 		q.w = cr * cp * cy + sr * sp * sy;
@@ -34,15 +34,17 @@ public:
 		q.z = cr * cp * sy - sr * sp * cy;
 
 		return q;
-
 	}
+
 	glm::vec3 Quat_to_euler(const glm::quat& q)
 	{
-		double roll = atan2(2 * (q.w * q.x + q.y * q.z), 1 - 2 * (q.x * q.x + q.y * q.y));
-		double pitch = asin(2 * (q.w * q.y - q.z * q.x));
-		double yaw = atan2(2 * (q.w * q.z + q.x * q.y), 1 - 2 * (q.y * q.y + q.z * q.z));
+		double roll = glm::degrees(atan2(2 * (q.w * q.x + q.y * q.z), 1 - 2 * (q.x * q.x + q.y * q.y)));
+		double pitch = glm::degrees(asin(2 * (q.w * q.y - q.z * q.x)));
+		double yaw = glm::degrees(atan2(2 * (q.w * q.z + q.x * q.y), 1 - 2 * (q.y * q.y + q.z * q.z)));
+
 		return glm::vec3(roll, pitch, yaw);
 	}
+
 
 
 	glm::vec3 Direction_to_forward(glm::vec3 vector3, double yaw, double pitch)

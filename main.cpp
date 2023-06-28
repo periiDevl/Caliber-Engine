@@ -349,6 +349,17 @@ int main()
 	float avgShadow = myData.data[25];
 
 	bool BPL_LIGHTING = myData.data[26];
+
+	Camera camera(width, height, glm::vec3(0, 0, 0.0f));
+	camera.Position.x = myData.data[27];
+	camera.Position.y = myData.data[28];
+	camera.Position.z = myData.data[29];
+
+	
+	camera.Orientation.x = myData.data[30];
+	camera.Orientation.y = myData.data[31];
+	camera.Orientation.z = myData.data[32];
+
 	
 	bool no_resize = true;
 	bool no_move = true;
@@ -483,7 +494,8 @@ int main()
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
 	glFrontFace(GL_CCW);
-	Camera camera(width, height, glm::vec3(0, 0, 0.0f));
+	
+
 	//camera stacking
 	//Camera camera2(width, height, glm::vec3(22.0f, 15.0, 0.0f));
 
@@ -909,7 +921,9 @@ int main()
 
 			for (int i = 0; i < sceneObjects.size(); i++)
 			{
-				sceneObjects[i].Draw(shadowMapProgram, camera, objectWorldMult);
+				if (!sceneObjects[i].deleted) {
+					sceneObjects[i].Draw(shadowMapProgram, camera, objectWorldMult);
+				}
 			}
 
 		}
@@ -952,61 +966,67 @@ int main()
 
 		for (int i = 0; i < sceneObjects.size(); i++)
 		{
-			sceneObjects[i].Draw(shaderProgram, camera, objectWorldMult);
-			PhysicsCube.translation = sceneObjects[i].translation;
-			PhysicsCube.scale = sceneObjects[i].scale;
-			
+			if (!sceneObjects[i].deleted)
+			{
 
-			sceneObjects[i].PHYSICS_SETUP(true, objectWorldMult);
-			if (!run) {
-				
-				GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x - 1.0f, sceneObjects[i].translation.y, sceneObjects[i].translation.z), Deg(glm::vec3(90, -90, 0)), glm::vec3(0.4));
-				glDisable(GL_DEPTH_TEST);
-				GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x - 1.0f, sceneObjects[i].translation.y, sceneObjects[i].translation.z), Deg(glm::vec3(90, -90, 0)), glm::vec3(0.4));
-				if (checkMouseOverObject(glm::vec3(sceneObjects[i].translation.x - 1.0f, sceneObjects[i].translation.y, sceneObjects[i].translation.z), camera.Position, camera.Orientation, width, height, window) && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-				{
 
-					sceneObjects[i].translation.x = moveObjectInXAxis(window, sceneObjects[i].translation, camera.Orientation, camera.Position).x;
+				sceneObjects[i].Draw(shaderProgram, camera, objectWorldMult);
+				PhysicsCube.translation = sceneObjects[i].translation;
+				PhysicsCube.scale = sceneObjects[i].scale;
+				PhysicsCube.rotation = sceneObjects[i].rotation;
 
-				};
-				glEnable(GL_DEPTH_TEST);
-				glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 0, 1, 1);
 
-				GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z + 1.0f), Deg(glm::vec3(-90, 0, 0)), glm::vec3(0.4));
-				glDisable(GL_DEPTH_TEST);
-				GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z + 1.0f), Deg(glm::vec3(-90, 0, 0)), glm::vec3(0.4));
-				glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 1, 0, 0, 1);
-				if (checkMouseOverObject(glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z + 1.0f), camera.Position, camera.Orientation, width, height, window) && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-				{
+				sceneObjects[i].PHYSICS_SETUP(true, objectWorldMult);
+				if (!run) {
 
-					sceneObjects[i].translation.z = moveObjectInZAxis(window, sceneObjects[i].translation, camera.Orientation, camera.Position).z;
+					GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x - 1.0f, sceneObjects[i].translation.y, sceneObjects[i].translation.z), glm::vec3(90, -90, 0), glm::vec3(0.4));
+					glDisable(GL_DEPTH_TEST);
+					GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x - 1.0f, sceneObjects[i].translation.y, sceneObjects[i].translation.z), glm::vec3(90, -90, 0), glm::vec3(0.4));
+					if (checkMouseOverObject(glm::vec3(sceneObjects[i].translation.x - 1.0f, sceneObjects[i].translation.y, sceneObjects[i].translation.z), camera.Position, camera.Orientation, width, height, window) && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+					{
 
-				};
-				glEnable(GL_DEPTH_TEST);
+						sceneObjects[i].translation.x = moveObjectInXAxis(window, sceneObjects[i].translation, camera.Orientation, camera.Position).x;
 
-				glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 1, 0, 1);
+					};
+					glEnable(GL_DEPTH_TEST);
+					glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 0, 1, 1);
 
-				GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y + 1.0f, sceneObjects[i].translation.z), Deg(glm::vec3(0)), glm::vec3(0.4));
-				glDisable(GL_DEPTH_TEST);
-				GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y + 1.0f, sceneObjects[i].translation.z), Deg(glm::vec3(0)), glm::vec3(0.4));
-				glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 1, 0, 0, 1);
-				if (checkMouseOverObject(glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y + 1.0f, sceneObjects[i].translation.z), camera.Position, camera.Orientation, width, height, window) && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-				{
+					GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z + 1.0f), glm::vec3(90, 0, 0), glm::vec3(0.4));
+					glDisable(GL_DEPTH_TEST);
+					GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z + 1.0f), glm::vec3(90, 0, 0), glm::vec3(0.4));
+					glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 1, 0, 0, 1);
+					if (checkMouseOverObject(glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z + 1.0f), camera.Position, camera.Orientation, width, height, window) && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+					{
 
-					sceneObjects[i].translation.y = moveObjectInYAxis(window, sceneObjects[i].translation, camera.Orientation, camera.Position).y;
+						sceneObjects[i].translation.z = moveObjectInZAxis(window, sceneObjects[i].translation, camera.Orientation, camera.Position).z;
 
-				};
-		
-				
-				glEnable(GL_DEPTH_TEST);
-				if (!wireframe) {
-					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-					glLineWidth(5.0f);
-					PhysicsCube.Draw(unlitProgram, camera, objectWorldMult);
-					
-					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+					};
+					glEnable(GL_DEPTH_TEST);
+
+					glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 1, 0, 1);
+
+					GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y + 1.0f, sceneObjects[i].translation.z), glm::vec3(0), glm::vec3(0.4));
+					glDisable(GL_DEPTH_TEST);
+					GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y + 1.0f, sceneObjects[i].translation.z), glm::vec3(0), glm::vec3(0.4));
+					glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 1, 0, 0, 1);
+					if (checkMouseOverObject(glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y + 1.0f, sceneObjects[i].translation.z), camera.Position, camera.Orientation, width, height, window) && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+					{
+
+						sceneObjects[i].translation.y = moveObjectInYAxis(window, sceneObjects[i].translation, camera.Orientation, camera.Position).y;
+
+					};
+
+
+					glEnable(GL_DEPTH_TEST);
+					if (!wireframe) {
+						glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+						glLineWidth(5.0f);
+						PhysicsCube.Draw(unlitProgram, camera, objectWorldMult);
+
+						glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+					}
+					glLineWidth(1.0f);
 				}
-				glLineWidth(1.0f);
 			}
 		}
 		glfwSetMouseButtonCallback(window, mouseButtonCallback);
@@ -1198,23 +1218,30 @@ int main()
 			
 			for (size_t i = 0; i < sceneObjects.size(); i++)
 			{
-				ImGui::Separator();
-				float T[3] = { sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z };
-				ImGui::InputFloat3(("Position##" + std::to_string(i)).c_str(), T);
-				sceneObjects[i].translation = glm::vec3(T[0], T[1], T[2]);
+				if (sceneObjects[i].deleted == false) {
+					if (ImGui::CollapsingHeader(("object " + std::to_string(i)).c_str())) {
+						ImGui::Separator();
+						if (ImGui::Button("Delete"))
+						{
+							sceneObjects[i].deleted = true;
+						}
+						float T[3] = { sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z };
+						ImGui::InputFloat3(("Position##" + std::to_string(i)).c_str(), T);
+						sceneObjects[i].translation = glm::vec3(T[0], T[1], T[2]);
 
-				float S[3] = { sceneObjects[i].scale.x, sceneObjects[i].scale.y, sceneObjects[i].scale.z };
-				ImGui::InputFloat3(("Scale##" + std::to_string(i)).c_str(), S);
-				sceneObjects[i].scale = glm::vec3(S[0], S[1], S[2]);
+						float S[3] = { sceneObjects[i].scale.x, sceneObjects[i].scale.y, sceneObjects[i].scale.z };
+						ImGui::InputFloat3(("Scale##" + std::to_string(i)).c_str(), S);
+						sceneObjects[i].scale = glm::vec3(S[0], S[1], S[2]);
 
 
-				float F[3] = { sceneObjects[i].rotation.x, sceneObjects[i].rotation.y, sceneObjects[i].rotation.z };
-				ImGui::InputFloat3(("Rotation##" + std::to_string(i)).c_str(), F);
-				sceneObjects[i].rotation = glm::vec3(F[0], F[1], F[2]);
-				ImGui::Columns(1, nullptr, true);
-				ImGui::Separator();
+						float F[3] = { sceneObjects[i].rotation.x, sceneObjects[i].rotation.y, sceneObjects[i].rotation.z };
+						ImGui::InputFloat3(("Rotation##" + std::to_string(i)).c_str(), F);
+						sceneObjects[i].rotation = glm::vec3(F[0], F[1], F[2]);
+						ImGui::Columns(1, nullptr, true);
+						ImGui::Separator();
 
-
+					}
+				}
 			}
 		}
 		
@@ -1239,10 +1266,12 @@ int main()
 
 	std::ofstream Caliboutfile("world.caliber");
 	for (const auto& obj : sceneObjects) {
-		Caliboutfile << obj.translation.x << "," << obj.translation.y << "," << obj.translation.z << ","
-			<< obj.rotation.x << "," << obj.rotation.y << "," << obj.rotation.z << ","
-			<< obj.scale.x << "," << obj.scale.y << "," << obj.scale.z << "," << obj.file
-			<< "\n";
+		if (obj.deleted == false) {
+			Caliboutfile << obj.translation.x << "," << obj.translation.y << "," << obj.translation.z << ","
+				<< obj.rotation.x << "," << obj.rotation.y << "," << obj.rotation.z << ","
+				<< obj.scale.x << "," << obj.scale.y << "," << obj.scale.z << "," << obj.file
+				<< "\n";
+		}
 	}
 	Caliboutfile.close();
 
@@ -1250,7 +1279,8 @@ int main()
 	myData.data = { float(vsync), float(renderShadows), float(msaaSamples), float(bloom), float(wireframe),
 					float(width), float(height), gamma, exposure, highCameraSpeed, cameraNormalSpeed, float(enableskybox),
 					fogNear, viewFarPlane, float(bakeShadows), float(colorChoice), FXAA_SPAN_MAX, FXAA_REDUCE_MIN, FXAA_REDUCE_MUL, BloomSpreadBlur, 
-	float(shadowMapWidth), float(shadowMapHeight), float(shadowSampleRadius), DepthBias1, DepthBias2, avgShadow, float(BPL_LIGHTING) };
+	float(shadowMapWidth), float(shadowMapHeight), float(shadowSampleRadius), DepthBias1, DepthBias2, avgShadow, float(BPL_LIGHTING)
+	, camera.Position.x, camera.Position.y, camera.Position.z, camera.Orientation.x, camera.Orientation.y, camera.Orientation.z};
 	
 	myData.saveData();
 	
