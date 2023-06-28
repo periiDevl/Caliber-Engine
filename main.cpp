@@ -403,9 +403,17 @@ int main()
 	console.log(reinterpret_cast<const char*>(glGetString(GL_VERSION)));
 
 
-	std::string rendererString = "Using : ";
-	rendererString += reinterpret_cast<const char*>(glGetString(GL_RENDERER));
-	console.log(rendererString.c_str());
+	std::string infoString = "Using : ";
+	infoString += reinterpret_cast<const char*>(glGetString(GL_RENDERER));
+	console.log(infoString.c_str());
+
+	infoString = "Glsl : ";
+	infoString += reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION));
+	console.log(infoString.c_str());
+
+	int maxmsaa = 0;
+	glGetIntegerv(GL_MAX_SAMPLES, &maxmsaa);
+	
 
 	setup.SETUP_IMGUI(window);
 	Shader shaderProgram(vert.Default, frag.Default);
@@ -991,10 +999,13 @@ int main()
 		
 				
 				glEnable(GL_DEPTH_TEST);
-				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-				glLineWidth(5.0f);
-				PhysicsCube.Draw(unlitProgram, camera, objectWorldMult);
-				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+				if (!wireframe) {
+					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+					glLineWidth(5.0f);
+					PhysicsCube.Draw(unlitProgram, camera, objectWorldMult);
+					
+					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+				}
 				glLineWidth(1.0f);
 			}
 		}
@@ -1152,7 +1163,7 @@ int main()
 
 			SETUI(no_resize, no_move, run, postProcessingTexture, shadowMap, depthTexture, colorChoice, msaaSamples, FXAA_SPAN_MAX, FXAA_REDUCE_MIN, FXAA_REDUCE_MUL, framebufferProgram,
 				gamma, exposure, bloom, BloomSpreadBlur, blurProgram, shadowMapWidth, shadowMapHeight, bakeShadows, renderShadows, shadowSampleRadius, avgShadow, DepthBias1, DepthBias2, shaderProgram,
-				fogNear, viewFarPlane, enableskybox, vsync, highCameraSpeed, cameraNormalSpeed, wireframe, BPL_LIGHTING);
+				fogNear, viewFarPlane, enableskybox, vsync, highCameraSpeed, cameraNormalSpeed, wireframe, BPL_LIGHTING, maxmsaa);
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "minEdgeContrast"), FXAA_REDUCE_MIN);
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "subPixelAliasing"), FXAA_REDUCE_MUL);
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "maximumEdgeDetection"), FXAA_SPAN_MAX);

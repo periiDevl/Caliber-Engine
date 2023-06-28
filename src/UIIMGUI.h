@@ -8,7 +8,7 @@ void SETUI(bool& no_resize, bool& no_move, bool& run, unsigned int& postProcessi
 	Shader& framebufferProgram, float& gamma, float& exposure, int& bloom, float& BloomSpreadBlur, Shader& blurProgram, 
 	int& shadowMapWidth, int& shadowMapHeight, bool& bakeShadows, bool& renderShadows, int&	shadowSampleRadius,
 	float& avgShadow, float& DepthBias1, float& DepthBias2, Shader& shaderProgram, float& fogNear, float& viewFarPlane,
-	bool& enableskybox, bool& vsync, float& highCameraSpeed, float& cameraNormalSpeed, bool& wireframe, bool& BPL_LIGHTING) {
+	bool& enableskybox, bool& vsync, float& highCameraSpeed, float& cameraNormalSpeed, bool& wireframe, bool& BPL_LIGHTING, int maxmsaa) {
 
 
 
@@ -88,6 +88,8 @@ void SETUI(bool& no_resize, bool& no_move, bool& run, unsigned int& postProcessi
 					ImGui::Text("Multisample Anti-Aliasing (Needs restart to change)");
 					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
 					ImGui::Text("MSAA Needs restart to apply it.");
+					ImGui::Text(("MAX : " + std::to_string(maxmsaa)).c_str());
+
 					ImGui::PopStyleColor();
 					ImGui::InputInt("MSSA Samples", &msaaSamples);
 
