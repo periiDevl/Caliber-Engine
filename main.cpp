@@ -1234,7 +1234,7 @@ int main()
 				if (sceneObjects[i].deleted == false) {
 					if (ImGui::CollapsingHeader(("object " + std::to_string(i)).c_str())) {
 						ImGui::Separator();
-						if (ImGui::Button("Delete"))
+						if (ImGui::Button(("Delete##" + std::to_string(i)).c_str()))
 						{
 							sceneObjects[i].deleted = true;
 						}
