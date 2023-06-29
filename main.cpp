@@ -440,12 +440,12 @@ int main()
 
 	
 
-	glm::vec4 lightColor = glm::vec4(1.0f, 0.8f, 0.6f, 1.0f) * 3.0f;
+	glm::vec4 lightColor = glm::vec4(1.0f, 0.8f, 0.6f, 1.0f) * 1.0f;
 
 	blurProgram.Activate();
 	glUniform1f(glGetUniformLocation(blurProgram.ID, "spreadBlur"), BloomSpreadBlur);
 
-	glm::vec3 lightPos = glm::vec3(0.5f, 1.0f, 0.0f);
+	glm::vec3 lightPos = glm::vec3(1.0f, 1.0f, 1.0f);
 	unlitProgram.Activate();
 	glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 1, 0, 1);
 
@@ -510,6 +510,7 @@ int main()
 		glm::vec3 rot;
 		glm::vec3 sca;
 		std::istringstream iss(line);
+		bool draw = true;
 
 		std::string token;
 		std::getline(iss, token, ',');
@@ -534,10 +535,12 @@ int main()
 		sca.z = std::stof(token);
 		std::getline(iss, token, ',');
 		path = token.c_str();
+		std::getline(iss, token, ',');
+		draw = std::stof(token);
 
 		Model obj = Model(path.c_str());
 
-
+		obj.draw = draw;
 		obj.translation = pos;
 		obj.rotation = rot;
 		obj.scale = sca;
@@ -1225,6 +1228,7 @@ int main()
 						{
 							sceneObjects[i].deleted = true;
 						}
+						ImGui::Checkbox("Render object", &sceneObjects[i].draw);
 						float T[3] = { sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z };
 						ImGui::InputFloat3(("Position##" + std::to_string(i)).c_str(), T);
 						sceneObjects[i].translation = glm::vec3(T[0], T[1], T[2]);
@@ -1269,7 +1273,7 @@ int main()
 		if (obj.deleted == false) {
 			Caliboutfile << obj.translation.x << "," << obj.translation.y << "," << obj.translation.z << ","
 				<< obj.rotation.x << "," << obj.rotation.y << "," << obj.rotation.z << ","
-				<< obj.scale.x << "," << obj.scale.y << "," << obj.scale.z << "," << obj.file
+				<< obj.scale.x << "," << obj.scale.y << "," << obj.scale.z << "," << obj.file << "," << obj.draw
 				<< "\n";
 		}
 	}

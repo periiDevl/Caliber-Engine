@@ -22,10 +22,12 @@ Model::Model(const char* fl,
 
 void Model::Draw(Shader& shader, Camera& camera, float worldSize)
 {
-	for (unsigned int i = 0; i < meshes.size(); i++)
-	{
-		
-		meshes[i].Mesh::Draw(shader, camera, matricesMeshes[i], translation, rotation, scale / glm::vec3(worldSize));
+	if (draw) {
+		for (unsigned int i = 0; i < meshes.size(); i++)
+		{
+
+			meshes[i].Mesh::Draw(shader, camera, matricesMeshes[i], translation, rotation, scale / glm::vec3(worldSize));
+		}
 	}
 }
 void Model::Draw(Shader& shader, Camera& camera, float worldSize, glm::vec3 position, glm::vec3 rot, glm::vec3 scale)
@@ -35,6 +37,7 @@ void Model::Draw(Shader& shader, Camera& camera, float worldSize, glm::vec3 posi
 
 		meshes[i].Mesh::Draw(shader, camera, matricesMeshes[i], position, rot, scale / glm::vec3(worldSize));
 	}
+
 }
 
 void Model::loadMesh(unsigned int indMesh)
