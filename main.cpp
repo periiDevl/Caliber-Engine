@@ -325,6 +325,8 @@ int main()
 	bool wireframe = myData.data[4];
 	int width = myData.data[5];
 	int height = myData.data[6];
+
+
 	float gamma = myData.data[7];
 	float exposure = myData.data[8];
 	float highCameraSpeed = myData.data[9];
@@ -793,7 +795,7 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
 
-	const float fixed_timestep = 1.0f / 200.0;
+	const float fixed_timestep = 1.0f / 60.0f;
 
 
 
@@ -860,7 +862,7 @@ int main()
 
 
 
-		if (timeDiff >= 1.0 / 30.0)
+		if (timeDiff >= fixed_timestep)
 		{
 			// Creates new title
 			std::string FPS = std::to_string((1.0 / timeDiff) * counter);
@@ -868,12 +870,11 @@ int main()
 			std::string newTitle = "Caliber Engine - " + FPS + "FPS / " + ms + "ms";
 			glfwSetWindowTitle(window, newTitle.c_str());
 
-			// Resets times and counter
 			prevTime = crntTime;
 			counter = 0;
 			
-			camera.Inputs(window, cameraNormalSpeed * fixed_timestep, highCameraSpeed * fixed_timestep);
 			//camera.Trackaballmovement(window, cameraNormalSpeed * fixed_timestep, highCameraSpeed * fixed_timestep);
+			camera.Inputs(window, cameraNormalSpeed * fixed_timestep, highCameraSpeed * fixed_timestep);
 			
 			
 
