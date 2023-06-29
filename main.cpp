@@ -568,7 +568,7 @@ int main()
 	double crntTime = 0.0;
 	double timeDiff;
 	unsigned int counter = 0;
-
+	//glfwSwapInterval(1);
 	unsigned int FBO;
 	glGenFramebuffers(1, &FBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
@@ -758,7 +758,7 @@ int main()
 
 
 	btCollisionShape* sphereShape = new btBoxShape(btVector3(0.3, 0.3, 0.3));
-	btDefaultMotionState* sphereMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0))); 
+	btDefaultMotionState* sphereMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(camera.Position.x, camera.Position.y, camera.Position.z)));
 	
 	btVector3 sphereInertia(0, 0, 0);
 	sphereShape->calculateLocalInertia(1, sphereInertia);
@@ -793,7 +793,7 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
 
-	const float fixed_timestep = 1.0f / 60.0;
+	const float fixed_timestep = 1.0f / 200.0;
 
 
 
@@ -854,18 +854,23 @@ int main()
 
 		//camera.TrackBallMouse(window);
 
-		camera.Mouse(window);
+		
+
+		
 
 
-		if (timeDiff >= fixed_timestep) {
+
+		if (timeDiff >= 1.0 / 30.0)
+		{
+			// Creates new title
 			std::string FPS = std::to_string((1.0 / timeDiff) * counter);
 			std::string ms = std::to_string((timeDiff / counter) * 1000);
-			std::string newTitle = "Caliber Universal Editor- " + FPS + "FPS / " + ms + "ms";
+			std::string newTitle = "YoutubeOpenGL - " + FPS + "FPS / " + ms + "ms";
 			glfwSetWindowTitle(window, newTitle.c_str());
 
+			// Resets times and counter
 			prevTime = crntTime;
 			counter = 0;
-			
 			
 			camera.Inputs(window, cameraNormalSpeed * fixed_timestep, highCameraSpeed * fixed_timestep);
 			//camera.Trackaballmovement(window, cameraNormalSpeed * fixed_timestep, highCameraSpeed * fixed_timestep);
@@ -934,7 +939,8 @@ int main()
 		glViewport(0, 0, width, height);
 		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 		
-
+		camera.updateMatrix3D(60.0f, 0.1f, viewFarPlane);
+		camera.Mouse(window);
 		shaderProgram.Activate();
 		glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "lightProjection"), 1, GL_FALSE, glm::value_ptr(lightProjection));
 
@@ -950,9 +956,9 @@ int main()
 
 
 		glClearColor(pow(0.05f, gamma), pow(0.05f, gamma), pow(0.05f, gamma), 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-		camera.updateMatrix3D(60.0f, 0.1f, viewFarPlane);
+		
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, UniversalDepthframebuffer);
 		glViewport(0, 0, width, height);
@@ -1209,6 +1215,9 @@ int main()
 				
 				if (glfwGetKey(window, GLFW_KEY_ENTER)) {
 					sceneObjects.push_back(Model(objName));
+					sceneObjects.back().file = objName;
+					sceneObjects.back().BindPhysics(dynamicsWorld, objectWorldMult, true);
+					sceneObjects.back().PHYSICS_SETUP(true, objectWorldMult);
 				}
 				if (ImGui::Button("Cube")) {
 					sceneObjects.push_back(Model("models/cube/scene.gltf"));
@@ -1228,7 +1237,7 @@ int main()
 						{
 							sceneObjects[i].deleted = true;
 						}
-						ImGui::Checkbox("Render object", &sceneObjects[i].draw);
+						ImGui::Checkbox(("Render Object##" + std::to_string(i)).c_str(), &sceneObjects[i].draw);
 						float T[3] = { sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z };
 						ImGui::InputFloat3(("Position##" + std::to_string(i)).c_str(), T);
 						sceneObjects[i].translation = glm::vec3(T[0], T[1], T[2]);

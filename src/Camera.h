@@ -20,7 +20,6 @@ public:
 	glm::mat4 cameraMatrix = glm::mat4(1.0f);
 	glm::vec3 trackballPos;
 	bool firstClick = true;
-
 	glm::vec3 getDirection(glm::vec3 direction, bool vertical)
 	{
 		if (vertical)

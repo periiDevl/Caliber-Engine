@@ -13,6 +13,7 @@ class Model
 public:
 	bool deleted = false;
 	bool draw = true;
+	bool bindedphysics = true;
 	btRigidBody* boxRigidBody;
 	glm::vec3 translation = glm::vec3(0);
 	glm::vec3 rotation = glm::vec3(0, 0, 0);
