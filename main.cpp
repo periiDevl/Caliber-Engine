@@ -865,7 +865,7 @@ int main()
 			// Creates new title
 			std::string FPS = std::to_string((1.0 / timeDiff) * counter);
 			std::string ms = std::to_string((timeDiff / counter) * 1000);
-			std::string newTitle = "YoutubeOpenGL - " + FPS + "FPS / " + ms + "ms";
+			std::string newTitle = "Caliber Engine - " + FPS + "FPS / " + ms + "ms";
 			glfwSetWindowTitle(window, newTitle.c_str());
 
 			// Resets times and counter
