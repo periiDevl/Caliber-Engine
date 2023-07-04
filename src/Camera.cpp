@@ -53,7 +53,7 @@ void Camera::Mouse(GLFWwindow* window)
 
 			if (firstClick)
 			{
-				glfwSetCursorPos(window, (width / 2), (height / 2));
+				glfwSetCursorPos(window, (640 / 2), (360 / 2));
 				firstClick = false;
 			}
 
@@ -61,8 +61,8 @@ void Camera::Mouse(GLFWwindow* window)
 			double mouseY;
 			glfwGetCursorPos(window, &mouseX, &mouseY);
 
-			float rotX = sensitivity * (float)(mouseY - (height / 2)) / height;
-			float rotY = sensitivity * (float)(mouseX - (width / 2)) / width;
+			float rotX = sensitivity * (float)(mouseY - (360 / 2)) / 360;
+			float rotY = sensitivity * (float)(mouseX - (640 / 2)) / 640;
 
 			glm::vec3 newOrientation = glm::rotate(Orientation, glm::radians(-rotX), glm::normalize(glm::cross(Orientation, Up)));
 
@@ -73,7 +73,7 @@ void Camera::Mouse(GLFWwindow* window)
 
 			Orientation = glm::rotate(Orientation, glm::radians(-rotY), Up);
 
-			glfwSetCursorPos(window, (width / 2), (height / 2));
+			glfwSetCursorPos(window, (640 / 2), (360 / 2));
 		}
 		else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE)
 		{
