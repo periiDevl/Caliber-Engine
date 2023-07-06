@@ -46,44 +46,42 @@ void Camera::Matrix(Shader& shader, const char* uniform)
 
 void Camera::Mouse(GLFWwindow* window)
 {
-	
-		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+	{
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+
+		if (firstClick)
 		{
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-
-			if (firstClick)
-			{
-				glfwSetCursorPos(window, (640 / 2), (360 / 2));
-				firstClick = false;
-			}
-
-			double mouseX;
-			double mouseY;
-			glfwGetCursorPos(window, &mouseX, &mouseY);
-
-			float rotX = sensitivity * (float)(mouseY - (360 / 2)) / 360;
-			float rotY = sensitivity * (float)(mouseX - (640 / 2)) / 640;
-
-			glm::vec3 newOrientation = glm::rotate(Orientation, glm::radians(-rotX), glm::normalize(glm::cross(Orientation, Up)));
-
-			if (abs(glm::angle(newOrientation, Up) - glm::radians(90.0f)) <= glm::radians(85.0f))
-			{
-				Orientation = newOrientation;
-			}
-
-			Orientation = glm::rotate(Orientation, glm::radians(-rotY), Up);
-
 			glfwSetCursorPos(window, (640 / 2), (360 / 2));
+			firstClick = false;
 		}
-		else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE)
+
+		double mouseX;
+		double mouseY;
+		glfwGetCursorPos(window, &mouseX, &mouseY);
+
+		float rotX = sensitivity * (float)(mouseY - (360 / 2)) / 360;
+		float rotY = sensitivity * (float)(mouseX - (640 / 2)) / 640;
+
+		glm::vec3 targetOrientation = glm::rotate(Orientation, glm::radians(-rotX), glm::normalize(glm::cross(Orientation, Up)));
+
+		if (abs(glm::angle(targetOrientation, Up) - glm::radians(90.0f)) <= glm::radians(85.0f))
 		{
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-
-
-
-			firstClick = true;
+			targetOrientation = glm::normalize(targetOrientation);
 		}
-	
+
+		targetOrientation = glm::rotate(targetOrientation, glm::radians(-rotY), Up);
+
+		float interpolationFactor = 0.8f; 
+		Orientation = glm::mix(Orientation, targetOrientation, interpolationFactor);
+
+		glfwSetCursorPos(window, (640 / 2), (360 / 2));
+	}
+	else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE)
+	{
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		firstClick = true;
+	}
 }
 
 
