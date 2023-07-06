@@ -323,10 +323,11 @@ int main()
 	int msaaSamples = myData.data[2];
 	int bloom = myData.data[3];
 	bool wireframe = myData.data[4];
-	int width = myData.data[5];
-	int height = myData.data[6];
+	//int width = myData.data[5];
+	//int height = myData.data[6];
 
-
+	int width = 1600;
+	int height = 900;
 
 	float gamma = myData.data[7];
 	float exposure = myData.data[8];
