@@ -72,7 +72,7 @@ void Camera::Mouse(GLFWwindow* window)
 
 		targetOrientation = glm::rotate(targetOrientation, glm::radians(-rotY), Up);
 
-		float interpolationFactor = 0.8f; 
+		float interpolationFactor = 1.2f; 
 		Orientation = glm::mix(Orientation, targetOrientation, interpolationFactor);
 
 		glfwSetCursorPos(window, (640 / 2), (360 / 2));
