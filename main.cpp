@@ -922,13 +922,13 @@ int main()
 
 		
 		glEnable(GL_DEPTH_TEST);
-		
+		shadowMapProgram.Activate();
+		glUniformMatrix4fv(glGetUniformLocation(shadowMapProgram.ID, "lightProjection"), 1, GL_FALSE, glm::value_ptr(lightProjection));
+		glViewport(0, 0, shadowMapWidth, shadowMapHeight);
+		glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFBO);
+		glClear(GL_DEPTH_BUFFER_BIT);
+
 		if (renderShadows) {
-			shadowMapProgram.Activate();
-			glUniformMatrix4fv(glGetUniformLocation(shadowMapProgram.ID, "lightProjection"), 1, GL_FALSE, glm::value_ptr(lightProjection));
-			glViewport(0, 0, shadowMapWidth, shadowMapHeight);
-			glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFBO);
-			glClear(GL_DEPTH_BUFFER_BIT);
 
 			for (int i = 0; i < sceneObjects.size(); i++)
 			{
@@ -944,10 +944,10 @@ int main()
 		
 		camera.updateMatrix3D(60.0f, 0.1f, viewFarPlane);
 		camera.Mouse(window);
-		shaderProgram.Activate();
-		glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "lightProjection"), 1, GL_FALSE, glm::value_ptr(lightProjection));
 
 		if (renderShadows) {
+			shaderProgram.Activate();
+			glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "lightProjection"), 1, GL_FALSE, glm::value_ptr(lightProjection));
 			glActiveTexture(GL_TEXTURE0 + 2);
 
 			glBindTexture(GL_TEXTURE_2D, shadowMap);
