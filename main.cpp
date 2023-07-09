@@ -414,15 +414,15 @@ int main()
 	
 	gladLoadGL();
 	glViewport(0, 0, width, height);
+	std::string infoString = "(INFO) Using : ";
+	infoString += reinterpret_cast<const char*>(glGetString(GL_VERSION));
+	console.log(infoString.c_str());
 
-	console.log(reinterpret_cast<const char*>(glGetString(GL_VERSION)));
-
-
-	std::string infoString = "Using : ";
+	infoString = "(INFO) Using : ";
 	infoString += reinterpret_cast<const char*>(glGetString(GL_RENDERER));
 	console.log(infoString.c_str());
 
-	infoString = "Glsl : ";
+	infoString = "(INFO) Glsl : ";
 	infoString += reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION));
 	console.log(infoString.c_str());
 

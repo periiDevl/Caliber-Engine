@@ -2,8 +2,10 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <utility> // Added for std::pair
 #ifndef CONSOLE_H
 #define CONSOLE_H
+
 class Console
 {
 public:
@@ -21,7 +23,19 @@ public:
         buf[IM_ARRAYSIZE(buf) - 1] = 0;
         va_end(args);
 
-        logs.push_back(buf);
+        std::string logMessage = buf;
+
+        ImColor color;
+        if (logMessage.find("ERROR") != std::string::npos)
+            color = ImColor(255, 0, 0);
+        else if (logMessage.find("WARNING") != std::string::npos)
+            color = ImColor(255, 255, 0); 
+        else if (logMessage.find("INFO") != std::string::npos)
+            color = ImColor(0, 140, 0);
+        else
+            color = ImColor(255, 255, 255);
+
+        logs.push_back(std::make_pair(logMessage, color));
     }
 
     template<typename T>
@@ -41,12 +55,14 @@ public:
 
         // Display logs
         ImGui::BeginChild("ScrollingRegion", ImVec2(0, -ImGui::GetTextLineHeightWithSpacing()), false, ImGuiWindowFlags_HorizontalScrollbar);
-        for (int i = 0; i < logs.size(); i++)
-            ImGui::TextUnformatted(logs[i].c_str());
+        for (const auto& logItem : logs)
+        {
+            const std::string& logMessage = logItem.first;
+            const ImColor& color = logItem.second;
+            ImGui::TextColored(color, logMessage.c_str());
+        }
         ImGui::SetScrollHereY(1.0f);
         ImGui::EndChild();
-
-
 
         if (ImGui::InputText("Input", input_buf, IM_ARRAYSIZE(input_buf), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory, NULL, NULL))
         {
@@ -66,7 +82,6 @@ public:
             }
         }
 
-
         ImGui::End();
     }
 
@@ -78,6 +93,7 @@ public:
     char input_buf[256];
 
 private:
-    std::vector<std::string> logs;
+    std::vector<std::pair<std::string, ImColor>> logs;
 };
+
 #endif // CONSOLE_H
