@@ -6,29 +6,27 @@
 void GUIDefaultCongoration()
 {
 	ImGuiStyle& style = ImGui::GetStyle();
-	style.WindowPadding = ImVec2(15, 15);
-	style.WindowPadding = ImVec2(8.00f, 8.00f);
-	style.FramePadding = ImVec2(5.00f, 2.00f);
-	style.CellPadding = ImVec2(6.00f, 6.00f);
-	style.ItemSpacing = ImVec2(6.00f, 6.00f);
-	style.ItemInnerSpacing = ImVec2(6.00f, 6.00f);
-	style.TouchExtraPadding = ImVec2(0.00f, 0.00f);
-	style.IndentSpacing = 25;
-	style.ScrollbarSize = 15;
-	style.GrabMinSize = 10;
-	style.WindowBorderSize = 1.5;
-	style.ChildBorderSize = 1;
-	style.PopupBorderSize = 1;
-	style.FrameBorderSize = 1;
-	style.TabBorderSize = 1;
-	style.WindowRounding = 4;
-	style.ChildRounding = 4;
-	style.FrameRounding = 3;
-	style.PopupRounding = 4;
-	style.ScrollbarRounding = 9;
-	style.GrabRounding = 3;
-	style.LogSliderDeadzone = 4;
-	style.TabRounding = 4;
+	style.WindowTitleAlign = ImVec2(0.5f, 0.5f);
+	style.WindowPadding = ImVec2(15.0f, 15.0f);
+	style.FramePadding = ImVec2(8.0f, 4.0f);
+	style.ItemSpacing = ImVec2(8.0f, 6.0f);
+	style.ItemInnerSpacing = ImVec2(6.0f, 6.0f);
+	style.IndentSpacing = 20.0f;
+	style.ScrollbarSize = 15.0f;
+	style.GrabMinSize = 10.0f;
+	style.WindowBorderSize = 1.0f;
+	style.ChildBorderSize = 1.0f;
+	style.PopupBorderSize = 1.0f;
+	style.FrameBorderSize = 1.0f;
+	style.TabBorderSize = 1.0f;
+	style.WindowRounding = 4.0f;
+	style.ChildRounding = 4.0f;
+	style.FrameRounding = 3.0f;
+	style.PopupRounding = 4.0f;
+	style.ScrollbarRounding = 9.0f;
+	style.GrabRounding = 3.0f;
+	style.TabRounding = 4.0f;
+
 }
 
 void JonayesTheme()
