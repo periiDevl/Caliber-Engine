@@ -42,7 +42,7 @@ public:
 	const float levelShade = 300000000000000000000.0;
 
 	uniform bool BPL_Lighting;
-
+	uniform vec4 tint;
 	uniform mat4 model;
 	vec4 pointLight()
 	{	
@@ -167,7 +167,7 @@ public:
 		}
 
 
-		FragColor = direcLight() + vec4(linearizeDepth(gl_FragCoord.z, near / 100, far) * vec3(1.0f, 1.0f, 1.0f), 1.0f);
+		FragColor = direcLight() * tint + vec4(linearizeDepth(gl_FragCoord.z, near / 100, far) * vec3(1.0f, 1.0f, 1.0f), 1.0f);
 
 		float brightness = dot(FragColor.rgb, vec3(0.2126f, 0.7152f, 0.0722f));
 		if (brightness > 0.15f)

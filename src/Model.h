@@ -20,6 +20,7 @@ public:
 	glm::vec3 scale = glm::vec3(0);
 	glm::vec3 ID = glm::vec3(0, 0, 0);
 	std::string file = "models/rocket/scene.gltf";
+	glm::vec4 tint = glm::vec4(1);
 
 	Model(const char* fl = "models/rocket/scene.gltf",
 		glm::vec3 trans = glm::vec3(0.0f, 0.0f, 0.0f),

@@ -454,6 +454,7 @@ int main()
 	glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 1, 0, 1);
 
 	shaderProgram.Activate();
+
 	glUniform1f(glGetUniformLocation(shaderProgram.ID, "avgShadow"), avgShadow);
 	glUniform4f(glGetUniformLocation(shaderProgram.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
@@ -513,6 +514,7 @@ int main()
 		glm::vec3 pos;
 		glm::vec3 rot;
 		glm::vec3 sca;
+		glm::vec4 tint;
 		std::istringstream iss(line);
 		bool draw = true;
 
@@ -542,12 +544,21 @@ int main()
 		std::getline(iss, token, ',');
 		draw = std::stof(token);
 
+		std::getline(iss, token, ',');
+		tint.x = std::stof(token);
+		std::getline(iss, token, ',');
+		tint.y = std::stof(token);
+		std::getline(iss, token, ',');
+		tint.z = std::stof(token);
+		tint.w= 1.0f;
+
 		Model obj = Model(path.c_str());
 
 		obj.draw = draw;
 		obj.translation = pos;
 		obj.rotation = rot;
 		obj.scale = sca;
+		obj.tint = tint;
 		sceneObjects.push_back(obj);
 	}
 
@@ -1044,10 +1055,11 @@ int main()
 		glfwSetMouseButtonCallback(window, mouseButtonCallback);
 	//	if (func.ClickOnRGBID(window, GLFW_MOUSE_BUTTON_LEFT, glm::vec3(pixelColor[0], pixelColor[1], pixelColor[2]), glm::vec3(0, 0, 1))) {
 //		}
+		
 		if (!run)
 		{
+			gird.tint = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 			gird.Draw(shaderProgram, camera, 1, glm::vec3(0), glm::vec3(0), glm::vec3(10));
-
 			GizmosBoundry.Draw(shaderProgram, camera, 1);
 		}
 		
@@ -1236,6 +1248,23 @@ int main()
 				if (sceneObjects[i].deleted == false) {
 					if (ImGui::CollapsingHeader(("object " + std::to_string(i)).c_str())) {
 						ImGui::Separator();
+						
+						float tint[3];
+
+
+						tint[0] = sceneObjects[i].tint.x;
+						tint[1] = sceneObjects[i].tint.y; 
+						tint[2] = sceneObjects[i].tint.z;
+
+						ImGui::ColorEdit3(("Tint##" + std::to_string(i)).c_str(), tint);
+
+
+						sceneObjects[i].tint.x = tint[0];
+						sceneObjects[i].tint.y = tint[1];
+						sceneObjects[i].tint.z = tint[2];
+
+
+
 						if (ImGui::Button(("Delete##" + std::to_string(i)).c_str()))
 						{
 							sceneObjects[i].deleted = true;
@@ -1285,7 +1314,7 @@ int main()
 		if (obj.deleted == false) {
 			Caliboutfile << obj.translation.x << "," << obj.translation.y << "," << obj.translation.z << ","
 				<< obj.rotation.x << "," << obj.rotation.y << "," << obj.rotation.z << ","
-				<< obj.scale.x << "," << obj.scale.y << "," << obj.scale.z << "," << obj.file << "," << obj.draw
+				<< obj.scale.x << "," << obj.scale.y << "," << obj.scale.z << "," << obj.file << "," << obj.draw << "," << obj.tint.x << "," << obj.tint.y << "," << obj.tint.z
 				<< "\n";
 		}
 	}

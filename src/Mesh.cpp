@@ -30,7 +30,7 @@ void Mesh::Draw(
 	glm::vec3 scale
 ) {
 	Functions function;
-	shader.Activate();
+
 	VAO.Bind();
 
 	unsigned int numDiffuse = 0;
