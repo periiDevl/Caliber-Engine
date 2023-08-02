@@ -1249,6 +1249,13 @@ int main()
 					if (ImGui::CollapsingHeader(("object " + std::to_string(i)).c_str())) {
 						ImGui::Separator();
 						
+
+
+						if (ImGui::Button(("Delete##" + std::to_string(i)).c_str()))
+						{
+							sceneObjects[i].deleted = true;
+						}
+						ImGui::Checkbox(("Render Object##" + std::to_string(i)).c_str(), &sceneObjects[i].draw);
 						float tint[3];
 
 
@@ -1263,13 +1270,6 @@ int main()
 						sceneObjects[i].tint.y = tint[1];
 						sceneObjects[i].tint.z = tint[2];
 
-
-
-						if (ImGui::Button(("Delete##" + std::to_string(i)).c_str()))
-						{
-							sceneObjects[i].deleted = true;
-						}
-						ImGui::Checkbox(("Render Object##" + std::to_string(i)).c_str(), &sceneObjects[i].draw);
 						float T[3] = { sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z };
 						ImGui::InputFloat3(("Position##" + std::to_string(i)).c_str(), T);
 						sceneObjects[i].translation = glm::vec3(T[0], T[1], T[2]);
