@@ -326,8 +326,8 @@ int main()
 	//int width = myData.data[5];
 	//int height = myData.data[6];
 
-	int width = 1600;
-	int height = 900;
+	int width = 1650;
+	int height = 950;
 
 	float gamma = myData.data[7];
 	float exposure = myData.data[8];
@@ -1052,6 +1052,7 @@ int main()
 				}
 			}
 		}
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glfwSetMouseButtonCallback(window, mouseButtonCallback);
 	//	if (func.ClickOnRGBID(window, GLFW_MOUSE_BUTTON_LEFT, glm::vec3(pixelColor[0], pixelColor[1], pixelColor[2]), glm::vec3(0, 0, 1))) {
 //		}
@@ -1116,6 +1117,7 @@ int main()
 		int Blur_amount = bloom;
 		blurProgram.Activate();
 
+
 		for (unsigned int i = 0; i < Blur_amount; i++)
 		{
 			glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
@@ -1133,6 +1135,7 @@ int main()
 
 			glBindVertexArray(rectVAO);
 			glDisable(GL_DEPTH_TEST);
+
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 
 			horizontal = !horizontal;
@@ -1142,14 +1145,17 @@ int main()
 		framebufferProgram.Activate();
 		glBindVertexArray(rectVAO);
 		glDisable(GL_DEPTH_TEST);
+
 		glActiveTexture(GL_TEXTURE0);
+
 		glBindTexture(GL_TEXTURE_2D, postProcessingTexture);
 		glActiveTexture(GL_TEXTURE1);
 
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 		glBindTexture(GL_TEXTURE_2D, pingpongBuffer[!horizontal]);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
+		
 		if (strcmp(console.input_buf, "quit") == 0 && glfwGetKey(window, GLFW_KEY_ENTER))
 		{
 			glfwSetWindowShouldClose(window, GLFW_TRUE);
