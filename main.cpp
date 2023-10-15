@@ -205,11 +205,10 @@ glm::vec3 moveObjectInXAxis(GLFWwindow* window, const glm::vec3& objectPosition,
 	glm::vec2 currentMousePosition(xpos, ypos);
 
 	double deltaX = -1.0 * (currentMousePosition.x - initialMousePosition.x);
-	float sensitivity = 0.0011f;
 
 	float distance = glm::distance(objectPosition, cameraPosition);
 
-	sensitivity *= distance;
+	float sensitivity = 0.0024f * (distance / 2);
 
 	glm::mat4 cameraRotation = glm::mat4(glm::quat(glm::radians(cameraOrientation)));
 	glm::vec3 cameraForward = glm::normalize(cameraPosition - objectPosition);
@@ -228,7 +227,6 @@ glm::vec3 moveObjectInXAxis(GLFWwindow* window, const glm::vec3& objectPosition,
 	return updatedObjectPosition;
 }
 
-
 glm::vec3 moveObjectInZAxis(GLFWwindow* window, const glm::vec3& objectPosition, const glm::vec3& cameraOrientation, const glm::vec3& cameraPosition) {
 	if (!isMouseDragging) {
 		return objectPosition;
@@ -239,7 +237,11 @@ glm::vec3 moveObjectInZAxis(GLFWwindow* window, const glm::vec3& objectPosition,
 	glm::vec2 currentMousePosition(xpos, ypos);
 
 	glm::vec2 deltaXY = currentMousePosition - initialMousePosition;
-	float sensitivity = 0.0011f;
+
+	float distance = glm::distance(objectPosition, cameraPosition);
+
+	// Adjust sensitivity based on the square of the distance
+	float sensitivity = 0.000051f * (distance * distance / 2);
 
 	glm::mat4 cameraRotation = glm::mat4(glm::quat(glm::radians(cameraOrientation)));
 
@@ -250,17 +252,16 @@ glm::vec3 moveObjectInZAxis(GLFWwindow* window, const glm::vec3& objectPosition,
 	glm::vec3 cameraRight = glm::normalize(glm::cross(cameraForward, glm::vec3(0.0f, 1.0f, 0.0f)));
 	glm::vec3 cameraUp = glm::cross(cameraRight, cameraForward);
 
-	float elevationAngle = glm::degrees(std::asin(cameraUp.y)); 
+	float elevationAngle = glm::degrees(std::asin(cameraUp.y));
 
 	glm::vec2 projectedDelta(glm::dot(deltaXY, glm::vec2(cameraRight.x, cameraUp.x)),
 		glm::dot(deltaXY, glm::vec2(cameraRight.y, cameraUp.y)));
 
-	projectedDelta.y *= std::cos(glm::radians(elevationAngle)); 
-
-	float distance = glm::distance(objectPosition, cameraPosition);
-	sensitivity *= distance;
+	projectedDelta.y *= std::cos(glm::radians(elevationAngle));
 
 	glm::vec3 delta = globalDelta.x * cameraRight + globalDelta.y * cameraUp;
+
+	// Scale delta for the Z-axis
 	delta.z = -glm::dot(deltaXY, glm::normalize(glm::vec2(cameraForward.x, cameraForward.y))) * sensitivity;
 
 	glm::vec3 updatedObjectPosition = objectPosition + delta;
@@ -269,9 +270,6 @@ glm::vec3 moveObjectInZAxis(GLFWwindow* window, const glm::vec3& objectPosition,
 
 	return updatedObjectPosition;
 }
-
-
-
 
 
 glm::vec3 moveObjectInYAxis(GLFWwindow* window, const glm::vec3& objectPosition, const glm::vec3& cameraOrientation, const glm::vec3& cameraPosition) {
@@ -284,13 +282,14 @@ glm::vec3 moveObjectInYAxis(GLFWwindow* window, const glm::vec3& objectPosition,
 	glm::vec2 currentMousePosition(xpos, ypos);
 
 	double deltaY = currentMousePosition.y - initialMousePosition.y;
-	float sensitivity = 0.0011f;
 
 	float distance = glm::distance(objectPosition, cameraPosition);
 
-	sensitivity *= distance;
+	float sensitivity = 0.0024f * (distance / 2);
 
 	glm::vec3 updatedObjectPosition = objectPosition;
+
+	// Scale delta for the Y-axis
 	updatedObjectPosition.y -= static_cast<float>(deltaY * sensitivity);
 
 	initialMousePosition = currentMousePosition;
