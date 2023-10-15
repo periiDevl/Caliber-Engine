@@ -810,11 +810,15 @@ int main()
 
 	const float fixed_timestep = 1.0f / 60.0f;
 
-
-
+	ImGuiStyle& style = ImGui::GetStyle();
+	ImVec2 originalItemSpacing = ImGui::GetStyle().ItemSpacing;
+	float originalButtonPadding = style.FramePadding.y;
 	float pixelColor[3];
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
+		style.FramePadding.y = originalButtonPadding;
+		style.ItemSpacing.x = originalItemSpacing.x;
+		style.ItemSpacing.y = originalItemSpacing.y;
 		glfwGetWindowSize(window, &width, &height);
 		if (!run) {
 			double xpos, ypos;
@@ -1221,6 +1225,8 @@ int main()
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
 			glUniform1f(glGetUniformLocation(blurProgram.ID, "spreadBlur"), BloomSpreadBlur);
 			glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), fogNear);
+			glUniform1f(glGetUniformLocation(shaderProgram.ID, "bias1"), DepthBias1);
+			glUniform1f(glGetUniformLocation(shaderProgram.ID, "bias2"), DepthBias2);
 
 			ImGui::Begin("Scene Hierarchy", 0, (no_resize ? ImGuiWindowFlags_NoResize : 0) | (no_move ? ImGuiWindowFlags_NoMove : 0));
 			if (ImGui::Button("+"))
@@ -1248,11 +1254,21 @@ int main()
 				}
 				ImGui::EndPopup();
 			}
-			
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(1.0f, 0.0f));
+
+			//style.FramePadding.y = 11.0f;
+
+			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
+			ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
 			for (size_t i = 0; i < sceneObjects.size(); i++)
 			{
 				if (sceneObjects[i].deleted == false) {
+					style.ItemSpacing.y = 0.0f;
+					style.FramePadding.y = 11.0f;
 					if (ImGui::CollapsingHeader(("object " + std::to_string(i)).c_str())) {
+
+						style.FramePadding.y = originalButtonPadding;
+						style.ItemSpacing.y = originalItemSpacing.y;
 						ImGui::Separator();
 						
 
@@ -1296,6 +1312,9 @@ int main()
 			}
 		}
 		
+		ImGui::PopStyleVar();
+		ImGui::PopStyleVar();
+		//style.ItemSpacing.y = originalItemSpacing.y;
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

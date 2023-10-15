@@ -135,7 +135,8 @@ void SETUI(bool& no_resize, bool& no_move, bool& run, unsigned int& postProcessi
 					ImGui::InputFloat("Depth Bias 2", &DepthBias2);
 					shaderProgram.Activate();
 					glUniform1f(glGetUniformLocation(shaderProgram.ID, "avgShadow"), avgShadow);
-
+					glUniform1f(glGetUniformLocation(shaderProgram.ID, "bias1"), DepthBias1);
+					glUniform1f(glGetUniformLocation(shaderProgram.ID, "bias2"), DepthBias2);
 				}
 				ImGui::Separator();
 
