@@ -45,7 +45,7 @@ static glm::vec3 Deg(const glm::vec3& radians)
 
 
 const float WorldRadius = 700;
-const float objectWorldMult = 5;
+const float objectWorldMult = 20;
 
 bool run = false; 
 
@@ -240,8 +240,7 @@ glm::vec3 moveObjectInZAxis(GLFWwindow* window, const glm::vec3& objectPosition,
 
 	float distance = glm::distance(objectPosition, cameraPosition);
 
-	// Adjust sensitivity based on the square of the distance
-	float sensitivity = 0.000051f * (distance * distance / 2);
+	float sensitivity = 0.000645f * (distance * 2);
 
 	glm::mat4 cameraRotation = glm::mat4(glm::quat(glm::radians(cameraOrientation)));
 
@@ -261,7 +260,6 @@ glm::vec3 moveObjectInZAxis(GLFWwindow* window, const glm::vec3& objectPosition,
 
 	glm::vec3 delta = globalDelta.x * cameraRight + globalDelta.y * cameraUp;
 
-	// Scale delta for the Z-axis
 	delta.z = -glm::dot(deltaXY, glm::normalize(glm::vec2(cameraForward.x, cameraForward.y))) * sensitivity;
 
 	glm::vec3 updatedObjectPosition = objectPosition + delta;
@@ -683,7 +681,7 @@ int main()
 	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	glm::mat4 orthgonalProjection = glm::ortho(-WorldRadius, WorldRadius, -WorldRadius, WorldRadius, 0.1f, viewFarPlane);
+	glm::mat4 orthgonalProjection = glm::ortho(-WorldRadius, WorldRadius, -WorldRadius, WorldRadius, 0.01f, viewFarPlane);
 	glm::mat4 lightView = glm::lookAt(20.0f * lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 lightProjection = orthgonalProjection * lightView;
 	
@@ -815,6 +813,9 @@ int main()
 	float pixelColor[3];
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
+		orthgonalProjection = glm::ortho(-WorldRadius, WorldRadius, -WorldRadius, WorldRadius, 0.0f, viewFarPlane);
+		lightView = glm::lookAt(200.0f * lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		lightProjection = orthgonalProjection * lightView;
 		style.FramePadding.y = originalButtonPadding;
 		style.ItemSpacing.x = originalItemSpacing.x;
 		style.ItemSpacing.y = originalItemSpacing.y;
