@@ -382,6 +382,7 @@ int main()
 		return -1; 
 	}
 	glfwMakeContextCurrent(window);
+
 	glfwSetWindowAttrib(window, GLFW_RESIZABLE, GLFW_FALSE);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
@@ -811,6 +812,9 @@ int main()
 	ImVec2 originalItemSpacing = ImGui::GetStyle().ItemSpacing;
 	float originalButtonPadding = style.FramePadding.y;
 	float pixelColor[3];
+
+
+
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
 		orthgonalProjection = glm::ortho(-WorldRadius, WorldRadius, -WorldRadius, WorldRadius, 0.0f, viewFarPlane);
@@ -935,7 +939,13 @@ int main()
 		
 
 
-		
+		glActiveTexture(GL_TEXTURE0); // Choose a texture unit (e.g., GL_TEXTURE0)
+		glBindTexture(GL_TEXTURE_2D, depthTexture); // Bind the depth texture
+
+		// Now, you can set the uniform in your shader to the texture unit
+		glUniform1i(glGetUniformLocation(framebufferProgram.ID, "depthTexture"), 0); // 0 corresponds to GL_TEXTURE0
+
+
 		glEnable(GL_DEPTH_TEST);
 		shadowMapProgram.Activate();
 		glUniformMatrix4fv(glGetUniformLocation(shadowMapProgram.ID, "lightProjection"), 1, GL_FALSE, glm::value_ptr(lightProjection));
@@ -1312,8 +1322,10 @@ int main()
 			}
 		}
 		
-		ImGui::PopStyleVar();
-		ImGui::PopStyleVar();
+		if (!run) {
+			ImGui::PopStyleVar();
+			ImGui::PopStyleVar();
+		}
 		//style.ItemSpacing.y = originalItemSpacing.y;
 
 		ImGui::Render();
