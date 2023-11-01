@@ -7,12 +7,12 @@ void SETUI(bool& no_resize, bool& no_move, bool& run, unsigned int& postProcessi
 	static int& colorChoice, int& msaaSamples, float& FXAA_SPAN_MAX, float& FXAA_REDUCE_MIN, float& FXAA_REDUCE_MUL,
 	Shader& framebufferProgram, float& gamma, float& exposure, int& bloom, float& BloomSpreadBlur, Shader& blurProgram, 
 	int& shadowMapWidth, int& shadowMapHeight, bool& bakeShadows, bool& renderShadows, int&	shadowSampleRadius,
-	float& avgShadow, float& DepthBias1, float& DepthBias2, Shader& shaderProgram, float& fogNear, float& viewFarPlane,
-	bool& enableskybox, bool& vsync, float& highCameraSpeed, float& cameraNormalSpeed, bool& wireframe, bool& BPL_LIGHTING, int maxmsaa) {
+	float& avgShadow, float& DepthBias1, float& DepthBias2, Shader& shaderProgram, float& AO, float& viewFarPlane,
+	bool& enableskybox, bool& vsync, float& highCameraSpeed, float& cameraNormalSpeed, bool& wireframe, bool& BPL_LIGHTING, int maxmsaa, bool& enableAo) {
 
 
 
-
+	shaderProgram.Activate();
 
 	ImGui::Begin("Preferences", 0, (no_resize ? ImGuiWindowFlags_NoResize : 0) | (no_move ? ImGuiWindowFlags_NoMove : 0));
 	{
@@ -125,31 +125,36 @@ void SETUI(bool& no_resize, bool& no_move, bool& run, unsigned int& postProcessi
 					ImGui::Text("Baking the shadow's will not improve the quality it will only freeze the texture");
 					ImGui::PopStyleColor();
 					ImGui::Checkbox("Bake/Static Shadows", &bakeShadows);
+
+					ImGui::Checkbox("Ambient Occlusion (Custom Caliber)", &enableAo);
+					if (enableAo) {
+						if (AO == 0)
+						{
+							AO = 0.11;
+						}
+						ImGui::SliderFloat("Ambient Occlusion", &AO, 0.11, 0.155, "%.3f", 0);
+					}
+					else {
+						AO = 0;
+					}
 					if (!bakeShadows) {
 						ImGui::Checkbox("Enable shadows", &renderShadows);
 					}
-					ImGui::InputInt("Sample Radius", &shadowSampleRadius, 0, 100);
+					ImGui::InputInt("Shadow Sample Radius", &shadowSampleRadius, 0, 100);
 
 					ImGui::InputFloat("Average Shadow (Transparency)", &avgShadow);
 					ImGui::InputFloat("Depth Bias 1", &DepthBias1);
 					ImGui::InputFloat("Depth Bias 2", &DepthBias2);
-					shaderProgram.Activate();
-					glUniform1f(glGetUniformLocation(shaderProgram.ID, "avgShadow"), avgShadow);
-					glUniform1f(glGetUniformLocation(shaderProgram.ID, "bias1"), DepthBias1);
-					glUniform1f(glGetUniformLocation(shaderProgram.ID, "bias2"), DepthBias2);
+				
+					
 				}
 				ImGui::Separator();
 
 				if (ImGui::CollapsingHeader("Atmospheric")) {
 
-
-
-
-					ImGui::SliderFloat("Fog Near Value", &fogNear, 0, 3, "%.3f", 0);
 					ImGui::InputFloat("Far Plane View distance", &viewFarPlane, 1, 30);
-					shaderProgram.Activate();
-					glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), fogNear);
-					glUniform1f(glGetUniformLocation(shaderProgram.ID, "far"), viewFarPlane);
+					
+					
 
 
 					ImGui::Checkbox("Enable Skybox", &enableskybox);

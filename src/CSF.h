@@ -120,7 +120,7 @@ public:
 
 
 			float bias = max((bias1 / 1000) * (1.0f - dot(normal, lightDirection)), (bias2 / 30000));
-
+ 
 
 			
 			vec2 pixelSize = 1.0 / textureSize(shadowMap, 0);
@@ -147,7 +147,7 @@ public:
 
 
 
-	float linearizeDepth(float depth, float near, float far)
+	float AmbientOcclusion(float depth, float near, float far)
 	{
 		return (2.0 * near * far) / (far + near - (depth * 2.0 - 1.0) * (far - near));
 	}
@@ -167,7 +167,7 @@ public:
 		}
 
 
-		FragColor = direcLight() * tint + vec4(linearizeDepth(gl_FragCoord.z, near / 100, far) * vec3(1.0f, 1.0f, 1.0f), 1.0f);
+		FragColor = direcLight() * tint + vec4(AmbientOcclusion(gl_FragCoord.z, far / 100, near) * vec3(-1.0f, -1.0f, -1.0f), 1.0f);
 
 		float brightness = dot(FragColor.rgb, vec3(0.2126f, 0.7152f, 0.0722f));
 		if (brightness > 0.15f)

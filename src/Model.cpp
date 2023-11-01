@@ -46,6 +46,7 @@ void Model::Draw(Shader& shader, Camera& camera, float worldSize, glm::vec3 posi
 
 }
 
+
 void Model::loadMesh(unsigned int indMesh)
 {
 	unsigned int posAccInd = JSON["meshes"][indMesh]["primitives"][0]["attributes"]["POSITION"];

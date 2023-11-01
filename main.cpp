@@ -331,7 +331,7 @@ int main()
 	float highCameraSpeed = myData.data[9];
 	float cameraNormalSpeed = myData.data[10];
 	bool enableskybox = myData.data[11];
-	float fogNear = myData.data[12];
+	float AOocc = myData.data[12];
 	float viewFarPlane = myData.data[13];
 	bool bakeShadows = myData.data[14];
 	static int colorChoice = myData.data[15];
@@ -360,7 +360,7 @@ int main()
 	camera.Orientation.x = myData.data[30];
 	camera.Orientation.y = myData.data[31];
 	camera.Orientation.z = myData.data[32];
-
+	bool enableAo = myData.data[33];
 	
 	bool no_resize = true;
 	bool no_move = true;
@@ -456,7 +456,7 @@ int main()
 	glUniform1f(glGetUniformLocation(shaderProgram.ID, "avgShadow"), avgShadow);
 	glUniform4f(glGetUniformLocation(shaderProgram.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
-	glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), fogNear);
+	glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), AOocc);
 	glUniform1f(glGetUniformLocation(shaderProgram.ID, "far"), viewFarPlane);
 
 	glUniform1i(glGetUniformLocation(shaderProgram.ID, "BPL_Lighting"), BPL_LIGHTING);
@@ -958,7 +958,8 @@ int main()
 			for (int i = 0; i < sceneObjects.size(); i++)
 			{
 				if (!sceneObjects[i].deleted) {
-					sceneObjects[i].Draw(shadowMapProgram, camera, objectWorldMult);
+					sceneObjects[i].Draw(shadowMapProgram, camera, objectWorldMult, sceneObjects[i].translation, sceneObjects[i].rotation,
+						sceneObjects[i].scale);
 				}
 			}
 
@@ -1227,16 +1228,21 @@ int main()
 
 			SETUI(no_resize, no_move, run, postProcessingTexture, shadowMap, depthTexture, colorChoice, msaaSamples, FXAA_SPAN_MAX, FXAA_REDUCE_MIN, FXAA_REDUCE_MUL, framebufferProgram,
 				gamma, exposure, bloom, BloomSpreadBlur, blurProgram, shadowMapWidth, shadowMapHeight, bakeShadows, renderShadows, shadowSampleRadius, avgShadow, DepthBias1, DepthBias2, shaderProgram,
-				fogNear, viewFarPlane, enableskybox, vsync, highCameraSpeed, cameraNormalSpeed, wireframe, BPL_LIGHTING, maxmsaa);
+				AOocc, viewFarPlane, enableskybox, vsync, highCameraSpeed, cameraNormalSpeed, wireframe, BPL_LIGHTING, maxmsaa, enableAo);
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "minEdgeContrast"), FXAA_REDUCE_MIN);
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "subPixelAliasing"), FXAA_REDUCE_MUL);
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "maximumEdgeDetection"), FXAA_SPAN_MAX);
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "gamma"), gamma);
 			glUniform1f(glGetUniformLocation(framebufferProgram.ID, "exposure"), exposure);
 			glUniform1f(glGetUniformLocation(blurProgram.ID, "spreadBlur"), BloomSpreadBlur);
-			glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), fogNear);
+			glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), AOocc);
 			glUniform1f(glGetUniformLocation(shaderProgram.ID, "bias1"), DepthBias1);
 			glUniform1f(glGetUniformLocation(shaderProgram.ID, "bias2"), DepthBias2);
+			glUniform1f(glGetUniformLocation(shaderProgram.ID, "avgShadow"), avgShadow);
+			glUniform1f(glGetUniformLocation(shaderProgram.ID, "bias1"), DepthBias1);
+			glUniform1f(glGetUniformLocation(shaderProgram.ID, "bias2"), DepthBias2);
+			glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), AOocc);
+			glUniform1f(glGetUniformLocation(shaderProgram.ID, "far"), viewFarPlane);
 
 			ImGui::Begin("Scene Hierarchy", 0, (no_resize ? ImGuiWindowFlags_NoResize : 0) | (no_move ? ImGuiWindowFlags_NoMove : 0));
 			if (ImGui::Button("+"))
@@ -1360,9 +1366,9 @@ int main()
 
 	myData.data = { float(vsync), float(renderShadows), float(msaaSamples), float(bloom), float(wireframe),
 					float(width), float(height), gamma, exposure, highCameraSpeed, cameraNormalSpeed, float(enableskybox),
-					fogNear, viewFarPlane, float(bakeShadows), float(colorChoice), FXAA_SPAN_MAX, FXAA_REDUCE_MIN, FXAA_REDUCE_MUL, BloomSpreadBlur, 
+					AOocc, viewFarPlane, float(bakeShadows), float(colorChoice), FXAA_SPAN_MAX, FXAA_REDUCE_MIN, FXAA_REDUCE_MUL, BloomSpreadBlur, 
 	float(shadowMapWidth), float(shadowMapHeight), float(shadowSampleRadius), DepthBias1, DepthBias2, avgShadow, float(BPL_LIGHTING)
-	, camera.Position.x, camera.Position.y, camera.Position.z, camera.Orientation.x, camera.Orientation.y, camera.Orientation.z};
+	, camera.Position.x, camera.Position.y, camera.Position.z, camera.Orientation.x, camera.Orientation.y, camera.Orientation.z, float(enableAo)};
 	
 	myData.saveData();
 	
