@@ -44,7 +44,7 @@ static glm::vec3 Deg(const glm::vec3& radians)
 }
 
 
-const float WorldRadius = 700;
+const float WorldRadius = 1750;
 const float objectWorldMult = 20;
 
 bool run = false; 
@@ -302,7 +302,7 @@ glm::vec3 moveObjectInYAxis(GLFWwindow* window, const glm::vec3& objectPosition,
 #include <glm/gtc/matrix_transform.hpp>
 
 
-
+glm::vec3 lightPos = glm::vec3(0.5f, 1.0f, -1.0f);
 
 int main()
 {
@@ -325,6 +325,10 @@ int main()
 
 	int width = 1650;
 	int height = 950;
+
+
+	//int width = 1920;
+	//int height = 1080;
 
 	float gamma = myData.data[7];
 	float exposure = myData.data[8];
@@ -361,6 +365,12 @@ int main()
 	camera.Orientation.y = myData.data[31];
 	camera.Orientation.z = myData.data[32];
 	bool enableAo = myData.data[33];
+
+	lightPos.x = myData.data[34];
+	lightPos.y = myData.data[35];
+	lightPos.z = myData.data[36];
+
+	bool FlipLight = myData.data[37];
 	
 	bool no_resize = true;
 	bool no_move = true;
@@ -370,10 +380,9 @@ int main()
 	
 	
 	//GLFWwindow* window = glfwCreateWindow(width, height, "Caliber window", glfwGetPrimaryMonitor(), NULL);
-	
+
 	
 	GLFWwindow* window = glfwCreateWindow(width, height, "Loading Caliber Engine...", NULL, NULL);
-	//glfwSetWindowAttrib(window, GLFW_RESIZABLE, GLFW_FALSE);
 	
 	if (window == NULL)
 	{
@@ -383,6 +392,7 @@ int main()
 	}
 	glfwMakeContextCurrent(window);
 
+	//glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 	glfwSetWindowAttrib(window, GLFW_RESIZABLE, GLFW_FALSE);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
@@ -447,7 +457,7 @@ int main()
 	blurProgram.Activate();
 	glUniform1f(glGetUniformLocation(blurProgram.ID, "spreadBlur"), BloomSpreadBlur);
 
-	glm::vec3 lightPos = glm::vec3(1.0f, 1.0f, 1.0f);
+	
 	unlitProgram.Activate();
 	glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 1, 0, 1);
 
@@ -710,12 +720,12 @@ int main()
 
 	std::string facesCubemap[6] =
 	{
-		"skybox/deafult/right.jpg",
-		"skybox/deafult/left.jpg",
-		"skybox/deafult/top.jpg",
-		"skybox/deafult/bottom.jpg",
-		"skybox/deafult/front.jpg",
-		"skybox/deafult/back.jpg"
+		"skybox/sky/right.jpg",
+		"skybox/sky/left.jpg",
+		"skybox/sky/top.jpg",
+		"skybox/sky/bottom.jpg",
+		"skybox/sky/front.jpg",
+		"skybox/sky/back.jpg"
 	};
 
 	unsigned int cubemapTexture;
@@ -817,8 +827,16 @@ int main()
 
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
-		orthgonalProjection = glm::ortho(-WorldRadius, WorldRadius, -WorldRadius, WorldRadius, 0.0f, viewFarPlane);
-		lightView = glm::lookAt(200.0f * lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		if (FlipLight)
+		{
+			lightPos.x = -1;
+		}
+		else {
+			lightPos.x = 1;
+
+		}
+		orthgonalProjection = glm::ortho(-WorldRadius, WorldRadius, -WorldRadius, WorldRadius, 0.0f, 10000.000f);
+		lightView = glm::lookAt(1300.0f * lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		lightProjection = orthgonalProjection * lightView;
 		style.FramePadding.y = originalButtonPadding;
 		style.ItemSpacing.x = originalItemSpacing.x;
@@ -955,6 +973,7 @@ int main()
 
 		if (renderShadows) {
 
+
 			for (int i = 0; i < sceneObjects.size(); i++)
 			{
 				if (!sceneObjects[i].deleted) {
@@ -968,8 +987,6 @@ int main()
 		glViewport(0, 0, width, height);
 		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 		
-		camera.updateMatrix3D(60.0f, 0.1f, viewFarPlane);
-		camera.Mouse(window);
 
 		if (renderShadows) {
 			shaderProgram.Activate();
@@ -992,6 +1009,8 @@ int main()
 		glBindFramebuffer(GL_FRAMEBUFFER, UniversalDepthframebuffer);
 		glViewport(0, 0, width, height);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		camera.updateMatrix3D(60.0f, 0.1f, viewFarPlane);
+		camera.Mouse(window);
 
 		for (int i = 0; i < sceneObjects.size(); i++)
 		{
@@ -1243,7 +1262,7 @@ int main()
 			glUniform1f(glGetUniformLocation(shaderProgram.ID, "bias2"), DepthBias2);
 			glUniform1f(glGetUniformLocation(shaderProgram.ID, "near"), AOocc);
 			glUniform1f(glGetUniformLocation(shaderProgram.ID, "far"), viewFarPlane);
-
+			glUniform3f(glGetUniformLocation(shaderProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 			ImGui::Begin("Scene Hierarchy", 0, (no_resize ? ImGuiWindowFlags_NoResize : 0) | (no_move ? ImGuiWindowFlags_NoMove : 0));
 			if (ImGui::Button("+"))
 			{
@@ -1276,6 +1295,12 @@ int main()
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
 			ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
+			if (ImGui::CollapsingHeader("Direc-Light")) {
+				ImGui::Checkbox("FlipHoriz", &FlipLight);
+				ImGui::SliderFloat("Y", &lightPos.y,1, 4.5);
+				ImGui::SliderFloat("Z", &lightPos.z, -3.5, 3.5);
+
+			}
 			for (size_t i = 0; i < sceneObjects.size(); i++)
 			{
 				if (sceneObjects[i].deleted == false) {
@@ -1368,7 +1393,8 @@ int main()
 					float(width), float(height), gamma, exposure, highCameraSpeed, cameraNormalSpeed, float(enableskybox),
 					AOocc, viewFarPlane, float(bakeShadows), float(colorChoice), FXAA_SPAN_MAX, FXAA_REDUCE_MIN, FXAA_REDUCE_MUL, BloomSpreadBlur, 
 	float(shadowMapWidth), float(shadowMapHeight), float(shadowSampleRadius), DepthBias1, DepthBias2, avgShadow, float(BPL_LIGHTING)
-	, camera.Position.x, camera.Position.y, camera.Position.z, camera.Orientation.x, camera.Orientation.y, camera.Orientation.z, float(enableAo)};
+	, camera.Position.x, camera.Position.y, camera.Position.z, camera.Orientation.x, camera.Orientation.y, camera.Orientation.z, float(enableAo),
+	lightPos.x, lightPos.y, lightPos.z, float(FlipLight)};
 	
 	myData.saveData();
 	

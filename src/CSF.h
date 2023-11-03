@@ -92,7 +92,7 @@ public:
 		float specular = 0.0f;
 		if (diffuse != 0.0f)
 		{
-			float specularLight = 0.20f;
+			float specularLight = 0.80f;
 			vec3 viewDirection = normalize(camPos - crntPos);
 			vec3 halfwayVec = normalize(viewDirection + lightDirection);
 			float specAmount = pow(max(dot(normal, halfwayVec), 0.0f), 16);

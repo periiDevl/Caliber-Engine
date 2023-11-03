@@ -63,17 +63,14 @@ void Camera::Mouse(GLFWwindow* window)
 		float rotX = sensitivity * (float)(mouseY - (height / 2)) / height;
 		float rotY = sensitivity * (float)(mouseX - (width / 2)) / width;
 
-		glm::vec3 targetOrientation = glm::rotate(Orientation, glm::radians(-rotX), glm::normalize(glm::cross(Orientation, Up)));
+		glm::vec3 newOrientation = glm::rotate(Orientation, glm::radians(-rotX), glm::normalize(glm::cross(Orientation, Up)));
 
-		if (abs(glm::angle(targetOrientation, Up) - glm::radians(90.0f)) <= glm::radians(85.0f))
+		if (abs(glm::angle(newOrientation, Up) - glm::radians(90.0f)) <= glm::radians(85.0f))
 		{
-			targetOrientation = glm::normalize(targetOrientation);
+			Orientation = newOrientation;
 		}
 
-		targetOrientation = glm::rotate(targetOrientation, glm::radians(-rotY), Up);
-
-		float interpolationFactor = 1.0f; 
-		Orientation = glm::mix(Orientation, targetOrientation, interpolationFactor);
+		Orientation = glm::rotate(Orientation, glm::radians(-rotY), Up);
 
 		glfwSetCursorPos(window, (width / 2), (height / 2));
 	}
@@ -138,7 +135,8 @@ void Camera::TrackBallMouse(GLFWwindow* window)
 
 void Camera::Inputs(GLFWwindow* window, float normalSpeed, float highSpeed)
 {
-	
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+	{
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		{
 			Position += speed * getDirection(Orientation, false);
@@ -173,6 +171,7 @@ void Camera::Inputs(GLFWwindow* window, float normalSpeed, float highSpeed)
 		{
 			speed = normalSpeed;
 		}
+	}
 	
 }
 void Camera::Trackaballmovement(GLFWwindow* window, float normalSpeed, float highSpeed)
