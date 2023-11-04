@@ -11,10 +11,11 @@ using json = nlohmann::json;
 class Model
 {
 public:
+	bool staticBody = false;
 	bool deleted = false;
 	bool draw = true;
 	bool bindedphysics = true;
-	btRigidBody* boxRigidBody;
+	btRigidBody* boxRigidBody = nullptr;
 	glm::vec3 translation = glm::vec3(0);
 	glm::vec3 rotation = glm::vec3(0, 0, 0);
 	glm::vec3 scale = glm::vec3(0);
@@ -64,48 +65,68 @@ public:
 
 
 
-	void BindPhysics(btDynamicsWorld* dynaWorld, float objectWorldMult, bool staticBody)
-	{
-		btCollisionShape* boxShape = new btBoxShape(btVector3(scale.x / objectWorldMult, scale.y / objectWorldMult, scale.z / objectWorldMult));
-		btScalar mass = 1;
 
-		if (staticBody) {
-			mass = 0;
+	// Function to create or update the btRigidBody.
+	void BindPhysics(btDynamicsWorld* dynaWorld, float objectWorldMult)
+	{
+		// Check if a rigid body has been created.
+		if (!rigidBodyCreated) {
+			btCollisionShape* boxShape = new btBoxShape(btVector3(scale.x / objectWorldMult, scale.y / objectWorldMult, scale.z / objectWorldMult));
+			btScalar mass = staticBody ? 0 : 1;
+
+			Functions func;
+			glm::quat rotationQuat = func.Euler_to_quat(rotation.x, rotation.y, rotation.z);
+			btDefaultMotionState* boxMotionState = new btDefaultMotionState(btTransform(btQuaternion(rotationQuat.x, rotationQuat.y, rotationQuat.z, rotationQuat.w), btVector3(translation.x, translation.y, translation.z)));
+			btVector3 boxInertia(0, 0, 0);
+			boxShape->calculateLocalInertia(mass, boxInertia);
+
+			boxRigidBody = new btRigidBody(mass, boxMotionState, boxShape, boxInertia);
+			dynaWorld->addRigidBody(boxRigidBody);
+
+			boxRigidBody->setSleepingThresholds(0, 0);
+			boxRigidBody->setActivationState(DISABLE_DEACTIVATION);
+
+			// Set the flag to indicate that a rigid body has been created.
+			rigidBodyCreated = true;
 		}
-		Functions func;
-		glm::quat rotationQuat = func.Euler_to_quat(rotation.x, rotation.y, rotation.z);
-		btDefaultMotionState* boxMotionState = new btDefaultMotionState(btTransform(btQuaternion(rotationQuat.x, rotationQuat.y, rotationQuat.z, rotationQuat.w), btVector3(translation.x, translation.y, translation.z)));
-		btVector3 boxInertia(0, 0, 0);
-		boxShape->calculateLocalInertia(mass, boxInertia);
-		boxRigidBody = new btRigidBody(mass, boxMotionState, boxShape, boxInertia);
-		dynaWorld->addRigidBody(boxRigidBody);
-		boxRigidBody->setWorldTransform(phys);
-	}
 
+
+	}
 	btTransform phys;
-	void PHYSICS_SETUP(bool staticBody, float objectWorldMult)
+	void PHYSICS_SETUP(float objectWorldMult, bool run)
 	{
 		Functions func;
+		
 		if (staticBody)
 		{
 			boxRigidBody->setWorldTransform(phys);
 			boxRigidBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
 		}
+		
 		boxRigidBody->setGravity(btVector3(0, -9.81, 0));
 		boxRigidBody->getMotionState()->getWorldTransform(phys);
-		//translation = glm::vec3(phys.getOrigin().getX(), phys.getOrigin().getY() - 1, phys.getOrigin().getZ());
+		if (!staticBody)
+		{
+			translation = glm::vec3(phys.getOrigin().getX(), phys.getOrigin().getY() - 1, phys.getOrigin().getZ());
+		}
 
 		phys.setOrigin(btVector3(translation.x, translation.y + 1, translation.z));
 		
 
-		float radiansX = btRadians(rotation.x);
-		float radiansY = btRadians(rotation.y);
-		float radiansZ = btRadians(rotation.z);
 
-		btQuaternion quaternionRotation;
-		quaternionRotation.setEulerZYX(radiansZ, radiansY, radiansX);
 
-		phys.setRotation(quaternionRotation);
+		if (!staticBody) {
+			btQuaternion rotationT = phys.getRotation();
+			rotation = func.Quat_to_euler(glm::quat(rotationT.getX(), rotationT.getY(), rotationT.getZ(), rotationT.getW()));
+		}
+		else {
+			float radiansX = btRadians(rotation.x);
+			float radiansY = btRadians(rotation.y);
+			float radiansZ = btRadians(rotation.z);
+			btQuaternion quaternionRotation;
+			quaternionRotation.setEulerZYX(radiansZ, radiansY, radiansX);
+			phys.setRotation(quaternionRotation);
+		}
 
 		btCollisionShape* boxShape = new btBoxShape(btVector3(scale.x / objectWorldMult, scale.y / objectWorldMult, scale.z / objectWorldMult));
 		boxRigidBody->setCollisionShape(boxShape);
@@ -148,6 +169,10 @@ public:
 	}
 
 private:
+
+
+	// Create a flag to keep track of whether the rigid body has been created.
+	bool rigidBodyCreated = false;
 
 
 	const char* changeFileExtension(const char* file) {

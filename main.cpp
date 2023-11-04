@@ -559,9 +559,11 @@ int main()
 		std::getline(iss, token, ',');
 		tint.z = std::stof(token);
 		tint.w= 1.0f;
+		std::getline(iss, token, ',');
+		bool staticI = std::stof(token);
 
 		Model obj = Model(path.c_str());
-
+		obj.staticBody = staticI;
 		obj.draw = draw;
 		obj.translation = pos;
 		obj.rotation = rot;
@@ -794,11 +796,7 @@ int main()
 
 	const int substep = 10;
 	Model PhysicsCube("models/cube/scene.gltf");
-	for (size_t i = 0; i < sceneObjects.size(); i++)
-	{
-		sceneObjects[i].BindPhysics(dynamicsWorld, objectWorldMult, true);
-		sceneObjects[i].PHYSICS_SETUP(true, objectWorldMult);
-	}
+
 
 	bool bake = true;
 
@@ -823,7 +821,11 @@ int main()
 	float originalButtonPadding = style.FramePadding.y;
 	float pixelColor[3];
 
-
+	for (size_t i = 0; i < sceneObjects.size(); i++)
+	{
+		sceneObjects[i].BindPhysics(dynamicsWorld, objectWorldMult);
+			//sceneObjects[i].PHYSICS_SETUP(objectWorldMult);
+	}
 
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
@@ -1031,11 +1033,11 @@ int main()
 				PhysicsCube.translation = sceneObjects[i].translation;
 				PhysicsCube.scale = sceneObjects[i].scale;
 				PhysicsCube.rotation = sceneObjects[i].rotation;
+				if (run) {
+					sceneObjects[i].PHYSICS_SETUP(objectWorldMult, run);
 
-
-				sceneObjects[i].PHYSICS_SETUP(true, objectWorldMult);
+				}
 				if (!run) {
-
 					GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x - 1.0f, sceneObjects[i].translation.y, sceneObjects[i].translation.z), glm::vec3(90, -90, 0), glm::vec3(0.4));
 					glDisable(GL_DEPTH_TEST);
 					GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x - 1.0f, sceneObjects[i].translation.y, sceneObjects[i].translation.z), glm::vec3(90, -90, 0), glm::vec3(0.4));
@@ -1205,6 +1207,10 @@ int main()
 
 
 		if (run == false) {
+			for (size_t i = 0; i < sceneObjects.size(); i++)
+			{
+				sceneObjects[i].phys.setOrigin(btVector3(sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z));
+			}
 			ImGui::Begin("Viewport", 0, (no_resize ? ImGuiWindowFlags_NoResize : 0) | (no_move ? ImGuiWindowFlags_NoMove : 0));
 			{
 				if (ImGui::Button("Run"))
@@ -1278,14 +1284,14 @@ int main()
 				if (glfwGetKey(window, GLFW_KEY_ENTER)) {
 					sceneObjects.push_back(Model(objName));
 					sceneObjects.back().file = objName;
-					sceneObjects.back().BindPhysics(dynamicsWorld, objectWorldMult, true);
-					sceneObjects.back().PHYSICS_SETUP(true, objectWorldMult);
+					sceneObjects.back().BindPhysics(dynamicsWorld, objectWorldMult);
+					//sceneObjects.back().PHYSICS_SETUP(objectWorldMult, run);
 				}
 				if (ImGui::Button("Cube")) {
 					sceneObjects.push_back(Model("models/cube/scene.gltf"));
 					sceneObjects.back().file = "models/cube/scene.gltf";
-					sceneObjects.back().BindPhysics(dynamicsWorld, objectWorldMult, true);
-					sceneObjects.back().PHYSICS_SETUP(true, objectWorldMult);
+					sceneObjects.back().BindPhysics(dynamicsWorld, objectWorldMult);
+					//sceneObjects.back().PHYSICS_SETUP(objectWorldMult);
 				}
 				ImGui::EndPopup();
 			}
@@ -1346,6 +1352,9 @@ int main()
 						ImGui::InputFloat3(("Rotation##" + std::to_string(i)).c_str(), F);
 						sceneObjects[i].rotation = glm::vec3(F[0], F[1], F[2]);
 						ImGui::Columns(1, nullptr, true);
+
+
+						ImGui::Checkbox(("Static Physics ##" + std::to_string(i)).c_str(), &sceneObjects[i].staticBody);
 						ImGui::Separator();
 
 					}
@@ -1374,7 +1383,7 @@ int main()
 	
 		
 
-	}
+	} 
 
 
 	std::ofstream Caliboutfile("world.caliber");
@@ -1383,7 +1392,7 @@ int main()
 			Caliboutfile << obj.translation.x << "," << obj.translation.y << "," << obj.translation.z << ","
 				<< obj.rotation.x << "," << obj.rotation.y << "," << obj.rotation.z << ","
 				<< obj.scale.x << "," << obj.scale.y << "," << obj.scale.z << "," << obj.file << "," << obj.draw << "," << obj.tint.x << "," << obj.tint.y << "," << obj.tint.z
-				<< "\n";
+				<< "," << obj.staticBody << "\n";
 		}
 	}
 	Caliboutfile.close();
