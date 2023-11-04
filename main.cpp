@@ -21,6 +21,7 @@
 //#include <stb_image_write.h>
 #include"src/UIIMGUI.h"
 #include<thread>
+#include<filesystem>
 Console console;
 
 CSV vert;
@@ -47,8 +48,8 @@ static glm::vec3 Deg(const glm::vec3& radians)
 const float WorldRadius = 1750;
 const float objectWorldMult = 20;
 
-bool run = false; 
-
+bool run; 
+bool build = false;
 
 
 void saveScreenshot(GLFWwindow* window, const char* filename) {
@@ -829,6 +830,9 @@ int main()
 
 	while (!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_HOME))
 	{
+		if (build) {
+			run = true;
+		}
 		if (FlipLight)
 		{
 			lightPos.x = -1;
@@ -880,7 +884,7 @@ int main()
 		}
 
 
-		if (glfwGetKey(window, GLFW_KEY_ESCAPE))
+		if (glfwGetKey(window, GLFW_KEY_ESCAPE) && !build)
 		{
 			run = false;
 		}
@@ -1215,6 +1219,10 @@ int main()
 			{
 				if (ImGui::Button("Run"))
 				{
+					std::system("taskkill /F /IM runtime.exe");
+					std::string exePath = std::filesystem::current_path().string() + "/DebugBuild/runtime.exe";
+					std::system(exePath.c_str());
+					/*
 					if (run == false) {
 						run = true;
 					}
@@ -1222,6 +1230,7 @@ int main()
 					{
 						run = false;
 					}
+					*/
 				}
 
 
@@ -1385,29 +1394,29 @@ int main()
 
 	} 
 
-
-	std::ofstream Caliboutfile("world.caliber");
-	for (const auto& obj : sceneObjects) {
-		if (obj.deleted == false) {
-			Caliboutfile << obj.translation.x << "," << obj.translation.y << "," << obj.translation.z << ","
-				<< obj.rotation.x << "," << obj.rotation.y << "," << obj.rotation.z << ","
-				<< obj.scale.x << "," << obj.scale.y << "," << obj.scale.z << "," << obj.file << "," << obj.draw << "," << obj.tint.x << "," << obj.tint.y << "," << obj.tint.z
-				<< "," << obj.staticBody << "\n";
+	if (!build) {
+		std::ofstream Caliboutfile("world.caliber");
+		for (const auto& obj : sceneObjects) {
+			if (obj.deleted == false) {
+				Caliboutfile << obj.translation.x << "," << obj.translation.y << "," << obj.translation.z << ","
+					<< obj.rotation.x << "," << obj.rotation.y << "," << obj.rotation.z << ","
+					<< obj.scale.x << "," << obj.scale.y << "," << obj.scale.z << "," << obj.file << "," << obj.draw << "," << obj.tint.x << "," << obj.tint.y << "," << obj.tint.z
+					<< "," << obj.staticBody << "\n";
+			}
 		}
+		Caliboutfile.close();
+
+
+		myData.data = { float(vsync), float(renderShadows), float(msaaSamples), float(bloom), float(wireframe),
+						float(width), float(height), gamma, exposure, highCameraSpeed, cameraNormalSpeed, float(enableskybox),
+						AOocc, viewFarPlane, float(bakeShadows), float(colorChoice), FXAA_SPAN_MAX, FXAA_REDUCE_MIN, FXAA_REDUCE_MUL, BloomSpreadBlur,
+		float(shadowMapWidth), float(shadowMapHeight), float(shadowSampleRadius), DepthBias1, DepthBias2, avgShadow, float(BPL_LIGHTING)
+		, camera.Position.x, camera.Position.y, camera.Position.z, camera.Orientation.x, camera.Orientation.y, camera.Orientation.z, float(enableAo),
+		lightPos.x, lightPos.y, lightPos.z, float(FlipLight) };
+
+		myData.saveData();
+
 	}
-	Caliboutfile.close();
-
-
-	myData.data = { float(vsync), float(renderShadows), float(msaaSamples), float(bloom), float(wireframe),
-					float(width), float(height), gamma, exposure, highCameraSpeed, cameraNormalSpeed, float(enableskybox),
-					AOocc, viewFarPlane, float(bakeShadows), float(colorChoice), FXAA_SPAN_MAX, FXAA_REDUCE_MIN, FXAA_REDUCE_MUL, BloomSpreadBlur, 
-	float(shadowMapWidth), float(shadowMapHeight), float(shadowSampleRadius), DepthBias1, DepthBias2, avgShadow, float(BPL_LIGHTING)
-	, camera.Position.x, camera.Position.y, camera.Position.z, camera.Orientation.x, camera.Orientation.y, camera.Orientation.z, float(enableAo),
-	lightPos.x, lightPos.y, lightPos.z, float(FlipLight)};
-	
-	myData.saveData();
-	
-	
 	
 	delete dynamicsWorld;
 	delete solver;
