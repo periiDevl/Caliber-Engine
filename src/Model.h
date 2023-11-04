@@ -66,10 +66,8 @@ public:
 
 
 
-	// Function to create or update the btRigidBody.
 	void BindPhysics(btDynamicsWorld* dynaWorld, float objectWorldMult)
 	{
-		// Check if a rigid body has been created.
 		if (!rigidBodyCreated) {
 			btCollisionShape* boxShape = new btBoxShape(btVector3(scale.x / objectWorldMult, scale.y / objectWorldMult, scale.z / objectWorldMult));
 			btScalar mass = staticBody ? 0 : 1;
@@ -86,7 +84,6 @@ public:
 			boxRigidBody->setSleepingThresholds(0, 0);
 			boxRigidBody->setActivationState(DISABLE_DEACTIVATION);
 
-			// Set the flag to indicate that a rigid body has been created.
 			rigidBodyCreated = true;
 		}
 
