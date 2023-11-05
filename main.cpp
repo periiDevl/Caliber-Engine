@@ -371,7 +371,7 @@ int main()
 	lightPos.y = myData.data[35];
 	lightPos.z = myData.data[36];
 
-	bool FlipLight = myData.data[37];
+
 	
 	bool no_resize = true;
 	bool no_move = true;
@@ -833,14 +833,7 @@ int main()
 		if (build) {
 			run = true;
 		}
-		if (FlipLight)
-		{
-			lightPos.x = -1;
-		}
-		else {
-			lightPos.x = 1;
 
-		}
 		orthgonalProjection = glm::ortho(-WorldRadius, WorldRadius, -WorldRadius, WorldRadius, 0.0f, 10000.000f);
 		lightView = glm::lookAt(1300.0f * lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		lightProjection = orthgonalProjection * lightView;
@@ -1236,7 +1229,7 @@ int main()
 									AOocc, viewFarPlane, float(bakeShadows), float(colorChoice), FXAA_SPAN_MAX, FXAA_REDUCE_MIN, FXAA_REDUCE_MUL, BloomSpreadBlur,
 					float(shadowMapWidth), float(shadowMapHeight), float(shadowSampleRadius), DepthBias1, DepthBias2, avgShadow, float(BPL_LIGHTING)
 					, camera.Position.x, camera.Position.y, camera.Position.z, camera.Orientation.x, camera.Orientation.y, camera.Orientation.z, float(enableAo),
-					lightPos.x, lightPos.y, lightPos.z, float(FlipLight) };
+					lightPos.x, lightPos.y, lightPos.z};
 
 					myData.saveData();
 					std::system("taskkill /F /IM runtime.exe");
@@ -1345,8 +1338,9 @@ int main()
 			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
 			ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
 			if (ImGui::CollapsingHeader("Direc-Light")) {
-				ImGui::Checkbox("FlipHoriz", &FlipLight);
-				ImGui::SliderFloat("Y", &lightPos.y,1, 4.5);
+				//ImGui::Checkbox("FlipHoriz", &FlipLight);
+				ImGui::SliderFloat("X", &lightPos.x,-2.5, 2.5);
+				ImGui::SliderFloat("Y", &lightPos.y, 1, 4.5);
 				ImGui::SliderFloat("Z", &lightPos.z, -3.5, 3.5);
 
 			}
