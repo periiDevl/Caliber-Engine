@@ -1219,9 +1219,31 @@ int main()
 			{
 				if (ImGui::Button("Run"))
 				{
+					std::ofstream Caliboutfile("world.caliber");
+					for (const auto& obj : sceneObjects) {
+						if (obj.deleted == false) {
+							Caliboutfile << obj.translation.x << "," << obj.translation.y << "," << obj.translation.z << ","
+								<< obj.rotation.x << "," << obj.rotation.y << "," << obj.rotation.z << ","
+								<< obj.scale.x << "," << obj.scale.y << "," << obj.scale.z << "," << obj.file << "," << obj.draw << "," << obj.tint.x * obj.tintMult << "," << obj.tint.y * obj.tintMult << "," << obj.tint.z * obj.tintMult
+								<< "," << obj.staticBody << "\n";
+						}
+					}
+					Caliboutfile.close();
+
+
+					myData.data = { float(vsync), float(renderShadows), float(msaaSamples), float(bloom), float(wireframe),
+									float(width), float(height), gamma, exposure, highCameraSpeed, cameraNormalSpeed, float(enableskybox),
+									AOocc, viewFarPlane, float(bakeShadows), float(colorChoice), FXAA_SPAN_MAX, FXAA_REDUCE_MIN, FXAA_REDUCE_MUL, BloomSpreadBlur,
+					float(shadowMapWidth), float(shadowMapHeight), float(shadowSampleRadius), DepthBias1, DepthBias2, avgShadow, float(BPL_LIGHTING)
+					, camera.Position.x, camera.Position.y, camera.Position.z, camera.Orientation.x, camera.Orientation.y, camera.Orientation.z, float(enableAo),
+					lightPos.x, lightPos.y, lightPos.z, float(FlipLight) };
+
+					myData.saveData();
 					std::system("taskkill /F /IM runtime.exe");
 					std::string exePath = std::filesystem::current_path().string() + "/DebugBuild/runtime.exe";
 					std::system(exePath.c_str());
+
+
 					/*
 					if (run == false) {
 						run = true;
@@ -1302,6 +1324,18 @@ int main()
 					sceneObjects.back().BindPhysics(dynamicsWorld, objectWorldMult);
 					//sceneObjects.back().PHYSICS_SETUP(objectWorldMult);
 				}
+				if (ImGui::Button("ExampleModel")) {
+					sceneObjects.push_back(Model("models/ExampleModel/scene.gltf"));
+					sceneObjects.back().file = "models/ExampleModel/scene.gltf";
+					sceneObjects.back().BindPhysics(dynamicsWorld, objectWorldMult);
+					//sceneObjects.back().PHYSICS_SETUP(objectWorldMult);
+				}
+				if (ImGui::Button("mapone")) {
+					sceneObjects.push_back(Model("models/mapone/scene.gltf"));
+					sceneObjects.back().file = "models/mapone/scene.gltf";
+					sceneObjects.back().BindPhysics(dynamicsWorld, objectWorldMult);
+					//sceneObjects.back().PHYSICS_SETUP(objectWorldMult);
+				}
 				ImGui::EndPopup();
 			}
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(1.0f, 0.0f));
@@ -1336,7 +1370,7 @@ int main()
 						ImGui::Checkbox(("Render Object##" + std::to_string(i)).c_str(), &sceneObjects[i].draw);
 						float tint[3];
 
-
+						ImGui::InputFloat(("Tint Mult ##" + std::to_string(i)).c_str(), &sceneObjects[i].tintMult);
 						tint[0] = sceneObjects[i].tint.x;
 						tint[1] = sceneObjects[i].tint.y; 
 						tint[2] = sceneObjects[i].tint.z;
@@ -1394,29 +1428,7 @@ int main()
 
 	} 
 
-	if (!build) {
-		std::ofstream Caliboutfile("world.caliber");
-		for (const auto& obj : sceneObjects) {
-			if (obj.deleted == false) {
-				Caliboutfile << obj.translation.x << "," << obj.translation.y << "," << obj.translation.z << ","
-					<< obj.rotation.x << "," << obj.rotation.y << "," << obj.rotation.z << ","
-					<< obj.scale.x << "," << obj.scale.y << "," << obj.scale.z << "," << obj.file << "," << obj.draw << "," << obj.tint.x << "," << obj.tint.y << "," << obj.tint.z
-					<< "," << obj.staticBody << "\n";
-			}
-		}
-		Caliboutfile.close();
 
-
-		myData.data = { float(vsync), float(renderShadows), float(msaaSamples), float(bloom), float(wireframe),
-						float(width), float(height), gamma, exposure, highCameraSpeed, cameraNormalSpeed, float(enableskybox),
-						AOocc, viewFarPlane, float(bakeShadows), float(colorChoice), FXAA_SPAN_MAX, FXAA_REDUCE_MIN, FXAA_REDUCE_MUL, BloomSpreadBlur,
-		float(shadowMapWidth), float(shadowMapHeight), float(shadowSampleRadius), DepthBias1, DepthBias2, avgShadow, float(BPL_LIGHTING)
-		, camera.Position.x, camera.Position.y, camera.Position.z, camera.Orientation.x, camera.Orientation.y, camera.Orientation.z, float(enableAo),
-		lightPos.x, lightPos.y, lightPos.z, float(FlipLight) };
-
-		myData.saveData();
-
-	}
 	
 	delete dynamicsWorld;
 	delete solver;

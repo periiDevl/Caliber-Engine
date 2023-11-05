@@ -11,6 +11,7 @@ using json = nlohmann::json;
 class Model
 {
 public:
+	float tintMult = 1;
 	bool staticBody = false;
 	bool deleted = false;
 	bool draw = true;

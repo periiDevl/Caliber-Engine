@@ -23,7 +23,7 @@ Model::Model(const char* fl,
 void Model::Draw(Shader& shader, Camera& camera, float worldSize)
 {
 	shader.Activate();
-	glUniform4f(glGetUniformLocation(shader.ID, "tint"), tint.x, tint.y, tint.z, tint.w);
+	glUniform4f(glGetUniformLocation(shader.ID, "tint"), tint.x * tintMult, tint.y * tintMult, tint.z * tintMult, tint.w * tintMult);
 
 	if (draw) {
 		for (unsigned int i = 0; i < meshes.size(); i++)
@@ -36,7 +36,7 @@ void Model::Draw(Shader& shader, Camera& camera, float worldSize)
 void Model::Draw(Shader& shader, Camera& camera, float worldSize, glm::vec3 position, glm::vec3 rot, glm::vec3 scale)
 {
 	shader.Activate();
-	glUniform4f(glGetUniformLocation(shader.ID, "tint"), tint.x, tint.y, tint.z, tint.w);
+	glUniform4f(glGetUniformLocation(shader.ID, "tint"), tint.x * tintMult, tint.y * tintMult, tint.z * tintMult, tint.w * tintMult);
 
 	for (unsigned int i = 0; i < meshes.size(); i++)
 	{
