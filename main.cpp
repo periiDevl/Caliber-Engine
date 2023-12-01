@@ -803,7 +803,7 @@ int main()
 
 	GLuint UniversalDepthframebuffer;
 	glGenFramebuffers(1, &UniversalDepthframebuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, UniversalDepthframebuffer);
+	//glBindFramebuffer(GL_FRAMEBUFFER, UniversalDepthframebuffer);
 
 	GLuint depthTexture;
 	glGenTextures(1, &depthTexture);
@@ -815,7 +815,7 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
 
-	const float fixed_timestep = 1.0f / 60.0f;
+	const float fixed_timestep = 1.0f / 120.0f;
 
 	ImGuiStyle& style = ImGui::GetStyle();
 	ImVec2 originalItemSpacing = ImGui::GetStyle().ItemSpacing;
@@ -982,6 +982,7 @@ int main()
 			}
 
 		}
+		
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, width, height);
 		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
@@ -996,7 +997,6 @@ int main()
 
 			glUniform1i(glGetUniformLocation(shaderProgram.ID, "shadowMap"), 2);
 		}
-		glEnable(GL_DEPTH_TEST);
 		
 
 
@@ -1005,20 +1005,18 @@ int main()
 		
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-		glBindFramebuffer(GL_FRAMEBUFFER, UniversalDepthframebuffer);
-		glViewport(0, 0, width, height);
+		//glBindFramebuffer(GL_FRAMEBUFFER, UniversalDepthframebuffer);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		camera.updateMatrix3D(60.0f, 0.1f, viewFarPlane);
 		camera.Mouse(window);
-
+		/*
 		for (int i = 0; i < sceneObjects.size(); i++)
 		{
 			sceneObjects[i].Draw(UniversalDepthProgram, camera, objectWorldMult);
 		}
+		*/
 
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, width, height);
-		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+
 
 		for (int i = 0; i < sceneObjects.size(); i++)
 		{
@@ -1044,11 +1042,11 @@ int main()
 						sceneObjects[i].translation.x = moveObjectInXAxis(window, sceneObjects[i].translation, camera.Orientation, camera.Position).x;
 
 					};
-					glEnable(GL_DEPTH_TEST);
+
 					glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 0, 1, 1);
 
 					GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z + 1.0f), glm::vec3(90, 0, 0), glm::vec3(0.4));
-					glDisable(GL_DEPTH_TEST);
+
 					GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z + 1.0f), glm::vec3(90, 0, 0), glm::vec3(0.4));
 					glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 1, 0, 0, 1);
 					if (checkMouseOverObject(glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y, sceneObjects[i].translation.z + 1.0f), camera.Position, camera.Orientation, width, height, window) && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
@@ -1057,12 +1055,12 @@ int main()
 						sceneObjects[i].translation.z = moveObjectInZAxis(window, sceneObjects[i].translation, camera.Orientation, camera.Position).z;
 
 					};
-					glEnable(GL_DEPTH_TEST);
+
 
 					glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 0, 1, 0, 1);
 
 					GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y + 1.0f, sceneObjects[i].translation.z), glm::vec3(0), glm::vec3(0.4));
-					glDisable(GL_DEPTH_TEST);
+
 					GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y + 1.0f, sceneObjects[i].translation.z), glm::vec3(0), glm::vec3(0.4));
 					glUniform4f(glGetUniformLocation(unlitProgram.ID, "color"), 1, 0, 0, 1);
 					if (checkMouseOverObject(glm::vec3(sceneObjects[i].translation.x, sceneObjects[i].translation.y + 1.0f, sceneObjects[i].translation.z), camera.Position, camera.Orientation, width, height, window) && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
@@ -1124,7 +1122,7 @@ int main()
 
 			glDepthFunc(GL_LESS);
 		}
-		
+		/*
 		glStencilFunc(GL_ALWAYS, 1, 0xFF);
 		glStencilMask(0xFF);
 		//House.Draw(shaderProgram, camera, glm::vec3(0), euler_to_quat(0, 0, 0), glm::vec3(10));
@@ -1140,7 +1138,7 @@ int main()
 		// Enable modifying of the stencil buffer
 		glStencilMask(0xFF);
 		glStencilFunc(GL_ALWAYS, 0, 0xFF);
-		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_DEPTH_TEST);*/
 
 
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
@@ -1421,7 +1419,7 @@ int main()
 		
 
 	} 
-
+	 
 
 	
 	delete dynamicsWorld;
