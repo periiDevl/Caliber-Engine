@@ -327,9 +327,10 @@ int main()
 	int width = 1650;
 	int height = 950;
 
-
-	//int width = 1920;
-	//int height = 1080;
+	if (build) {
+		width = 1920;
+		height = 1080;
+	}
 
 	float gamma = myData.data[7];
 	float exposure = myData.data[8];
@@ -380,10 +381,12 @@ int main()
 
 	
 	
-	//GLFWwindow* window = glfwCreateWindow(width, height, "Caliber window", glfwGetPrimaryMonitor(), NULL);
 
 	
 	GLFWwindow* window = glfwCreateWindow(width, height, "Loading Caliber Engine...", NULL, NULL);
+	if (build) {
+		window = glfwCreateWindow(width, height, "Caliber window", glfwGetPrimaryMonitor(), NULL);
+	}
 	
 	if (window == NULL)
 	{
