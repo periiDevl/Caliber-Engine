@@ -49,7 +49,7 @@ const float WorldRadius = 1750;
 const float objectWorldMult = 20;
 
 bool run; 
-bool build = true;
+bool build = false;
 
 
 void saveScreenshot(GLFWwindow* window, const char* filename) {
