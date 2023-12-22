@@ -49,7 +49,7 @@ const float WorldRadius = 1750;
 const float objectWorldMult = 20;
 
 bool run; 
-bool build = false;
+bool build = true;
 
 
 void saveScreenshot(GLFWwindow* window, const char* filename) {
@@ -781,7 +781,7 @@ int main()
 	btCollisionDispatcher* dispatcher = new btCollisionDispatcher(collisionConfiguration);
 	btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
 	btDiscreteDynamicsWorld* dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
-	dynamicsWorld->setGravity(btVector3(0, -9.81, 0));
+	dynamicsWorld->setGravity(btVector3(0, -50.81, 0));
 
 	
 

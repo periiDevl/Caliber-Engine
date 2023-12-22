@@ -101,7 +101,7 @@ public:
 			boxRigidBody->setCollisionFlags(btCollisionObject::CF_STATIC_OBJECT);
 		}
 		
-		boxRigidBody->setGravity(btVector3(0, -9.81, 0));
+		boxRigidBody->setGravity(btVector3(0, -9.81 * 10, 0));
 		boxRigidBody->getMotionState()->getWorldTransform(phys);
 		if (!staticBody)
 		{
