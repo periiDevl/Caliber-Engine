@@ -565,7 +565,8 @@ int main()
 		tint.w= 1.0f;
 		std::getline(iss, token, ',');
 		bool staticI = std::stof(token);
-
+		std::getline(iss, token, ',');
+		bool st = std::stof(token);
 		Model obj = Model(path.c_str());
 		obj.staticBody = staticI;
 		obj.draw = draw;
@@ -573,6 +574,7 @@ int main()
 		obj.rotation = rot;
 		obj.scale = sca;
 		obj.tint = tint;
+		obj.semi_transparent = st;
 		sceneObjects.push_back(obj);
 	}
 
@@ -868,7 +870,7 @@ int main()
 			
 		}
 
-
+		
 		glfwSwapInterval(vsync);
 		if (bakeShadows && bake)
 		{
@@ -972,7 +974,8 @@ int main()
 		glViewport(0, 0, shadowMapWidth, shadowMapHeight);
 		glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFBO);
 		glClear(GL_DEPTH_BUFFER_BIT);
-
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		
 		if (renderShadows) {
 
 
@@ -1026,16 +1029,23 @@ int main()
 			if (!sceneObjects[i].deleted)
 			{
 
-
+				if (sceneObjects[i].semi_transparent == true) {
+					glEnable(GL_BLEND);
+					glDisable(GL_DEPTH_TEST);
+				}
 				sceneObjects[i].Draw(shaderProgram, camera, objectWorldMult);
+				glEnable(GL_DEPTH_TEST);
+				glDisable(GL_BLEND);
+
 				PhysicsCube.translation = sceneObjects[i].translation;
 				PhysicsCube.scale = sceneObjects[i].scale;
 				PhysicsCube.rotation = sceneObjects[i].rotation;
 				if (run) {
+					
 					sceneObjects[i].PHYSICS_SETUP(objectWorldMult, run);
-
+					
 				}
-				if (!run) {
+				else {
 					GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x - 1.0f, sceneObjects[i].translation.y, sceneObjects[i].translation.z), glm::vec3(90, -90, 0), glm::vec3(0.4));
 					glDisable(GL_DEPTH_TEST);
 					GizmosSphere.Draw(unlitProgram, camera, 1, glm::vec3(sceneObjects[i].translation.x - 1.0f, sceneObjects[i].translation.y, sceneObjects[i].translation.z), glm::vec3(90, -90, 0), glm::vec3(0.4));
@@ -1219,7 +1229,7 @@ int main()
 							Caliboutfile << obj.translation.x << "," << obj.translation.y << "," << obj.translation.z << ","
 								<< obj.rotation.x << "," << obj.rotation.y << "," << obj.rotation.z << ","
 								<< obj.scale.x << "," << obj.scale.y << "," << obj.scale.z << "," << obj.file << "," << obj.draw << "," << obj.tint.x * obj.tintMult << "," << obj.tint.y * obj.tintMult << "," << obj.tint.z * obj.tintMult
-								<< "," << obj.staticBody << "\n";
+								<< "," << obj.staticBody << "," << obj.semi_transparent << "\n";
 						}
 					}
 					Caliboutfile.close();
@@ -1318,6 +1328,12 @@ int main()
 					sceneObjects.back().BindPhysics(dynamicsWorld, objectWorldMult);
 					//sceneObjects.back().PHYSICS_SETUP(objectWorldMult);
 				}
+				if (ImGui::Button("Window")) {
+					sceneObjects.push_back(Model("models/Window/scene.gltf"));
+					sceneObjects.back().file = "models/Window/scene.gltf";
+					sceneObjects.back().BindPhysics(dynamicsWorld, objectWorldMult);
+					//sceneObjects.back().PHYSICS_SETUP(objectWorldMult);
+				}
 				if (ImGui::Button("ExampleModel")) {
 					sceneObjects.push_back(Model("models/ExampleModel/scene.gltf"));
 					sceneObjects.back().file = "models/ExampleModel/scene.gltf";
@@ -1363,6 +1379,7 @@ int main()
 							sceneObjects[i].deleted = true;
 						}
 						ImGui::Checkbox(("Render Object##" + std::to_string(i)).c_str(), &sceneObjects[i].draw);
+						ImGui::Checkbox(("Semi Transparent##" + std::to_string(i)).c_str(), &sceneObjects[i].semi_transparent);
 						float tint[3];
 
 						ImGui::InputFloat(("Tint Mult ##" + std::to_string(i)).c_str(), &sceneObjects[i].tintMult);

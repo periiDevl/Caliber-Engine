@@ -132,7 +132,7 @@ void SETUI(bool& no_resize, bool& no_move, bool& run, unsigned int& postProcessi
 						{
 							AO = 0.11;
 						}
-						ImGui::SliderFloat("Ambient Occlusion", &AO, 0.11, 0.155, "%.3f", 0);
+						ImGui::SliderFloat("Ambient Occlusion", &AO, 0.06, 0.155, "%.3f", 0);
 					}
 					else {
 						AO = 0;

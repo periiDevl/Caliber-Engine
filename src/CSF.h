@@ -140,7 +140,8 @@ public:
 			shadow /= pow((sampleRadius * 2 + avgShadow), 2);
 		}
 
-
+		if (texture(diffuse0, texCoord).a < 0.1)
+			discard;
 
 		return (texture(diffuse0, texCoord) * (diffuse * (1.0f - shadow) + ambient) + texture(specular0, texCoord).r * specular  * (1.0f - shadow)) * lightColor;
 	}
