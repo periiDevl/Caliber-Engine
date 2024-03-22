@@ -45,7 +45,8 @@ static glm::vec3 Deg(const glm::vec3& radians)
 }
 
 
-const float WorldRadius = 1750;
+//const float WorldRadius = 1750;
+const float WorldRadius = 150;
 const float objectWorldMult = 20;
 
 bool run; 
@@ -567,6 +568,8 @@ int main()
 		bool staticI = std::stof(token);
 		std::getline(iss, token, ',');
 		bool st = std::stof(token);
+		std::getline(iss, token, ',');
+		bool sa = std::stof(token);
 		Model obj = Model(path.c_str());
 		obj.staticBody = staticI;
 		obj.draw = draw;
@@ -575,6 +578,7 @@ int main()
 		obj.scale = sca;
 		obj.tint = tint;
 		obj.semi_transparent = st;
+		obj.shadowAppro = sa;
 		sceneObjects.push_back(obj);
 	}
 
@@ -981,7 +985,7 @@ int main()
 
 			for (int i = 0; i < sceneObjects.size(); i++)
 			{
-				if (!sceneObjects[i].deleted) {
+				if (!sceneObjects[i].deleted && sceneObjects[i].shadowAppro) {
 					sceneObjects[i].Draw(shadowMapProgram, camera, objectWorldMult, sceneObjects[i].translation, sceneObjects[i].rotation,
 						sceneObjects[i].scale);
 				}
@@ -1229,7 +1233,7 @@ int main()
 							Caliboutfile << obj.translation.x << "," << obj.translation.y << "," << obj.translation.z << ","
 								<< obj.rotation.x << "," << obj.rotation.y << "," << obj.rotation.z << ","
 								<< obj.scale.x << "," << obj.scale.y << "," << obj.scale.z << "," << obj.file << "," << obj.draw << "," << obj.tint.x * obj.tintMult << "," << obj.tint.y * obj.tintMult << "," << obj.tint.z * obj.tintMult
-								<< "," << obj.staticBody << "," << obj.semi_transparent << "\n";
+								<< "," << obj.staticBody << "," << obj.semi_transparent << "," << obj.shadowAppro << "\n";
 						}
 					}
 					Caliboutfile.close();
@@ -1328,6 +1332,18 @@ int main()
 					sceneObjects.back().BindPhysics(dynamicsWorld, objectWorldMult);
 					//sceneObjects.back().PHYSICS_SETUP(objectWorldMult);
 				}
+				if (ImGui::Button("grass")) {
+					sceneObjects.push_back(Model("models/grass/scene.gltf"));
+					sceneObjects.back().file = "models/grass/scene.gltf";
+					sceneObjects.back().BindPhysics(dynamicsWorld, objectWorldMult);
+					//sceneObjects.back().PHYSICS_SETUP(objectWorldMult);
+				}
+				if (ImGui::Button("grass_plane")) {
+					sceneObjects.push_back(Model("models/plane/scene.gltf"));
+					sceneObjects.back().file = "models/plane/scene.gltf";
+					sceneObjects.back().BindPhysics(dynamicsWorld, objectWorldMult);
+					//sceneObjects.back().PHYSICS_SETUP(objectWorldMult);
+				}
 				if (ImGui::Button("Window")) {
 					sceneObjects.push_back(Model("models/Window/scene.gltf"));
 					sceneObjects.back().file = "models/Window/scene.gltf";
@@ -1380,8 +1396,8 @@ int main()
 						}
 						ImGui::Checkbox(("Render Object##" + std::to_string(i)).c_str(), &sceneObjects[i].draw);
 						ImGui::Checkbox(("Semi Transparent##" + std::to_string(i)).c_str(), &sceneObjects[i].semi_transparent);
+						ImGui::Checkbox(("Shadow Cast##" + std::to_string(i)).c_str(), &sceneObjects[i].shadowAppro);
 						float tint[3];
-
 						ImGui::InputFloat(("Tint Mult ##" + std::to_string(i)).c_str(), &sceneObjects[i].tintMult);
 						tint[0] = sceneObjects[i].tint.x;
 						tint[1] = sceneObjects[i].tint.y; 

@@ -109,9 +109,8 @@ public:
 			}
 		};
 
-
+		
 		float shadow = 0.0f;
-
 		vec3 lightCoords = fragPosLight.xyz / fragPosLight.w;
 		if (lightCoords.z <= 1.0f)
 		{

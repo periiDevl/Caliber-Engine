@@ -17,6 +17,7 @@ public:
 	bool draw = true;
 	bool bindedphysics = true;
 	bool semi_transparent = false;
+	bool shadowAppro = true;
 	btRigidBody* boxRigidBody = nullptr;
 	glm::vec3 translation = glm::vec3(0);
 	glm::vec3 rotation = glm::vec3(0, 0, 0);
